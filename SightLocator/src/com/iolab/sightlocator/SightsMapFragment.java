@@ -71,7 +71,9 @@ public class SightsMapFragment extends Fragment {
 			
 			gMap.addMarker(new MarkerOptions()
 					.position(new LatLng(49.8367019,24.0048451))
-					.title("Hello world"));
+					.title("Church of Sts. Olha and Elizabeth, Lviv")
+					.icon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
 		}
 	}
