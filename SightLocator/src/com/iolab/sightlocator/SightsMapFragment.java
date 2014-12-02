@@ -70,8 +70,8 @@ public class SightsMapFragment extends Fragment {
 							.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 			
 			gMap.addMarker(new MarkerOptions()
-		    		.position(new LatLng(49.8367019,24.0048451))
-		    		.title("Hello world"));
+					.position(new LatLng(49.8367019,24.0048451))
+					.title("Hello world"));
 
 		}
 	}
