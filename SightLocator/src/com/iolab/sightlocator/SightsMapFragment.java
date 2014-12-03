@@ -45,15 +45,21 @@ public class SightsMapFragment extends Fragment {
 
 		super.onActivityCreated(savedInstanceState);
 		
+		gMap = ((MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map))
+				.getMap();
+		
 		// Acquire a reference to the system Location Manager
 		LocationManager locationManager = (LocationManager) getActivity()
 				.getSystemService(Context.LOCATION_SERVICE);
+		
+		gMap.setMyLocationEnabled(true);
 
 		// Define a listener that responds to location updates
 		LocationListener locationListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
 				// Called when a new location is found by the network location provider.
-				makeUseOfNewLocation(location);
+				//makeUseOfNewLocation(location);
 			}
 
 			@SuppressLint("SimpleDateFormat")
@@ -98,10 +104,6 @@ public class SightsMapFragment extends Fragment {
 				60000,	//1 min - minimum time interval between location updates
 				50,		// 50 m - minimum distance between location updates
 				locationListener);
-
-		gMap = ((MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map))
-				.getMap();
 		
 		if (gMap != null) {
 			gMap.addMarker(new MarkerOptions()
