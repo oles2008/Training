@@ -1,5 +1,9 @@
 package com.iolab.sightlocator;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
@@ -52,7 +56,11 @@ public class SightsMapFragment extends Fragment {
 				makeUseOfNewLocation(location);
 			}
 
+			@SuppressLint("SimpleDateFormat")
 			private void makeUseOfNewLocation(Location location) {
+				Calendar cal = Calendar.getInstance();
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+				
 				LatLng newCoord = new LatLng(
 						location.getLatitude(),
 						location.getLongitude());
@@ -61,7 +69,7 @@ public class SightsMapFragment extends Fragment {
 				
 				gMap.addMarker(new MarkerOptions()
 						.position(newCoord)
-						.title("Now you are here")
+						.title("You are here at " + sdf.format(cal.getTime()))
 						.icon(BitmapDescriptorFactory
 								.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 			}
@@ -80,15 +88,15 @@ public class SightsMapFragment extends Fragment {
 		// Register the listener with the Location Manager to receive NETWORK location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 
-				60000, //1 min - minimum time interval between location updates
-				50,    // 50 m - minimum distance between location updates
+				60000,	//1 min - minimum time interval between location updates
+				50,		// 50 m - minimum distance between location updates
 				locationListener);
 
 		// Register the listener with the Location Manager to receive GPS location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
-				60000, //1 min - minimum time interval between location updates
-				50,    // 50 m - minimum distance between location updates
+				60000,	//1 min - minimum time interval between location updates
+				50,		// 50 m - minimum distance between location updates
 				locationListener);
 
 		gMap = ((MapFragment) getFragmentManager()
