@@ -3,6 +3,7 @@ package com.iolab.sightlocator;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,42 +40,68 @@ public class SightsMapFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 
 		super.onActivityCreated(savedInstanceState);
-
+		
+		// Acquire a reference to the system Location Manager
 		LocationManager locationManager = (LocationManager) getActivity()
 				.getSystemService(Context.LOCATION_SERVICE);
-		// locationManager.req(LocationManager.NETWORK_PROVIDER, 0,0,)
-		
-		Location initialLocation = locationManager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		
-		if (initialLocation == null) {
-			initialLocation = locationManager
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		}
-		
+
+		// Define a listener that responds to location updates
+		LocationListener locationListener = new LocationListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location provider.
+				makeUseOfNewLocation(location);
+			}
+
+			private void makeUseOfNewLocation(Location location) {
+				LatLng newCoord = new LatLng(
+						location.getLatitude(),
+						location.getLongitude());
+				
+				gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
+				
+				gMap.addMarker(new MarkerOptions()
+						.position(newCoord)
+						.title("Now you are here")
+						.icon(BitmapDescriptorFactory
+								.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+			}
+
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+			}
+
+			public void onProviderEnabled(String provider) {
+			}
+
+			public void onProviderDisabled(String provider) {
+			}
+		};
+
+		// Register the listener with the Location Manager to receive NETWORK location updates
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 
+				0,
+				0,
+				locationListener);
+
+		// Register the listener with the Location Manager to receive GPS location updates
+		locationManager.requestLocationUpdates(
+				LocationManager.GPS_PROVIDER, 
+				0,
+				0,
+				locationListener);
+
 		gMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map))
 				.getMap();
 		
-		if ((gMap != null) && (initialLocation != null)) {
-			LatLng initialCoord = new LatLng(
-					initialLocation.getLatitude(),
-					initialLocation.getLongitude());
-
-			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialCoord, 15));
-			
-			gMap.addMarker(new MarkerOptions()
-					.position(initialCoord)
-					.title("You are here")
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-			
+		if (gMap != null) {
 			gMap.addMarker(new MarkerOptions()
 					.position(new LatLng(49.8367019,24.0048451))
 					.title("Church of Sts. Olha and Elizabeth, Lviv")
 					.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-
 		}
+		
 	}
 }
