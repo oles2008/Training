@@ -81,14 +81,14 @@ public class SightsMapFragment extends Fragment {
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 
 				60000, //1 min - minimum time interval between location updates
-				100,   //100 m - minimum distance between location updates
+				50,    // 50 m - minimum distance between location updates
 				locationListener);
 
 		// Register the listener with the Location Manager to receive GPS location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
-				0,
-				0,
+				60000, //1 min - minimum time interval between location updates
+				50,    // 50 m - minimum distance between location updates
 				locationListener);
 
 		gMap = ((MapFragment) getFragmentManager()
