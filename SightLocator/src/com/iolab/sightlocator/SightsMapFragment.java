@@ -80,8 +80,8 @@ public class SightsMapFragment extends Fragment {
 		// Register the listener with the Location Manager to receive NETWORK location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 
-				0,
-				0,
+				60000, //1 min - minimum time interval between location updates
+				100,   //100 m - minimum distance between location updates
 				locationListener);
 
 		// Register the listener with the Location Manager to receive GPS location updates
