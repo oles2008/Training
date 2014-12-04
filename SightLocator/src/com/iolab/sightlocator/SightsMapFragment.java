@@ -136,6 +136,12 @@ public class SightsMapFragment extends Fragment {
 					.title("Church of Sts. Olha and Elizabeth, Lviv")
 					.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+			gMap.addMarker(new MarkerOptions()
+					.position(new LatLng(49.839860, 23.993669))
+					.title("Railway station, Lviv")
+					.icon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+			
 		}
 		
 	}
