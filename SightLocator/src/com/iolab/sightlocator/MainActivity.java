@@ -10,33 +10,32 @@ import android.view.Menu;
 
 public class MainActivity extends Activity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        //checking if GooglePlayServices is installed
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        // Showing status
-        if(status!=ConnectionResult.SUCCESS){ // Google Play Services are not available
+		// checking if GooglePlayServices is installed
+		int status = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(getBaseContext());
 
-            int requestCode = 10;
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
-            dialog.show();
+		// Showing status
+		if (status != ConnectionResult.SUCCESS) { // Google Play Services are not available
 
-        }else{
-            setContentView(R.layout.activity_main);
-        }
-    }
+			int requestCode = 10;
+			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this,
+					requestCode);
+			dialog.show();
 
+		} else {
+			setContentView(R.layout.activity_main);
+		}
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-    	//   
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
- 
-    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
 }

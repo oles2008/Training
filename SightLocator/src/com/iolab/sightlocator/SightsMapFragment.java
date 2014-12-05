@@ -77,7 +77,6 @@ public class SightsMapFragment extends Fragment {
 						makeUseOfNewLocation(location);
 					}
 
-					@SuppressLint("SimpleDateFormat")
 					private void makeUseOfNewLocation(Location location) {
 						
 						LatLng newCoord = new LatLng(
