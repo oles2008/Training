@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -116,8 +117,18 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 
 	public boolean onMarkerClick(final Marker marker) {
+		
+		String railwayStation = this.getString(R.string.railway_station_wiki);
+		
 		if (marker.equals(markerRailWayStation)) {
-			Log.d("MSG", "click test");
+			Log.d("MSG", "marker click test");
+			marker.showInfoWindow();
+			Fragment fragment = getFragmentManager()
+					.findFragmentById(R.id.text_fragment);
+			TextView textView = (TextView) fragment
+					.getView()
+					.findViewById(R.id.textView);
+			textView.setText(railwayStation);
 			return true;
 		}
 		return false;
@@ -153,6 +164,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 					gMap.addMarker(new MarkerOptions()
 						.position(new LatLng(49.839860, 23.993669))
 						.title("Railway station, Lviv")
+						.snippet("Snippet string")
 						.icon(BitmapDescriptorFactory
 								.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));			
 		}
