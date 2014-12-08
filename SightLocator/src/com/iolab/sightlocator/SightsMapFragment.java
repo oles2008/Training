@@ -1,26 +1,29 @@
 package com.iolab.sightlocator;
 
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class SightsMapFragment extends Fragment {
+public class SightsMapFragment extends Fragment implements OnMarkerClickListener{
 	private GoogleMap gMap;
+	Marker markerRailWayStation;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -111,6 +114,14 @@ public class SightsMapFragment extends Fragment {
 						50,		// 50 m - minimum distance between location updates
 						locationListener);
 	}
+
+	public boolean onMarkerClick(final Marker marker) {
+		if (marker.equals(markerRailWayStation)) {
+			Log.d("MSG", "click test");
+			return true;
+		}
+		return false;
+	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -122,6 +133,9 @@ public class SightsMapFragment extends Fragment {
 				.getMap();
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);
+
+		// Register the listener with the map to receive marker clicks updates
+		gMap.setOnMarkerClickListener(this);
 		
 		//zooming in to the user's location so that the user doesn't have to press the Google-provided "Locate me" button
 		zoomInToUsersLastLocation();
@@ -135,12 +149,12 @@ public class SightsMapFragment extends Fragment {
 					.title("Church of Sts. Olha and Elizabeth, Lviv")
 					.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-			gMap.addMarker(new MarkerOptions()
-					.position(new LatLng(49.839860, 23.993669))
-					.title("Railway station, Lviv")
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-			
+			markerRailWayStation = 
+					gMap.addMarker(new MarkerOptions()
+						.position(new LatLng(49.839860, 23.993669))
+						.title("Railway station, Lviv")
+						.icon(BitmapDescriptorFactory
+								.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));			
 		}
 		
 	}
