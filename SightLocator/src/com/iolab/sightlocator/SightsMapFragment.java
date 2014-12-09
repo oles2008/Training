@@ -117,6 +117,11 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 						locationListener);
 	}
 	
+	/**
+	 * Change text in text fragment to new one.
+	 *
+	 * @param newText the new text to be displayed
+	 */
 	private void changeTextFragment(String newText) {
 		Fragment fragment = getFragmentManager()
 				.findFragmentById(R.id.text_fragment);
