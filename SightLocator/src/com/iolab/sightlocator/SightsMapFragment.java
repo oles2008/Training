@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -115,20 +116,22 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 						50,		// 50 m - minimum distance between location updates
 						locationListener);
 	}
+	
+	private void changeTextFragment(String newText) {
+		Fragment fragment = getFragmentManager()
+				.findFragmentById(R.id.text_fragment);
+		TextView textView = (TextView) fragment
+				.getView()
+				.findViewById(R.id.textView);
+		textView.setText(newText);
+	}
 
 	public boolean onMarkerClick(final Marker marker) {
-		
 		String railwayStation = this.getString(R.string.railway_station_wiki);
 		
 		if (marker.equals(markerRailWayStation)) {
-			Log.d("MSG", "marker click test");
 			marker.showInfoWindow();
-			Fragment fragment = getFragmentManager()
-					.findFragmentById(R.id.text_fragment);
-			TextView textView = (TextView) fragment
-					.getView()
-					.findViewById(R.id.textView);
-			textView.setText(railwayStation);
+			changeTextFragment(railwayStation);
 			return true;
 		}
 		return false;
@@ -144,6 +147,15 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				.getMap();
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);
+		
+		gMap.setOnMapClickListener(new OnMapClickListener() {
+			
+			@Override
+			public void onMapClick(LatLng arg0) {
+				String loremIpsum = getString(R.string.lorem_ipsum);
+				changeTextFragment(loremIpsum);
+			}
+		});
 
 		// Register the listener with the map to receive marker clicks updates
 		gMap.setOnMarkerClickListener(this);
