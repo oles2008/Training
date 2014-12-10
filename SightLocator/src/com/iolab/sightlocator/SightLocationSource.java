@@ -5,6 +5,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.LocationSource;
 
@@ -27,7 +28,7 @@ public class SightLocationSource implements LocationSource, LocationListener {
 
 	@Override
 	public void activate(OnLocationChangedListener onLocationChangedListener) {
-		
+		//Log.d("MyLogs", "activating locationListener");
 		this.onLocationChangedListener = onLocationChangedListener;
 		
 		// Register the listener with the Location Manager to receive NETWORK location updates
@@ -47,6 +48,7 @@ public class SightLocationSource implements LocationSource, LocationListener {
 
 	@Override
 	public void deactivate() {
+		//Log.d("MyLogs", "deactivating locationListener");
 		locationManager.removeUpdates(this);
 	}
 

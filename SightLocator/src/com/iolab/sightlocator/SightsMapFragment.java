@@ -22,8 +22,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 
-public class SightsMapFragment extends Fragment implements OnMarkerClickListener{
+public class SightsMapFragment extends Fragment implements OnMarkerClickListener, NewLocationUser{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 
@@ -75,26 +76,23 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	private void registerLocationListener() {
-				
-		// Define a listener that responds to location updates
-				OnLocationChangedListener onLocationChangedListener = new OnLocationChangedListener() {
-					public void onLocationChanged(Location location) {
-						// Called when a new location is found by the network location provider.
-						makeUseOfNewLocation(location);
-					}
 
-					private void makeUseOfNewLocation(Location location) {
-						
-						LatLng newCoord = new LatLng(
-								location.getLatitude(),
-								location.getLongitude());
-						
-						gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
-					}
-				};
-				
-				sightLocationSource = new SightLocationSource(getActivity());
-				sightLocationSource.activate(onLocationChangedListener);
+		// Create a listener that responds to location updates by calling makeUseOfNewLocation() when it
+		//thinks it's necessary (since not all location updates should be taken into account), 
+		//and activate this listener by sightLocationSource
+
+		sightLocationSource = new SightLocationSource(getActivity());
+		sightLocationSource.activate(new OnUserLocationChangedListener(this));
+	}
+	
+	@Override
+	public void makeUseOfNewLocation(Location location) {
+		
+		LatLng newCoord = new LatLng(
+				location.getLatitude(),
+				location.getLongitude());
+		
+		gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
 	}
 	
 	/**
@@ -177,9 +175,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onStart() {
 
-		super.onActivityCreated(savedInstanceState);
+		super.onStart();
 		
 		gMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map))
