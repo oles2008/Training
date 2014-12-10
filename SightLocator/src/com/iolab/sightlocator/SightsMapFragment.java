@@ -157,6 +157,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		// Define a listener that responds to location updates and register it
 		registerLocationListener();
 		
+		
+		
 		if (gMap != null) {
 			gMap.addMarker(new MarkerOptions()
 					.position(new LatLng(49.8367019,24.0048451))
