@@ -55,7 +55,6 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 			newLocationUser.makeUseOfNewLocation(location);
 			currentBestLocation = location;
 		}
-		
 		//Log.d("MyLogs", "Provider: "+location.getProvider());
 	}
 	
