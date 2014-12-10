@@ -75,26 +75,25 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	private void registerLocationListener() {
-				
-		// Define a listener that responds to location updates
-				OnLocationChangedListener onLocationChangedListener = new OnLocationChangedListener() {
-					public void onLocationChanged(Location location) {
-						// Called when a new location is found by the network location provider.
-						makeUseOfNewLocation(location);
-					}
 
-					private void makeUseOfNewLocation(Location location) {
-						
-						LatLng newCoord = new LatLng(
-								location.getLatitude(),
-								location.getLongitude());
-						
-						gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
-					}
-				};
-				
-				sightLocationSource = new SightLocationSource(getActivity());
-				sightLocationSource.activate(onLocationChangedListener);
+		// Define a listener that responds to location updates
+		OnLocationChangedListener onLocationChangedListener = new OnLocationChangedListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location provider.
+				makeUseOfNewLocation(location);
+			}
+
+			private void makeUseOfNewLocation(Location location) {
+
+				LatLng newCoord = new LatLng(location.getLatitude(),
+						location.getLongitude());
+
+				gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
+			}
+		};
+
+		sightLocationSource = new SightLocationSource(getActivity());
+		sightLocationSource.activate(onLocationChangedListener);
 	}
 	
 	/**
