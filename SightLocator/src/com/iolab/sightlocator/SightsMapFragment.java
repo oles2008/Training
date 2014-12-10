@@ -15,8 +15,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class SightsMapFragment extends Fragment implements OnMarkerClickListener{
 	private GoogleMap gMap;
+	private LocationSource sightLocationSource;
 	Marker markerRailWayStation;
 	
 	@Override
@@ -48,7 +51,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	 *
 	 * @return true, if successful, false if the location could not be obtained
 	 */
-	public boolean zoomInToUsersLastLocation() {
+	private boolean zoomInToUsersLastLocation() {
 		LocationManager locationManager = (LocationManager) getActivity()
 				.getSystemService(Context.LOCATION_SERVICE);
 		
@@ -70,13 +73,10 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		}
 	}
 	
-	public void registerLocationListener() {
-		// Acquire a reference to the system Location Manager
-				LocationManager locationManager = (LocationManager) getActivity()
-						.getSystemService(Context.LOCATION_SERVICE);
+	private void registerLocationListener() {
 				
 		// Define a listener that responds to location updates
-				LocationListener locationListener = new LocationListener() {
+				OnLocationChangedListener onLocationChangedListener = new OnLocationChangedListener() {
 					public void onLocationChanged(Location location) {
 						// Called when a new location is found by the network location provider.
 						makeUseOfNewLocation(location);
@@ -90,31 +90,10 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 						
 						gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
 					}
-
-					public void onStatusChanged(String provider, int status,
-							Bundle extras) {
-					}
-
-					public void onProviderEnabled(String provider) {
-					}
-
-					public void onProviderDisabled(String provider) {
-					}
 				};
-
-				// Register the listener with the Location Manager to receive NETWORK location updates
-				locationManager.requestLocationUpdates(
-						LocationManager.NETWORK_PROVIDER, 
-						60000,	//1 min - minimum time interval between location updates
-						50,		// 50 m - minimum distance between location updates
-						locationListener);
-
-				// Register the listener with the Location Manager to receive GPS location updates
-				locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 
-						60000,	//1 min - minimum time interval between location updates
-						50,		// 50 m - minimum distance between location updates
-						locationListener);
+				
+				sightLocationSource = new SightLocationSource(getActivity());
+				sightLocationSource.activate(onLocationChangedListener);
 	}
 	
 	/**
@@ -150,6 +129,13 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map))
 				.getMap();
+		
+
+		//here, we do not set sightLocationSource as the location source, because that instance of SightLocationSource  
+		//is used for the marking the user's location and for zooming in to the user's location,
+		//different instances of SightLocationSource are needed
+		gMap.setLocationSource(new SightLocationSource(getActivity()));
+
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);
 		
@@ -186,5 +172,11 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 								.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));			
 		}
 		
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		sightLocationSource.deactivate();
 	}
 }
