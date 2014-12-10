@@ -3,7 +3,6 @@ package com.iolab.sightlocator;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,9 +12,9 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -76,7 +75,6 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	private void registerLocationListener() {
-
 		// Create a listener that responds to location updates by calling makeUseOfNewLocation() when it
 		//thinks it's necessary (since not all location updates should be taken into account), 
 		//and activate this listener by sightLocationSource
