@@ -1,13 +1,11 @@
 package com.iolab.sightlocator;
 
-
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +26,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class SightsMapFragment extends Fragment implements OnMarkerClickListener{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
-	Marker markerRailWayStation;
-	
+
+	private static final LatLng RAILWAY_STATION = new LatLng(49.839860, 23.993669);
+	private static final LatLng STS_OLHA_AND_ELISABETH = new LatLng(49.8367019,24.0048451);
+	private static final LatLng SOFTSERVE_OFFICE_4 = new LatLng(49.832786, 23.997022);
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -112,13 +113,67 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 
 	public boolean onMarkerClick(final Marker marker) {
 		String railwayStation = this.getString(R.string.railway_station_wiki);
+		String softserveOffice4 = this.getString(R.string.softserve_office_4);
+		String stsOlhaAndElisabeth = this.getString(R.string.sts_olha_and_elisabeth);
 		
-		if (marker.equals(markerRailWayStation)) {
+		if (marker.getPosition().equals(RAILWAY_STATION)) {
 			marker.showInfoWindow();
 			changeTextFragment(railwayStation);
 			return true;
 		}
+		
+		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
+			marker.showInfoWindow();
+			changeTextFragment(softserveOffice4);
+			return true;
+		}
+		
+		if (marker.getPosition().equals(STS_OLHA_AND_ELISABETH)) {
+			marker.showInfoWindow();
+			changeTextFragment(stsOlhaAndElisabeth);
+			return true;
+		}
+
 		return false;
+	}
+	
+	public void addMarkers() {
+		if (gMap != null) {
+			gMap.addMarker(new MarkerOptions()
+				.position(STS_OLHA_AND_ELISABETH)
+				.title("Church of Sts. Olha and Elizabeth, Lviv")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+			gMap.addMarker(new MarkerOptions()
+				.position(RAILWAY_STATION)
+				.title("Railway station, Lviv")
+				.snippet("Snippet string")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+			gMap.addMarker(new MarkerOptions()
+				.position(SOFTSERVE_OFFICE_4)
+				.title("Softserve office #4, Lviv")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));			
+		}
+	}
+
+	private void registerMapClickListener() {
+		gMap.setOnMapClickListener(new OnMapClickListener() {
+			@Override
+			public void onMapClick(LatLng arg0) {
+				String loremIpsum = getString(R.string.lorem_ipsum);
+				changeTextFragment(loremIpsum);
+			}
+		});
+	}
+
+	private void addMarkersPositions() {
+		MarkerOptions markersPositions = new MarkerOptions();
+		markersPositions.position(RAILWAY_STATION);
+		markersPositions.position(SOFTSERVE_OFFICE_4);
+		markersPositions.position(STS_OLHA_AND_ELISABETH);
+		gMap.addMarker(markersPositions);
 	}
 	
 	@Override
@@ -139,16 +194,10 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);
 		
-		gMap.setOnMapClickListener(new OnMapClickListener() {
-			
-			@Override
-			public void onMapClick(LatLng arg0) {
-				String loremIpsum = getString(R.string.lorem_ipsum);
-				changeTextFragment(loremIpsum);
-			}
-		});
+		// Define a map listener that responds on map clicks and register it
+		registerMapClickListener();
 
-		// Register the listener with the map to receive marker clicks updates
+		// Register a marker listener to receive marker clicks updates
 		gMap.setOnMarkerClickListener(this);
 		
 		//zooming in to the user's location so that the user doesn't have to press the Google-provided "Locate me" button
@@ -156,24 +205,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		
 		// Define a listener that responds to location updates and register it
 		registerLocationListener();
-		
-		
-		
-		if (gMap != null) {
-			gMap.addMarker(new MarkerOptions()
-					.position(new LatLng(49.8367019,24.0048451))
-					.title("Church of Sts. Olha and Elizabeth, Lviv")
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-			markerRailWayStation = 
-					gMap.addMarker(new MarkerOptions()
-						.position(new LatLng(49.839860, 23.993669))
-						.title("Railway station, Lviv")
-						.snippet("Snippet string")
-						.icon(BitmapDescriptorFactory
-								.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));			
-		}
-		
+
+		// add markers LatLng positions
+		addMarkersPositions();
+
+		// add markers with markers details
+		addMarkers();
 	}
 	
 	@Override
