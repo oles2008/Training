@@ -5,6 +5,7 @@ import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
+import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -51,10 +52,21 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 	// Called when a new location is found by one of the location providers.
 	@Override
 	public void onLocationChanged(Location location) {
+		//for debugging
+		Toast toast = Toast.makeText(Appl.appContext, "Provider: "+location.getProvider(), Toast.LENGTH_SHORT);
+		toast.show();
+		//
+		
 		if(isBetterLocation(location, currentBestLocation)){
 			newLocationUser.makeUseOfNewLocation(location);
 			currentBestLocation = location;
+			
+			//for debugging
+			toast = Toast.makeText(Appl.appContext, "Better location ", Toast.LENGTH_SHORT);
+			toast.show();
+			//
 		}
+		
 		
 		//Log.d("MyLogs", "Provider: "+location.getProvider());
 	}

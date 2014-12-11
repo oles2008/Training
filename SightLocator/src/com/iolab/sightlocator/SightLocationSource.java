@@ -6,6 +6,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.LocationSource;
 
@@ -28,27 +29,49 @@ public class SightLocationSource implements LocationSource, LocationListener {
 
 	@Override
 	public void activate(OnLocationChangedListener onLocationChangedListener) {
-		//Log.d("MyLogs", "activating locationListener");
+		//for debugging
+		Toast toast = Toast.makeText(Appl.appContext, "activating locationListener", Toast.LENGTH_SHORT);
+		toast.show();
+		//
+		
 		this.onLocationChangedListener = onLocationChangedListener;
+		
+		//to set initial location
+		setInitialLocation();
 		
 		// Register the listener with the Location Manager to receive NETWORK location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 
-				60000,	//1 min - minimum time interval between location updates
-				50,		// 50 m - minimum distance between location updates
+				20000,	//1 min - minimum time interval between location updates
+				20,		// 50 m - minimum distance between location updates
 				this);
 
 		// Register the listener with the Location Manager to receive GPS location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
-				60000,	//1 min - minimum time interval between location updates
-				50,		// 50 m - minimum distance between location updates
+				20000,	//1 min - minimum time interval between location updates
+				20,		// 50 m - minimum distance between location updates
 				this);
+	}
+	
+	private void setInitialLocation(){
+		Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if(lastKnownLocation==null){
+			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+		}
+		if(lastKnownLocation==null){
+			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		}
+		onLocationChangedListener.onLocationChanged(lastKnownLocation);
 	}
 
 	@Override
 	public void deactivate() {
-		//Log.d("MyLogs", "deactivating locationListener");
+		//for debugging
+		Toast toast = Toast.makeText(Appl.appContext, "deactivating locationListener", Toast.LENGTH_SHORT);
+		toast.show();
+		//
+		
 		locationManager.removeUpdates(this);
 	}
 

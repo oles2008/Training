@@ -26,6 +26,7 @@ import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 public class SightsMapFragment extends Fragment implements OnMarkerClickListener, NewLocationUser{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
+	private boolean moveMapOnLocationUpdate = true;
 
 	private static final LatLng RAILWAY_STATION = new LatLng(49.839860, 23.993669);
 	private static final LatLng STS_OLHA_AND_ELISABETH = new LatLng(49.8367019,24.0048451);
@@ -108,6 +109,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 
 	public boolean onMarkerClick(final Marker marker) {
+		//the user wants to stay here
+		moveMapOnLocationUpdate = false;
+		
 		String railwayStation = this.getString(R.string.railway_station_wiki);
 		String softserveOffice4 = this.getString(R.string.softserve_office_4);
 		String stsOlhaAndElisabeth = this.getString(R.string.sts_olha_and_elisabeth);
@@ -158,6 +162,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public void onMapClick(LatLng arg0) {
+				//the user wants to stay here
+				moveMapOnLocationUpdate = false;
+				
 				String loremIpsum = getString(R.string.lorem_ipsum);
 				changeTextFragment(loremIpsum);
 			}
@@ -173,9 +180,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	@Override
-	public void onStart() {
+	public void onResume() {
 
-		super.onStart();
+		super.onResume();
+		
+		//himnokod for debugging
+		Appl.appContext = getActivity();
 		
 		gMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map))
@@ -197,7 +207,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnMarkerClickListener(this);
 		
 		//zooming in to the user's location so that the user doesn't have to press the Google-provided "Locate me" button
-		zoomInToUsersLastLocation();
+		//zoomInToUsersLastLocation();
 		
 		// Define a listener that responds to location updates and register it
 		registerLocationListener();
@@ -210,8 +220,11 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	@Override
-	public void onStop() {
-		super.onStop();
+	public void onPause() {
+		super.onPause();
 		sightLocationSource.deactivate();
+		
+		//himnokod for debugging
+		Appl.appContext=null;
 	}
 }
