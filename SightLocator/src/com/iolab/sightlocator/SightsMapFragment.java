@@ -15,7 +15,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.LocationSource;
-import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -140,11 +139,6 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	public void addMarkers() {
 		if (gMap != null) {
 			gMap.addMarker(new MarkerOptions()
-				.position(STS_OLHA_AND_ELISABETH)
-				.title("Church of Sts. Olha and Elizabeth, Lviv")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-			gMap.addMarker(new MarkerOptions()
 				.position(RAILWAY_STATION)
 				.title("Railway station, Lviv")
 				.snippet("Snippet string")
@@ -154,7 +148,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				.position(SOFTSERVE_OFFICE_4)
 				.title("Softserve office #4, Lviv")
 				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));			
+						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+			gMap.addMarker(new MarkerOptions()
+				.position(STS_OLHA_AND_ELISABETH)
+				.title("Church of Sts. Olha and Elizabeth, Lviv")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 		}
 	}
 

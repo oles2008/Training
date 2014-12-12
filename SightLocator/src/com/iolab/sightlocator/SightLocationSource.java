@@ -42,15 +42,15 @@ public class SightLocationSource implements LocationSource, LocationListener {
 		// Register the listener with the Location Manager to receive NETWORK location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 
-				20000,	//1 min - minimum time interval between location updates
-				20,		// 50 m - minimum distance between location updates
+				20000,	//20 sec - minimum time interval between location updates
+				20,		//20 m - minimum distance between location updates
 				this);
 
 		// Register the listener with the Location Manager to receive GPS location updates
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
-				20000,	//1 min - minimum time interval between location updates
-				20,		// 50 m - minimum distance between location updates
+				20000,	//20 sec - minimum time interval between location updates
+				20,		//20 m - minimum distance between location updates
 				this);
 	}
 	
