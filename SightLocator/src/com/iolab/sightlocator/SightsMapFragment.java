@@ -5,13 +5,16 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.LocationSource;
@@ -146,22 +149,32 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			gMap.addMarker(new MarkerOptions()
 				.position(RAILWAY_STATION)
 				.title("Railway station, Lviv")
-				.snippet("Snippet string")
+				.snippet("Address")
 				.icon(BitmapDescriptorFactory
 						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 			gMap.addMarker(new MarkerOptions()
 				.position(SOFTSERVE_OFFICE_4)
 				.title("Softserve office #4, Lviv")
+				.snippet("Address")
 				.icon(BitmapDescriptorFactory
 						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 			gMap.addMarker(new MarkerOptions()
 				.position(STS_OLHA_AND_ELISABETH)
 				.title("Church of Sts. Olha and Elizabeth, Lviv")
+				.snippet("Address")
 				.icon(BitmapDescriptorFactory
 						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 		}
 	}
 
+	private void addMarkersPositions() {
+		MarkerOptions markersPositions = new MarkerOptions();
+		markersPositions.position(RAILWAY_STATION);
+		markersPositions.position(SOFTSERVE_OFFICE_4);
+		markersPositions.position(STS_OLHA_AND_ELISABETH);
+		gMap.addMarker(markersPositions);
+	}
+	
 	private void registerMapClickListener() {
 		gMap.setOnMapClickListener(new OnMapClickListener() {
 			@Override
@@ -174,15 +187,17 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			}
 		});
 	}
-
-	private void addMarkersPositions() {
-		MarkerOptions markersPositions = new MarkerOptions();
-		markersPositions.position(RAILWAY_STATION);
-		markersPositions.position(SOFTSERVE_OFFICE_4);
-		markersPositions.position(STS_OLHA_AND_ELISABETH);
-		gMap.addMarker(markersPositions);
-	}
 	
+	private void registerInfoWindowClickListener(){
+		gMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				Toast toast = Toast.makeText(Appl.appContext, "onInfoWindowClick", Toast.LENGTH_SHORT);
+				toast.show();
+			}
+		});
+	}
+
 	@Override
 	public void onResume() {
 
@@ -205,7 +220,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setMyLocationEnabled(true);
 		
 		// Define a map listener that responds on map clicks and register it
-		registerMapClickListener();
+		//registerMapClickListener();
 
 		// Register a marker listener to receive marker clicks updates
 		gMap.setOnMarkerClickListener(this);
@@ -215,6 +230,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		
 		// Define a listener that responds to location updates and register it
 		registerLocationListener();
+		
+		registerInfoWindowClickListener();
 
 		// add markers LatLng positions
 		addMarkersPositions();
@@ -237,4 +254,5 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//himnokod for debugging
 		Appl.appContext=null;
 	}
+
 }
