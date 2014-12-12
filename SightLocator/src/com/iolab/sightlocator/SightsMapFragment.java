@@ -34,6 +34,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(savedInstanceState!=null){
+			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
+		}
 	}
 
 	@Override
@@ -90,7 +93,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				location.getLatitude(),
 				location.getLongitude());
 		
-		gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
+		if (moveMapOnLocationUpdate) {
+			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
+		}
 	}
 	
 	/**
@@ -216,6 +221,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 
 		// add markers with markers details
 		addMarkers();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle args){
+		super.onSaveInstanceState(args);
+		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
 	}
 	
 	@Override
