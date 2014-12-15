@@ -14,12 +14,16 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -29,6 +33,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
+	private boolean showToastToNavigateClickOnMap = true;
 
 	private static final LatLng RAILWAY_STATION = new LatLng(49.839860, 23.993669);
 	private static final LatLng STS_OLHA_AND_ELISABETH = new LatLng(49.8367019,24.0048451);
@@ -39,6 +44,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState!=null){
 			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
+			showToastToNavigateClickOnMap = savedInstanceState.getBoolean("showToastToNavigateClickOnMap", false);
 		}
 	}
 
@@ -188,12 +194,54 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		});
 	}
 	
+	private void registerMapLongClickListener() {
+		gMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+			@Override
+			public void onMapLongClick(LatLng arg0) {
+				//the user wants to stay here
+				moveMapOnLocationUpdate = false;
+				
+				String loremIpsum = getString(R.string.lorem_ipsum);
+				changeTextFragment(loremIpsum);
+			}
+		});
+	}
+	
 	private void registerInfoWindowClickListener(){
 		gMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 			@Override
 			public void onInfoWindowClick(Marker marker) {
 				Toast toast = Toast.makeText(Appl.appContext, "onInfoWindowClick", Toast.LENGTH_SHORT);
 				toast.show();
+			}
+		});
+	}
+	
+	private void registerCameraChangeListener(){
+		gMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+			@Override
+			public void onCameraChange(CameraPosition position) {
+				if(showToastToNavigateClickOnMap){
+					Toast toast = Toast.makeText(Appl.appContext, "To NAVIGATE away from your position, LONG CLICK on the map", Toast.LENGTH_SHORT);
+					toast.show();
+				}
+			}
+		});
+	}
+	
+	private void registerOnMyLocationButtonClickListener() {
+		gMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
+			@Override
+			public boolean onMyLocationButtonClick() {
+				Toast toast = Toast.makeText(Appl.appContext, "To NAVIGATE away from your position, LONG CLICK on the map", Toast.LENGTH_SHORT);
+				toast.show();
+				
+				//the user probably wants his location to be show and updated
+				moveMapOnLocationUpdate = true;
+				showToastToNavigateClickOnMap = true;
+				//returning false means that the primary function of the button -- showing the user's
+				//location, should be performed
+				return false;
 			}
 		});
 	}
@@ -233,6 +281,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		
 		// define a listener that responds to clicks on markers Info Window
 		registerInfoWindowClickListener();
+		registerCameraChangeListener();
+		registerMapLongClickListener();
+		registerOnMyLocationButtonClickListener();
 
 		// add markers LatLng positions
 		addMarkersPositions();
@@ -245,6 +296,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	public void onSaveInstanceState(Bundle args){
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
+		args.putBoolean("showToastToNavigateClickOnMap", showToastToNavigateClickOnMap);
 	}
 	
 	@Override
