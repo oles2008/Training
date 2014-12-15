@@ -67,8 +67,6 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 			//
 		}
 		
-		
-		//Log.d("MyLogs", "Provider: "+location.getProvider());
 	}
 	
 	/**
