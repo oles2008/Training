@@ -286,7 +286,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		registerOnMyLocationButtonClickListener();
 
 		// add markers LatLng positions
-		addMarkersPositions();
+		//addMarkersPositions();
 
 		// add markers with markers details
 		addMarkers();
