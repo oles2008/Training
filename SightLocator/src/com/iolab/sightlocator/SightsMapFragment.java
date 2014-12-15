@@ -231,6 +231,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		// Define a listener that responds to location updates and register it
 		registerLocationListener();
 		
+		// define a listener that responds to clicks on markers Info Window
 		registerInfoWindowClickListener();
 
 		// add markers LatLng positions

@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import com.google.android.gms.internal.lo;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 import android.location.Location;
@@ -62,7 +63,7 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 			currentBestLocation = location;
 			
 			//for debugging
-			toast = Toast.makeText(Appl.appContext, "Better location ", Toast.LENGTH_SHORT);
+			toast = Toast.makeText(Appl.appContext, "Better location " + location.toString(), Toast.LENGTH_SHORT);
 			toast.show();
 			//
 		}
