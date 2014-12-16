@@ -2,15 +2,17 @@ package com.iolab.sightlocator;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -123,6 +125,16 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				.findViewById(R.id.textView);
 		textView.setText(newText);
 	}
+	
+	private void changeImageFragment(Bitmap image) {
+		Fragment fragment = getFragmentManager()
+				.findFragmentById(R.id.text_fragment);
+		ImageView imageView = (ImageView) fragment
+				.getView()
+				.findViewById(R.id.imageView);
+		imageView.setImageBitmap(image);
+	}
+
 
 	public boolean onMarkerClick(final Marker marker) {
 		//the user wants to stay here
@@ -131,6 +143,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		String railwayStation = this.getString(R.string.railway_station_wiki);
 		String softserveOffice4 = this.getString(R.string.softserve_office_4);
 		String stsOlhaAndElisabeth = this.getString(R.string.sts_olha_and_elisabeth);
+		
+		Bitmap ssLogoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ss_logo);
 		
 		if (marker.getPosition().equals(RAILWAY_STATION)) {
 			marker.showInfoWindow();
@@ -141,6 +155,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
 			marker.showInfoWindow();
 			changeTextFragment(softserveOffice4);
+			changeImageFragment(ssLogoBitmap);
 			return true;
 		}
 		
