@@ -7,8 +7,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,12 +53,13 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View sightsmapFragment = inflater.inflate(
+		TouchEventListenerFrameLayout touchEventListenerFrameLayout = new TouchEventListenerFrameLayout(getActivity());
+		touchEventListenerFrameLayout.addView(inflater.inflate(
 				R.layout.map_fragment,
 				container,
-				false);
+				false));
 
-		return sightsmapFragment;
+		return touchEventListenerFrameLayout;
 	}
 	
 	/**
@@ -187,6 +190,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			public void onMapClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
+				showToastToNavigateClickOnMap = false;
 				
 				String loremIpsum = getString(R.string.lorem_ipsum);
 				changeTextFragment(loremIpsum);
@@ -200,6 +204,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			public void onMapLongClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
+				showToastToNavigateClickOnMap = false;
 				
 				String loremIpsum = getString(R.string.lorem_ipsum);
 				changeTextFragment(loremIpsum);
@@ -217,27 +222,38 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		});
 	}
 	
-	private void registerCameraChangeListener(){
+	private void registerCameraChangeListener() {
 		gMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition position) {
-				if(showToastToNavigateClickOnMap){
-					Toast toast = Toast.makeText(Appl.appContext, "To NAVIGATE away from your position, LONG CLICK on the map", Toast.LENGTH_SHORT);
+				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
+				if (mapIsTouched && showToastToNavigateClickOnMap) {
+					Toast toast = Toast
+							.makeText(
+									Appl.appContext,
+									"To NAVIGATE away from your position, LONG CLICK on the map",
+									Toast.LENGTH_SHORT);
 					toast.show();
+					showToastToNavigateClickOnMap = false;
 				}
 			}
 		});
 	}
-	
+
 	private void registerOnMyLocationButtonClickListener() {
 		gMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
 			@Override
 			public boolean onMyLocationButtonClick() {
-				Toast toast = Toast.makeText(Appl.appContext, "To NAVIGATE away from your position, LONG CLICK on the map", Toast.LENGTH_SHORT);
-				toast.show();
+				if(!moveMapOnLocationUpdate){
+					Toast toast = Toast.makeText(Appl.appContext, "To NAVIGATE away from your position again, LONG CLICK on the map", Toast.LENGTH_SHORT);
+					toast.show();
+				}
 				
 				//the user probably wants his location to be show and updated
 				moveMapOnLocationUpdate = true;
+				
+				//this means that the location will be now shown and updated, 
+				//so if the user wants to navigate away, they should perform long clock again
 				showToastToNavigateClickOnMap = true;
 				//returning false means that the primary function of the button -- showing the user's
 				//location, should be performed
@@ -282,6 +298,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		// define a listener that responds to clicks on markers Info Window
 		registerInfoWindowClickListener();
 		registerCameraChangeListener();
+		registerMapClickListener();
 		registerMapLongClickListener();
 		registerOnMyLocationButtonClickListener();
 

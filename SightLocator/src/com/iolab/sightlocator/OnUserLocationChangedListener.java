@@ -63,13 +63,11 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 			currentBestLocation = location;
 			
 			//for debugging
-			toast = Toast.makeText(Appl.appContext, "Better location " + location.toString(), Toast.LENGTH_SHORT);
+			toast = Toast.makeText(Appl.appContext, "Better location ", Toast.LENGTH_SHORT);
 			toast.show();
 			//
 		}
 		
-		
-		//Log.d("MyLogs", "Provider: "+location.getProvider());
 	}
 	
 	/**
