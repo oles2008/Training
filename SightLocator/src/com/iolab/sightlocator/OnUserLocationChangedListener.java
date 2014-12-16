@@ -1,6 +1,5 @@
 package com.iolab.sightlocator;
 
-import com.google.android.gms.internal.lo;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 import android.location.Location;

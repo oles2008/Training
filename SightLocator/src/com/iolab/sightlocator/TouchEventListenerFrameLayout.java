@@ -1,7 +1,6 @@
 package com.iolab.sightlocator;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
