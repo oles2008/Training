@@ -216,7 +216,11 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 			@Override
 			public void onInfoWindowClick(Marker marker) {
-				Toast toast = Toast.makeText(Appl.appContext, "onInfoWindowClick", Toast.LENGTH_SHORT);
+				Toast toast = Toast
+						.makeText(
+								Appl.appContext,
+								"onInfoWindowClick",
+								Toast.LENGTH_SHORT);
 				toast.show();
 			}
 		});
@@ -245,7 +249,11 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			@Override
 			public boolean onMyLocationButtonClick() {
 				if(!moveMapOnLocationUpdate){
-					Toast toast = Toast.makeText(Appl.appContext, "To NAVIGATE away from your position again, LONG CLICK on the map", Toast.LENGTH_SHORT);
+					Toast toast = Toast
+							.makeText(
+									Appl.appContext,
+									"To NAVIGATE away from your position again, LONG CLICK on the map",
+									Toast.LENGTH_SHORT);
 					toast.show();
 				}
 				
