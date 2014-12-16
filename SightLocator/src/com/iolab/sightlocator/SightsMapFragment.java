@@ -48,7 +48,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState!=null){
 			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
-			showToastToNavigateClickOnMap = savedInstanceState.getBoolean("showToastToNavigateClickOnMap", false);
+			//showToastToNavigateClickOnMap = savedInstanceState.getBoolean("showToastToNavigateClickOnMap", false);
 		}
 	}
 
@@ -336,7 +336,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	public void onSaveInstanceState(Bundle args){
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
-		args.putBoolean("showToastToNavigateClickOnMap", showToastToNavigateClickOnMap);
+		//args.putBoolean("showToastToNavigateClickOnMap", showToastToNavigateClickOnMap);
 	}
 	
 	@Override
