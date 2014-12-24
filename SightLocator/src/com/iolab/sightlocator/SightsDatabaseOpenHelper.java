@@ -22,6 +22,7 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_LATITUDE = "latitude";
 	public static final String[] COLUMNS_LOCATION_LEVEL = { "level0", "level1",
 			"level2", "level3", "level4" };
+	public static final String COLUMN_SIGHT_STATUS = "status";
 	
 	//column name stubs
 	public static final String SIGHT_NAME = "name_";
@@ -39,7 +40,7 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	private static String getDatabaseCreateStatement(List<String> languages){
 		String createStatement = "create table " + TABLE_NAME + "(" + COLUMN_ID
 				+ " integer primary key autoincrement, " + COLUMN_LONGITUDE
-				+ " real, " + COLUMN_LATITUDE + " real, ";
+				+ " real, " + COLUMN_LATITUDE + " real, " + COLUMN_SIGHT_STATUS+ " integer, ";
 		for(String locationLevelColumn: COLUMNS_LOCATION_LEVEL){
 			createStatement += locationLevelColumn + " text, ";
 		}
