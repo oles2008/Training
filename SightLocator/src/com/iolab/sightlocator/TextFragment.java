@@ -1,7 +1,6 @@
 package com.iolab.sightlocator;
 
 import android.app.Fragment;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,9 +27,14 @@ public class TextFragment extends Fragment {
 		if (savedInstanceState != null) {
 			String uri = savedInstanceState.getString("uri");
 			Log.d("MSG", " > URI 1 > " + uri);
+			
 			if (null != uri) {
 				ImageView imageView = (ImageView) getActivity().findViewById(R.id.imageView);
 				imageView.setImageURI(Uri.parse(uri));
+				if (!uri.contains("onePixel")) {
+					imageView.setImageBitmap(new SightsMapFragment().resizeBitmap100by100(imageView));
+				}
+				
 				imageView.setTag(R.string.imageview_tag_uri, uri);
 			}
 		}

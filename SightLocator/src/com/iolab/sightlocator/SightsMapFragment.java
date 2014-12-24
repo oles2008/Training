@@ -1,12 +1,18 @@
 package com.iolab.sightlocator;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,12 +128,17 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	 * @param newText the new text to be displayed
 	 */
 	private void changeTextFragment(String newText) {
+		TextView textView = getTextView();
+		textView.setText(newText);
+	}
+
+	private TextView getTextView() {
 		Fragment fragment = getFragmentManager()
 				.findFragmentById(R.id.text_fragment);
 		TextView textView = (TextView) fragment
 				.getView()
 				.findViewById(R.id.textView);
-		textView.setText(newText);
+		return textView;
 	}
 
 	/**
@@ -137,17 +148,55 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	 * 
 	 * @param uri
 	 *            the uri, path to device Download folder
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	private void changeImageFragmentUsingImageUri(String uri) {
+	private void changeImageFragmentUsingImageUri(String uri){
+		ImageView imageView = getImageView();
+		
+		imageView.setImageURI(Uri.parse(uri));
+		
+		if (!uri.contains("onePixel")) {
+			Bitmap resizedBitmap = resizeBitmap100by100(imageView);
+			imageView.setImageBitmap(resizedBitmap);
+		}
+		
+		imageView.setTag(R.string.imageview_tag_uri, uri);
+	}
+
+	private ImageView getImageView() {
 		Fragment fragment = getFragmentManager()
 				.findFragmentById(R.id.text_fragment);
 		ImageView imageView = (ImageView) fragment
 				.getView()
 				.findViewById(R.id.imageView);
-		imageView.setImageURI(Uri.parse(uri));
-		imageView.setTag(R.string.imageview_tag_uri, uri);
+		return imageView;
 	}
 
+	/**
+	 * Resize bitmap to new width 100 by (roughly) height 100, keeping the aspect ratio.
+	 *
+	 * @param imageView the Image View where the bitmap is placed
+	 * @return the resized image bitmap
+	 */
+	protected Bitmap resizeBitmap100by100(ImageView imageView) {
+		// get the bitmap from Image View
+		Bitmap bitmapFromImageView = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+		// get Width and Height
+		int originalWidth = bitmapFromImageView.getWidth();
+		int originalHeight = bitmapFromImageView.getHeight();
+		// find the proportion (aspect ratio)
+		float scale = (float) 100 / originalWidth;
+		// find new Height keeping aspect ratio
+		int newHeight = (int) Math.round(originalHeight * scale);
+		// get new resized Bitmap
+		Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+				bitmapFromImageView,
+				100,
+				newHeight,
+				true);
+		return resizedBitmap;
+	}
 
 	public boolean onMarkerClick(final Marker marker) {
 		//the user wants to stay here
@@ -303,6 +352,17 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			}
 		});
 	}
+	
+	private void registerImageViewClickListener(){
+		ImageView imageView = getImageView();
+		imageView.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d("MSG", " view click");
+			}
+		});
+	}
 
 	@Override
 	public void onResume() {
@@ -343,6 +403,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		registerMapClickListener();
 		registerMapLongClickListener();
 		registerOnMyLocationButtonClickListener();
+		registerImageViewClickListener();
 
 		// add markers LatLng positions
 		//addMarkersPositions();
