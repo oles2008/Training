@@ -1,11 +1,10 @@
 package com.iolab.sightlocator;
 
-import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
-
 import android.location.Location;
 import android.location.LocationManager;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 // TODO: Auto-generated Javadoc
 /**
