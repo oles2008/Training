@@ -2,13 +2,11 @@ package com.iolab.sightlocator;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +37,16 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	private boolean moveMapOnLocationUpdate = true;
 	private boolean showToastToNavigateClickOnMap = true;
 
-	private static final LatLng RAILWAY_STATION = new LatLng(49.839860, 23.993669);
-	private static final LatLng STS_OLHA_AND_ELISABETH = new LatLng(49.8367019,24.0048451);
-	private static final LatLng SOFTSERVE_OFFICE_4 = new LatLng(49.832786, 23.997022);
+	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860, 23.993669);
+	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
+	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786, 23.997022);
 
+	private static String PathToSdcard = Environment.getExternalStorageDirectory() + "/Download/";
+	private static final String ONE_PIXEL 						= PathToSdcard + "onePixel.jpg";
+	private static final String STRING_STS_OLHA_AND_ELISABETH 	= PathToSdcard + "elis.jpg"; 
+	private static final String STRING_RAILWAY_STATION 			= PathToSdcard + "railway.jpg";
+	private static final String STRING_SOFTSERVE_OFFICE_4 		= PathToSdcard + "ss_logo.jpg";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -125,14 +129,23 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				.findViewById(R.id.textView);
 		textView.setText(newText);
 	}
-	
-	private void changeImageFragment(Bitmap image) {
+
+	/**
+	 * On markers click change image fragment from default (one pixel image) to
+	 * an icon, using image uri. The uri is stored in ImageView tag and then
+	 * used in onSaveInstanceState() and onActivityCreated methods
+	 * 
+	 * @param uri
+	 *            the uri, path to device Download folder
+	 */
+	private void changeImageFragmentUsingImageUri(String uri) {
 		Fragment fragment = getFragmentManager()
 				.findFragmentById(R.id.text_fragment);
 		ImageView imageView = (ImageView) fragment
 				.getView()
 				.findViewById(R.id.imageView);
-		imageView.setImageBitmap(image);
+		imageView.setImageURI(Uri.parse(uri));
+		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
 
 
@@ -144,24 +157,24 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		String softserveOffice4 = this.getString(R.string.softserve_office_4);
 		String stsOlhaAndElisabeth = this.getString(R.string.sts_olha_and_elisabeth);
 		
-		Bitmap ssLogoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ss_logo);
-		
 		if (marker.getPosition().equals(RAILWAY_STATION)) {
 			marker.showInfoWindow();
 			changeTextFragment(railwayStation);
+			changeImageFragmentUsingImageUri(STRING_RAILWAY_STATION);
 			return true;
 		}
 		
 		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
 			marker.showInfoWindow();
 			changeTextFragment(softserveOffice4);
-			changeImageFragment(ssLogoBitmap);
+			changeImageFragmentUsingImageUri(STRING_SOFTSERVE_OFFICE_4);
 			return true;
 		}
 		
 		if (marker.getPosition().equals(STS_OLHA_AND_ELISABETH)) {
 			marker.showInfoWindow();
 			changeTextFragment(stsOlhaAndElisabeth);
+			changeImageFragmentUsingImageUri(STRING_STS_OLHA_AND_ELISABETH);
 			return true;
 		}
 
@@ -208,7 +221,10 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				showToastToNavigateClickOnMap = false;
 				
 				String loremIpsum = getString(R.string.lorem_ipsum);
+				// changes the text fragment to default (lorem ipsum text)
 				changeTextFragment(loremIpsum);
+				// changes the image fragment to default (one pixel image)
+				changeImageFragmentUsingImageUri(ONE_PIXEL);
 			}
 		});
 	}
@@ -222,7 +238,10 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				showToastToNavigateClickOnMap = false;
 				
 				String loremIpsum = getString(R.string.lorem_ipsum);
+				// changes the text fragment to default (lorem ipsum text)
 				changeTextFragment(loremIpsum);
+				// changes the image fragment to default (one pixel image)
+				changeImageFragmentUsingImageUri(ONE_PIXEL);
 			}
 		});
 	}
