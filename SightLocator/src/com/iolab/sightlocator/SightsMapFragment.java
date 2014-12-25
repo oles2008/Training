@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout.LayoutParams;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -360,6 +362,14 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			@Override
 			public void onClick(View v) {
 				Log.d("MSG", " view click");
+				
+				ImageView imageView = new ImageView(this);
+				LinearLayout.LayoutParams vp = 
+				    new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 
+				                    LayoutParams.WRAP_CONTENT);
+				imageView.setLayoutParams(vp);        
+				imageView.setImageResource(id);        
+				someLinearLayout.addView(imageView); 
 			}
 		});
 	}
