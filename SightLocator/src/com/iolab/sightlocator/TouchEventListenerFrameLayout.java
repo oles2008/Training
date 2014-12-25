@@ -6,26 +6,35 @@ import android.widget.FrameLayout;
 
 public class TouchEventListenerFrameLayout extends FrameLayout {
 
-	boolean mMapIsTouched = false;
+	OnMapTouchedListener onMapTouchedListener;
+	
 
 	public TouchEventListenerFrameLayout(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public void registerOnMapTouchListener(OnMapTouchedListener onMapTouchedListener){
+		this.onMapTouchedListener = onMapTouchedListener;
 	}
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			mMapIsTouched = true;
+			onMapTouchedListener.onMapTouched();
 			break;
 
 		case MotionEvent.ACTION_UP:
-			mMapIsTouched = false;
+//			mMapIsTouched = false;
 			break;
 		}
 
 		return super.dispatchTouchEvent(ev);
+	}
+	
+	interface OnMapTouchedListener{
+		void onMapTouched();
 	}
 
 }

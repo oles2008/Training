@@ -1,19 +1,10 @@
 package com.iolab.sightlocator;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.os.Bundle;import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout.LayoutParams;
@@ -38,22 +29,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
+import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
 public class SightsMapFragment extends Fragment implements OnMarkerClickListener, NewLocationUser{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
-	private boolean showToastToNavigateClickOnMap = true;
+//	private boolean showToastToNavigateClickOnMap = true;
 
 	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860, 23.993669);
 	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
 	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786, 23.997022);
-
-	private static String PathToSdcard = Environment.getExternalStorageDirectory() + "/Download/";
-	private static final String ONE_PIXEL 						= PathToSdcard + "onePixel.jpg";
-	private static final String STRING_STS_OLHA_AND_ELISABETH 	= PathToSdcard + "elis.jpg"; 
-	private static final String STRING_RAILWAY_STATION 			= PathToSdcard + "railway.jpg";
-	private static final String STRING_SOFTSERVE_OFFICE_4 		= PathToSdcard + "ss_logo.jpg";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -123,113 +109,14 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
 		}
 	}
-	
-	/**
-	 * Change text in text fragment to new one.
-	 *
-	 * @param newText the new text to be displayed
-	 */
-	private void changeTextFragment(String newText) {
-		TextView textView = getTextView();
-		textView.setText(newText);
-	}
-
-	private TextView getTextView() {
-		Fragment fragment = getFragmentManager()
-				.findFragmentById(R.id.text_fragment);
-		TextView textView = (TextView) fragment
-				.getView()
-				.findViewById(R.id.textView);
-		return textView;
-	}
-
-	/**
-	 * On markers click change image fragment from default (one pixel image) to
-	 * an icon, using image uri. The uri is stored in ImageView tag and then
-	 * used in onSaveInstanceState() and onActivityCreated methods
-	 * 
-	 * @param uri
-	 *            the uri, path to device Download folder
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 */
-	private void changeImageFragmentUsingImageUri(String uri){
-		ImageView imageView = getImageView();
-		
-		imageView.setImageURI(Uri.parse(uri));
-		
-		if (!uri.contains("onePixel")) {
-			Bitmap resizedBitmap = resizeBitmap100by100(imageView);
-			imageView.setImageBitmap(resizedBitmap);
-		}
-		
-		imageView.setTag(R.string.imageview_tag_uri, uri);
-	}
-
-	private ImageView getImageView() {
-		Fragment fragment = getFragmentManager()
-				.findFragmentById(R.id.text_fragment);
-		ImageView imageView = (ImageView) fragment
-				.getView()
-				.findViewById(R.id.imageView);
-		return imageView;
-	}
-
-	/**
-	 * Resize bitmap to new width 100 by (roughly) height 100, keeping the aspect ratio.
-	 *
-	 * @param imageView the Image View where the bitmap is placed
-	 * @return the resized image bitmap
-	 */
-	protected Bitmap resizeBitmap100by100(ImageView imageView) {
-		// get the bitmap from Image View
-		Bitmap bitmapFromImageView = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-		// get Width and Height
-		int originalWidth = bitmapFromImageView.getWidth();
-		int originalHeight = bitmapFromImageView.getHeight();
-		// find the proportion (aspect ratio)
-		float scale = (float) 100 / originalWidth;
-		// find new Height keeping aspect ratio
-		int newHeight = (int) Math.round(originalHeight * scale);
-		// get new resized Bitmap
-		Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-				bitmapFromImageView,
-				100,
-				newHeight,
-				true);
-		return resizedBitmap;
-	}
 
 	public boolean onMarkerClick(final Marker marker) {
-		//the user wants to stay here
+		// the user wants to stay here
 		moveMapOnLocationUpdate = false;
-		
-		String railwayStation = this.getString(R.string.railway_station_wiki);
-		String softserveOffice4 = this.getString(R.string.softserve_office_4);
-		String stsOlhaAndElisabeth = this.getString(R.string.sts_olha_and_elisabeth);
-		
-		if (marker.getPosition().equals(RAILWAY_STATION)) {
-			marker.showInfoWindow();
-			changeTextFragment(railwayStation);
-			changeImageFragmentUsingImageUri(STRING_RAILWAY_STATION);
-			return true;
-		}
-		
-		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
-			marker.showInfoWindow();
-			changeTextFragment(softserveOffice4);
-			changeImageFragmentUsingImageUri(STRING_SOFTSERVE_OFFICE_4);
-			return true;
-		}
-		
-		if (marker.getPosition().equals(STS_OLHA_AND_ELISABETH)) {
-			marker.showInfoWindow();
-			changeTextFragment(stsOlhaAndElisabeth);
-			changeImageFragmentUsingImageUri(STRING_STS_OLHA_AND_ELISABETH);
-			return true;
-		}
+		marker.showInfoWindow();
 
-		return false;
+		return ((OnMarkerClickListener) getActivity().getFragmentManager()
+				.findFragmentById(R.id.text_fragment)).onMarkerClick(marker);
 	}
 	
 	public void addMarkers() {
@@ -269,13 +156,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			public void onMapClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
-				showToastToNavigateClickOnMap = false;
 				
-				String loremIpsum = getString(R.string.lorem_ipsum);
-				// changes the text fragment to default (lorem ipsum text)
-				changeTextFragment(loremIpsum);
-				// changes the image fragment to default (one pixel image)
-				changeImageFragmentUsingImageUri(ONE_PIXEL);
+				((OnMapClickListener) getActivity().getFragmentManager()
+						.findFragmentById(R.id.text_fragment)).onMapClick(arg0);
 			}
 		});
 	}
@@ -286,13 +169,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			public void onMapLongClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
-				showToastToNavigateClickOnMap = false;
 				
-				String loremIpsum = getString(R.string.lorem_ipsum);
-				// changes the text fragment to default (lorem ipsum text)
-				changeTextFragment(loremIpsum);
-				// changes the image fragment to default (one pixel image)
-				changeImageFragmentUsingImageUri(ONE_PIXEL);
+				((OnMapLongClickListener) getActivity().getFragmentManager()
+						.findFragmentById(R.id.text_fragment)).onMapLongClick(arg0);
 			}
 		});
 	}
@@ -315,16 +194,27 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition position) {
-				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
-				if (mapIsTouched && showToastToNavigateClickOnMap) {
-					Toast toast = Toast
-							.makeText(
-									Appl.appContext,
-									"To NAVIGATE away from your position, LONG CLICK on the map",
-									Toast.LENGTH_SHORT);
-					toast.show();
-					showToastToNavigateClickOnMap = false;
-				}
+//				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
+//				if (mapIsTouched && showToastToNavigateClickOnMap) {
+//					Toast toast = Toast
+//							.makeText(
+//									Appl.appContext,
+//									"To NAVIGATE away from your position, LONG CLICK on the map",
+//									Toast.LENGTH_SHORT);
+//					toast.show();
+//					showToastToNavigateClickOnMap = false;
+//				}
+			}
+		});
+	}
+	
+	//this will disable automatic zooming to the user's location if the map was touched
+	private void registerOnMapTouchedListener() {
+		((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).registerOnMapTouchListener(new OnMapTouchedListener() {
+			
+			@Override
+			public void onMapTouched() {
+				moveMapOnLocationUpdate = false;
 			}
 		});
 	}
@@ -333,21 +223,22 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
 			@Override
 			public boolean onMyLocationButtonClick() {
-				if(!moveMapOnLocationUpdate){
-					Toast toast = Toast
-							.makeText(
-									Appl.appContext,
-									"To NAVIGATE away from your position again, LONG CLICK on the map",
-									Toast.LENGTH_SHORT);
-					toast.show();
-				}
+				//no more toasts "To navigate from your position, LONG CLICK on map"
+//				if(!moveMapOnLocationUpdate){
+//					Toast toast = Toast
+//							.makeText(
+//									Appl.appContext,
+//									"To NAVIGATE away from your position again, LONG CLICK on the map",
+//									Toast.LENGTH_SHORT);
+//					toast.show();
+//				}
 				
 				//the user probably wants his location to be show and updated
 				moveMapOnLocationUpdate = true;
 				
 				//this means that the location will be now shown and updated, 
 				//so if the user wants to navigate away, they should perform long clock again
-				showToastToNavigateClickOnMap = true;
+//				showToastToNavigateClickOnMap = true;
 				//returning false means that the primary function of the button -- showing the user's
 				//location, should be performed
 				return false;
@@ -412,8 +303,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		registerCameraChangeListener();
 		registerMapClickListener();
 		registerMapLongClickListener();
+		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
-		registerImageViewClickListener();
 
 		// add markers LatLng positions
 		//addMarkersPositions();
