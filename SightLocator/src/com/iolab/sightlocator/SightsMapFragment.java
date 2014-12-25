@@ -4,13 +4,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Bundle;import android.view.LayoutInflater;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout.LayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -238,7 +237,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				
 				//this means that the location will be now shown and updated, 
 				//so if the user wants to navigate away, they should perform long clock again
-//				showToastToNavigateClickOnMap = true;
+				//showToastToNavigateClickOnMap = true;
 				//returning false means that the primary function of the button -- showing the user's
 				//location, should be performed
 				return false;
@@ -247,20 +246,13 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	}
 	
 	private void registerImageViewClickListener(){
-		ImageView imageView = getImageView();
+		TextFragment tf = new TextFragment();
+		ImageView imageView = tf.getImageView();
 		imageView.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				Log.d("MSG", " view click");
-				
-				ImageView imageView = new ImageView(this);
-				LinearLayout.LayoutParams vp = 
-				    new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 
-				                    LayoutParams.WRAP_CONTENT);
-				imageView.setLayoutParams(vp);        
-				imageView.setImageResource(id);        
-				someLinearLayout.addView(imageView); 
 			}
 		});
 	}

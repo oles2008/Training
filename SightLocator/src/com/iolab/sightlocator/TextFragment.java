@@ -25,12 +25,9 @@ import android.widget.TextView;
 public class TextFragment extends Fragment implements OnMapClickListener,
 		OnMapLongClickListener, OnMarkerClickListener {
 
-	private static final LatLng RAILWAY_STATION = new LatLng(49.839860,
-			23.993669);
-	private static final LatLng STS_OLHA_AND_ELISABETH = new LatLng(49.8367019,
-			24.0048451);
-	private static final LatLng SOFTSERVE_OFFICE_4 = new LatLng(49.832786,
-			23.997022);
+	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860,23.993669);
+	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
+	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786,23.997022);
 
 	private static String PathToSdcard = Environment
 			.getExternalStorageDirectory() + "/Download/";
@@ -41,6 +38,8 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 			+ "railway.jpg";
 	private static final String STRING_SOFTSERVE_OFFICE_4 = PathToSdcard
 			+ "ss_logo.jpg";
+	
+	private final int ICON_SIZE = 200;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,14 +58,13 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 
 		if (savedInstanceState != null) {
 			String uri = savedInstanceState.getString("uri");
-			Log.d("MSG", " > URI 1 > " + uri);
 
 			if (null != uri) {
 				ImageView imageView = (ImageView) getActivity().findViewById(
 						R.id.imageView);
 				imageView.setImageURI(Uri.parse(uri));
 				if (!uri.contains("onePixel")) {
-					imageView.setImageBitmap(resizeBitmap100by100(imageView));
+					imageView.setImageBitmap(resizeBitmap(imageView, ICON_SIZE));
 				}
 
 				imageView.setTag(R.string.imageview_tag_uri, uri);
@@ -76,14 +74,14 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 	}
 
 	/**
-	 * Resize bitmap to new width 100 by (roughly) height 100, keeping the
-	 * aspect ratio.
+	 * Resize bitmap to New Width (set by method argument) by New
+	 * Height(calculated according aspect ratio)
 	 * 
 	 * @param imageView
 	 *            the Image View where the bitmap is placed
 	 * @return the resized image bitmap
 	 */
-	protected Bitmap resizeBitmap100by100(ImageView imageView) {
+	protected Bitmap resizeBitmap(ImageView imageView, int newWidth) {
 		// get the bitmap from Image View
 		Bitmap bitmapFromImageView = ((BitmapDrawable) imageView.getDrawable())
 				.getBitmap();
@@ -91,12 +89,15 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 		int originalWidth = bitmapFromImageView.getWidth();
 		int originalHeight = bitmapFromImageView.getHeight();
 		// find the proportion (aspect ratio)
-		float scale = (float) 100 / originalWidth;
+		float scale = (float) newWidth / originalWidth;
 		// find new Height keeping aspect ratio
 		int newHeight = (int) Math.round(originalHeight * scale);
 		// get new resized Bitmap
-		Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmapFromImageView,
-				100, newHeight, true);
+		Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+				bitmapFromImageView,
+				newWidth, 
+				newHeight, 
+				true);
 		return resizedBitmap;
 	}
 
@@ -135,14 +136,14 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 		imageView.setImageURI(Uri.parse(uri));
 
 		if (!uri.contains("onePixel")) {
-			Bitmap resizedBitmap = resizeBitmap100by100(imageView);
+			Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
 			imageView.setImageBitmap(resizedBitmap);
 		}
 
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
 
-	private ImageView getImageView() {
+	protected ImageView getImageView() {
 		Fragment fragment = getFragmentManager().findFragmentById(
 				R.id.text_fragment);
 		ImageView imageView = (ImageView) fragment.getView().findViewById(
