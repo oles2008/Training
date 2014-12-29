@@ -25,12 +25,14 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
-public class SightsMapFragment extends Fragment implements OnMarkerClickListener, NewLocationUser{
+public class SightsMapFragment extends Fragment implements OnMarkerClickListener, NewLocationUser, ViewUpdateListener{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
@@ -197,6 +199,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition position) {
+				LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
 //				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
 //				if (mapIsTouched && showToastToNavigateClickOnMap) {
 //					Toast toast = Toast
@@ -254,7 +257,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 
 		super.onResume();
 		
-		Appl.appContext = getActivity();
+		Appl.subscribeForViewUpdates(this);
 		
 		gMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map))
@@ -307,9 +310,13 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	public void onPause() {
 		super.onPause();
 		sightLocationSource.deactivate();
+		Appl.subscribeForViewUpdates(this);
+	}
+
+	@Override
+	public void onUpdateView(Bundle bundle) {
+		// TODO Auto-generated method stub
 		
-		//himnokod for debugging
-		Appl.appContext=null;
 	}
 
 }

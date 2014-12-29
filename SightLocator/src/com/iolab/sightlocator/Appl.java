@@ -10,6 +10,8 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 
 public class Appl {
 	
@@ -21,6 +23,23 @@ public class Appl {
 	static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
 	static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
 	static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
+	
+	/**
+	 * The ResultReceiver will be used to send data from background services to
+	 * the UI thread in a {@link Bundle}. When the result is received on the UI thread, all the
+	 * viewUpdateListeners will have their views updated depending on the content of the Bundle.
+	 */
+	public static final ResultReceiver receiver = new ResultReceiver(
+			new Handler()) {
+
+		@Override
+		protected void onReceiveResult(final int resultCode,
+				final Bundle resultData) {
+			for (ViewUpdateListener viewUpdateListener : viewUpdateListeners) {
+				viewUpdateListener.onUpdateView(resultData);
+			}
+		}
+	};
 	
 	public static void subscribeForMarkerClickUpdates(OnMarkerClickListener onMarkerClickListener){
 		onMarkerClickListeners.add(onMarkerClickListener);
