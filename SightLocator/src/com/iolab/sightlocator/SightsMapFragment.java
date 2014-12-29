@@ -113,9 +113,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		// the user wants to stay here
 		moveMapOnLocationUpdate = false;
 		marker.showInfoWindow();
+		
+		for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
+			listener.onMarkerClick(marker);
+		}
 
-		return ((OnMarkerClickListener) getActivity().getFragmentManager()
-				.findFragmentById(R.id.text_fragment)).onMarkerClick(marker);
+		return true;
 	}
 	
 	public void addMarkers() {
@@ -155,9 +158,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			public void onMapClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
-				
-				((OnMapClickListener) getActivity().getFragmentManager()
-						.findFragmentById(R.id.text_fragment)).onMapClick(arg0);
+				for(OnMapClickListener listener: Appl.onMapClickListeners){
+					listener.onMapClick(arg0);
+				}
 			}
 		});
 	}
@@ -169,8 +172,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				
-				((OnMapLongClickListener) getActivity().getFragmentManager()
-						.findFragmentById(R.id.text_fragment)).onMapLongClick(arg0);
+				for(OnMapLongClickListener listener: Appl.onMapLongClickListeners){
+					listener.onMapLongClick(arg0);
+				}
 			}
 		});
 	}
@@ -244,25 +248,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			}
 		});
 	}
-	
-	private void registerImageViewClickListener(){
-		TextFragment tf = new TextFragment();
-		ImageView imageView = tf.getImageView();
-		imageView.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Log.d("MSG", " view click");
-			}
-		});
-	}
 
 	@Override
 	public void onResume() {
 
 		super.onResume();
 		
-		//himnokod for debugging
 		Appl.appContext = getActivity();
 		
 		gMap = ((MapFragment) getFragmentManager()

@@ -72,6 +72,14 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 		}
 		registerImageViewClickListener();
 	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		Appl.subscribeForMarkerClickUpdates(this);
+		Appl.subscribeForMapClickUpdates(this);
+		Appl.subscribeForMapLongClickUpdates(this);
+	}
 
 	/**
 	 * Resize bitmap to New Width (set by method argument) by New
@@ -223,5 +231,13 @@ public class TextFragment extends Fragment implements OnMapClickListener,
 			args.putString("uri", uri);
 		}
 		Log.d("MSG", " > URI 2 > " + uri);
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		Appl.unsubscribeFromMarkerClickUpdates(this);
+		Appl.unsubscribeFromMapClickUpdates(this);
+		Appl.unsubscribeFromMapLongClickUpdates(this);
 	}
 }
