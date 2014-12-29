@@ -14,6 +14,9 @@ import android.os.Bundle;
 public class Appl {
 	
 	static Context appContext;
+	
+	//all the following listeners should perform their callback methods
+	//in the UI thread
 	static List<OnMarkerClickListener> onMarkerClickListeners = new ArrayList<GoogleMap.OnMarkerClickListener>();
 	static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
 	static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
