@@ -8,10 +8,12 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 public class Appl {
 	
@@ -19,10 +21,10 @@ public class Appl {
 	
 	//all the following listeners should perform their callback methods
 	//in the UI thread
-	static List<OnMarkerClickListener> onMarkerClickListeners = new ArrayList<GoogleMap.OnMarkerClickListener>();
-	static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
-	static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
-	static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
+	public static List<OnMarkerClickListener> onMarkerClickListeners = new ArrayList<OnMarkerClickListener>();
+	public static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
+	public static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
+	public static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
 	
 	/**
 	 * The ResultReceiver will be used to send data from background services to
