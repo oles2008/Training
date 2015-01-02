@@ -1,8 +1,13 @@
 package com.iolab.sightlocator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.database.Cursor;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
@@ -11,7 +16,9 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_L
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		Parcelable {
@@ -60,13 +67,35 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 								COLUMNS_LOCATION_LEVEL[3],
 								COLUMNS_LOCATION_LEVEL[4] },
 						"(" + COLUMN_LATITUDE + " BETWEEN "
-								+ latLngBounds.northeast.latitude + " AND "
-								+ latLngBounds.southwest.latitude + ") AND ("
+								+ latLngBounds.southwest.latitude + " AND "
+								+ latLngBounds.northeast.latitude + ") AND ("
 								+ COLUMN_LONGITUDE + " BETWEEN "
-								+ latLngBounds.northeast.longitude + " AND "
-								+ latLngBounds.southwest.longitude + ")", null,
+								+ latLngBounds.southwest.longitude + " AND "
+								+ latLngBounds.northeast.longitude + ")", null,
 						null, null, null);
-		
+//		Log.d("MyLogs", "Where statement: "+"(" + COLUMN_LATITUDE + " BETWEEN "
+//								+ latLngBounds.northeast.latitude + " AND "
+//								+ latLngBounds.southwest.latitude + ") AND ("
+//								+ COLUMN_LONGITUDE + " BETWEEN "
+//								+ latLngBounds.southwest.longitude + " AND "
+//								+ latLngBounds.northeast.longitude + ")");
+//		Log.d("MyLogs", "cursor size: "+cursor.getCount());
+		ArrayList<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
+		if (cursor.moveToFirst()) {
+			LatLng position = new LatLng(cursor.getDouble(0),
+					cursor.getDouble(1));
+			markerOptionsList.add(new MarkerOptions().position(position)
+					.title(cursor.getString(2)).snippet(cursor.getString(3)));
+		}
+		while (cursor.moveToNext()) {
+			LatLng position = new LatLng(cursor.getDouble(0),
+					cursor.getDouble(1));
+			markerOptionsList.add(new MarkerOptions().position(position)
+					.title(cursor.getString(2)).snippet(cursor.getString(3)));
+		}
+		Bundle resultData = new Bundle();
+		resultData.putParcelableArrayList(Tags.MARKERS, markerOptionsList);
+		Appl.receiver.send(0, resultData);
 	}
 
 }

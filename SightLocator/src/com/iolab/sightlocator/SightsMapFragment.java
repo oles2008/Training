@@ -1,5 +1,8 @@
 package com.iolab.sightlocator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +45,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860, 23.993669);
 	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
 	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786, 23.997022);
+	private List<Marker> markerList = new ArrayList<Marker>();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -200,10 +204,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition position) {
+//				Log.d("MyLogs", "onCameraChange() started");
 				LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
 				Intent intent = new Intent(getActivity(), SightsIntentService.class);
 				intent.putExtra(SightsIntentService.ACTION, new GetMarkersOnCameraUpdateAction(currentMapBounds));
 				getActivity().startService(intent);
+//				Log.d("MyLogs", "onCameraChange() finished");
 //				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
 //				if (mapIsTouched && showToastToNavigateClickOnMap) {
 //					Toast toast = Toast
@@ -300,7 +306,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//addMarkersPositions();
 
 		// add markers with markers details
-		addMarkers();
+		//addMarkers();
 		
 		//for debugging
 		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));
@@ -322,8 +328,18 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 
 	@Override
 	public void onUpdateView(Bundle bundle) {
-		// TODO Auto-generated method stub
-		
+		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
+		if(markerOptionsList!=null){
+			for(Marker marker: markerList){
+				marker.remove();
+			}
+			markerList.clear();
+			for(MarkerOptions markerOptions: markerOptionsList){
+//				Log.d("MyLogs", "adding marker "+markerOptions.getTitle());
+				markerList.add(gMap.addMarker(markerOptions));
+			}
+		}
+//		Log.d("MyLogs", "markerList.size(): "+markerList.size());
 	}
 
 }
