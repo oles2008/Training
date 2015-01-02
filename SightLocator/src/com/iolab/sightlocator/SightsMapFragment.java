@@ -2,6 +2,7 @@ package com.iolab.sightlocator;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -200,6 +201,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			@Override
 			public void onCameraChange(CameraPosition position) {
 				LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
+				Intent intent = new Intent(getActivity(), SightsIntentService.class);
+				intent.putExtra(SightsIntentService.ACTION, new GetMarkersOnCameraUpdateAction(currentMapBounds));
+				getActivity().startService(intent);
 //				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
 //				if (mapIsTouched && showToastToNavigateClickOnMap) {
 //					Toast toast = Toast
@@ -297,6 +301,9 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 
 		// add markers with markers details
 		addMarkers();
+		
+		//for debugging
+		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));
 	}
 	
 	@Override

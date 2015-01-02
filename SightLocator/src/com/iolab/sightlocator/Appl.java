@@ -3,7 +3,6 @@ package com.iolab.sightlocator;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -15,7 +14,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-public class Appl {
+public class Appl extends Application{
 	
 	static Context appContext;
 	
@@ -25,6 +24,15 @@ public class Appl {
 	public static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
 	public static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
 	public static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
+	public static SightsDatabaseOpenHelper sightsDatabaseOpenHelper;
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		appContext = getApplicationContext();
+		sightsDatabaseOpenHelper = new SightsDatabaseOpenHelper(appContext, 1);
+		//Log.d("MyLogs", "Application onCreate() fired");
+	}
 	
 	/**
 	 * The ResultReceiver will be used to send data from background services to

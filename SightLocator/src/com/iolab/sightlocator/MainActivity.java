@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 	public void onResume(){
 		super.onResume();
 		//himnokod
-		Appl.appContext = this;
+		//Appl.appContext = this;
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
 	public void onPause(){
 		super.onPause();
 		//himnokod
-		Appl.appContext=null;
+		//Appl.appContext=null;
 	}
 
 }

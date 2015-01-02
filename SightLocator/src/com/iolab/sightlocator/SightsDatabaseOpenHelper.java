@@ -97,16 +97,16 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 					new String[] {
 							"49.839860",
 							"23.993669",
-							"Main Railway Station",
-							"The Main railway station in Lviv, Ukraine also known as Lviv-Main. It is one of the most notable pieces of Art Nouveau architecture in former Galicia. The station was opened to the public in 1904, and celebrated its centennial anniversary on 26 March 2004. On a monthly basis, the terminal handles over 1.2 million passengers and moves 16 thousand tons of freight." }));
+							"\'Main Railway Station\'",
+							"\'The Main railway station in Lviv, Ukraine also known as Lviv-Main. It is one of the most notable pieces of Art Nouveau architecture in former Galicia. The station was opened to the public in 1904, and celebrated its centennial anniversary on 26 March 2004. On a monthly basis, the terminal handles over 1.2 million passengers and moves 16 thousand tons of freight.\'" }));
 			db.execSQL(getDatabaseInsertStatement(
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
 							SIGHT_NAME + "en", SIGHT_DESCRIPTION + "en" },
 					new String[] {
 							"49.8367019",
 							"24.0048451",
-							"Church of Sts. Olha and Elizabeth, Lviv",
-							"The Church of Sts. Olha and Elizabeth in Lviv, Ukraine, is located between the citys main rail station and the Old Town. It was originally built as the Roman Catholic Church of St. Elizabeth and today serves as the Greek Catholic Church of Sts. Olha and Elizabeth. The church was built by the Latin Archbishop of Lviv Saint Joseph Bilczewski in the years 1903&#8211;1911 as a parish church for the dynamically developing western suburb. It was designed by Polish architect Teodor Talowski." }));
+							"\'Church of Sts. Olha and Elizabeth, Lviv\'",
+							"\'The Church of Sts. Olha and Elizabeth in Lviv, Ukraine, is located between the citys main rail station and the Old Town. It was originally built as the Roman Catholic Church of St. Elizabeth and today serves as the Greek Catholic Church of Sts. Olha and Elizabeth. The church was built by the Latin Archbishop of Lviv Saint Joseph Bilczewski in the years 1903&#8211;1911 as a parish church for the dynamically developing western suburb. It was designed by Polish architect Teodor Talowski.\'" }));
 			db.setTransactionSuccessful(); 
 		}finally{
 			db.endTransaction();
