@@ -24,13 +24,16 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		Parcelable {
 	
 	private LatLngBounds latLngBounds;
+	private long viewUpdateCallIndex;
 	
-	public GetMarkersOnCameraUpdateAction(LatLngBounds latLngBounds) {
+	public GetMarkersOnCameraUpdateAction(LatLngBounds latLngBounds, long viewUpdateCallIndex) {
 		this.latLngBounds = latLngBounds;
+		this.viewUpdateCallIndex = viewUpdateCallIndex;
 	}
 	
 	private GetMarkersOnCameraUpdateAction(Parcel parcel) {
 		this.latLngBounds = parcel.readParcelable(LatLngBounds.class.getClassLoader());
+		this.viewUpdateCallIndex = parcel.readLong();
 	}
 
 	@Override
@@ -42,6 +45,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeParcelable(latLngBounds, flags);
+		dest.writeLong(viewUpdateCallIndex);
 	}
 	
 	public static final Parcelable.Creator<GetMarkersOnCameraUpdateAction> CREATOR = new Parcelable.Creator<GetMarkersOnCameraUpdateAction>() {
@@ -95,6 +99,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		}
 		Bundle resultData = new Bundle();
 		resultData.putParcelableArrayList(Tags.MARKERS, markerOptionsList);
+		resultData.putLong("viewUpdateCallIndex", viewUpdateCallIndex);
 		Appl.receiver.send(0, resultData);
 	}
 

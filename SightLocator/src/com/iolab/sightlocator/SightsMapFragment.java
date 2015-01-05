@@ -47,11 +47,14 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786, 23.997022);
 	private List<Marker> markerList = new ArrayList<Marker>();
 	
+	private long updateViewCallIndex=0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState!=null){
 			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
+			updateViewCallIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
 			//showToastToNavigateClickOnMap = savedInstanceState.getBoolean("showToastToNavigateClickOnMap", false);
 		}
 	}
@@ -207,7 +210,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 //				Log.d("MyLogs", "onCameraChange() started");
 				LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
 				Intent intent = new Intent(getActivity(), SightsIntentService.class);
-				intent.putExtra(SightsIntentService.ACTION, new GetMarkersOnCameraUpdateAction(currentMapBounds));
+				intent.putExtra(SightsIntentService.ACTION, new GetMarkersOnCameraUpdateAction(currentMapBounds, ++updateViewCallIndex));
+				intent.putExtra("updateViewCallIndex", ++updateViewCallIndex);
 				getActivity().startService(intent);
 //				Log.d("MyLogs", "onCameraChange() finished");
 //				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
@@ -317,6 +321,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
 		//args.putBoolean("showToastToNavigateClickOnMap", showToastToNavigateClickOnMap);
+		args.putLong("updateViewCallIndex", updateViewCallIndex);
 	}
 	
 	@Override
@@ -329,7 +334,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
-		if(markerOptionsList!=null){
+		if(markerOptionsList!=null && bundle.getLong("updateViewCallIndex")==updateViewCallIndex){
 			for(Marker marker: markerList){
 				marker.remove();
 			}
