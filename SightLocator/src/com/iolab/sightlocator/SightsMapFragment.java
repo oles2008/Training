@@ -100,7 +100,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//thinks it's necessary (since not all location updates should be taken into account), 
 		//and activate this listener by sightLocationSource
 
-		sightLocationSource = new SightLocationSource(getActivity());
+		sightLocationSource = new SightsLocationSource(getActivity());
 		sightLocationSource.activate(new OnUserLocationChangedListener(this));
 	}
 	
@@ -277,7 +277,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//here, we do not set sightLocationSource as the location source, because that instance of SightLocationSource  
 		//is used for the marking the user's location and for zooming in to the user's location,
 		//different instances of SightLocationSource are needed
-		gMap.setLocationSource(new SightLocationSource(getActivity()));
+		gMap.setLocationSource(new SightsLocationSource(getActivity()));
 
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);

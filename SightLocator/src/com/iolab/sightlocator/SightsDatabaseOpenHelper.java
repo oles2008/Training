@@ -38,9 +38,16 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	 * @return the database create statement
 	 */
 	private static String getDatabaseCreateStatement(List<String> languages){
-		String createStatement = "create table " + TABLE_NAME + "(" + COLUMN_ID
-				+ " integer primary key autoincrement, " + COLUMN_LONGITUDE
-				+ " real, " + COLUMN_LATITUDE + " real, " + COLUMN_SIGHT_STATUS+ " integer, ";
+		String createStatement = "create table " 
+					+ TABLE_NAME + "(" 
+					+ COLUMN_ID
+					+ " integer primary key autoincrement, " 
+					+ COLUMN_LONGITUDE
+					+ " real, " 
+					+ COLUMN_LATITUDE 
+					+ " real, " 
+					+ COLUMN_SIGHT_STATUS
+					+ " integer, ";
 		for(String locationLevelColumn: COLUMNS_LOCATION_LEVEL){
 			createStatement += locationLevelColumn + " text, ";
 		}
@@ -92,16 +99,20 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 		db.beginTransaction();
 		try{
 			db.execSQL(getDatabaseInsertStatement(
-					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
-							SIGHT_NAME + "en", SIGHT_DESCRIPTION + "en" },
+					new String[] { 	COLUMN_LATITUDE,
+									COLUMN_LONGITUDE,
+									SIGHT_NAME + "en",
+									SIGHT_DESCRIPTION + "en" },
 					new String[] {
 							"49.839860",
 							"23.993669",
 							"\'Main Railway Station\'",
 							"\'The Main railway station in Lviv, Ukraine also known as Lviv-Main. It is one of the most notable pieces of Art Nouveau architecture in former Galicia. The station was opened to the public in 1904, and celebrated its centennial anniversary on 26 March 2004. On a monthly basis, the terminal handles over 1.2 million passengers and moves 16 thousand tons of freight.\'" }));
 			db.execSQL(getDatabaseInsertStatement(
-					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
-							SIGHT_NAME + "en", SIGHT_DESCRIPTION + "en" },
+					new String[] { 	COLUMN_LATITUDE,
+									COLUMN_LONGITUDE,
+									SIGHT_NAME + "en", 
+									SIGHT_DESCRIPTION + "en" },
 					new String[] {
 							"49.8367019",
 							"24.0048451",
