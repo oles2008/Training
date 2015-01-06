@@ -60,7 +60,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 
 	@Override
 	public void runInService() {
-		//Log.d("MyLogs", "Hi from service");
+		Log.d("MyLogs", "Starting runUnService(), updateViewCallIndex: "+this.viewUpdateCallIndex);
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.query(TABLE_NAME,
 						new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
@@ -99,7 +99,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		}
 		Bundle resultData = new Bundle();
 		resultData.putParcelableArrayList(Tags.MARKERS, markerOptionsList);
-		resultData.putLong("viewUpdateCallIndex", viewUpdateCallIndex);
+		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		Appl.receiver.send(0, resultData);
 	}
 

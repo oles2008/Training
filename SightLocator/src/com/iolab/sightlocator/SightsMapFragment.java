@@ -207,13 +207,12 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		gMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition position) {
-//				Log.d("MyLogs", "onCameraChange() started");
 				LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
 				Intent intent = new Intent(getActivity(), SightsIntentService.class);
 				intent.putExtra(SightsIntentService.ACTION, new GetMarkersOnCameraUpdateAction(currentMapBounds, ++updateViewCallIndex));
-				intent.putExtra("updateViewCallIndex", ++updateViewCallIndex);
+				intent.putExtra(Tags.ON_CAMERA_CHANGE_CALL_INDEX, updateViewCallIndex);
 				getActivity().startService(intent);
-//				Log.d("MyLogs", "onCameraChange() finished");
+//				Log.d("MyLogs", "onCameraChange() with updateViewIndex "+updateViewCallIndex);
 //				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
 //				if (mapIsTouched && showToastToNavigateClickOnMap) {
 //					Toast toast = Toast
@@ -334,7 +333,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
-		if(markerOptionsList!=null && bundle.getLong("updateViewCallIndex")==updateViewCallIndex){
+		Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
 			for(Marker marker: markerList){
 				marker.remove();
 			}
