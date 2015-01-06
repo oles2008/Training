@@ -216,7 +216,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 			@Override
 			public void onClick(View v) {
-				Log.d("MSG", " view click");
+//				Log.d("MSG", " view click");
 			}
 		});
 	}
@@ -230,7 +230,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (null != uri) {
 			args.putString("uri", uri);
 		}
-		Log.d("MSG", " > URI 2 > " + uri);
+//		Log.d("MSG", " > URI 2 > " + uri);
 	}
 	
 	@Override

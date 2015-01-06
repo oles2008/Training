@@ -344,7 +344,6 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 				markerList.add(gMap.addMarker(markerOptions));
 			}
 		}
-//		Log.d("MyLogs", "markerList.size(): "+markerList.size());
 	}
 
 }
