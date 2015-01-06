@@ -74,7 +74,7 @@ public class Appl extends Application{
 	public static void unsubscribeFromMapLongClickUpdates(OnMapLongClickListener onMapLongClickListener){
 		onMapLongClickListeners.remove(onMapLongClickListener);
 	}
-	
+
 	public static void subscribeForViewUpdates(ViewUpdateListener viewUpdateListener){
 		viewUpdateListeners.add(viewUpdateListener);
 	}
@@ -82,6 +82,7 @@ public class Appl extends Application{
 	public static void unsubscribeFromViewUpdates(ViewUpdateListener viewUpdateListener){
 		viewUpdateListeners.remove(viewUpdateListener);
 	}
+
 	
 	interface ViewUpdateListener {
 		void onUpdateView(Bundle bundle);
