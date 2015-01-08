@@ -41,16 +41,11 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	private static String getDatabaseCreateStatement(List<String> languages){
 		String createStatement = "create table " 
 					+ TABLE_NAME + "(" 
-					+ COLUMN_ID
-					+ " integer primary key autoincrement, " 
-					+ COLUMN_LONGITUDE
-					+ " real, " 
-					+ COLUMN_LATITUDE 
-					+ " real, " 
-					+ COLUMN_SIGHT_IMAGE_PATH
-					+ " text, "
-					+ COLUMN_SIGHT_STATUS
-					+ " integer, ";
+					+ COLUMN_ID 				+ " integer primary key autoincrement, " 
+					+ COLUMN_LONGITUDE 			+ " real, " 
+					+ COLUMN_LATITUDE 			+ " real, " 
+					+ COLUMN_SIGHT_IMAGE_PATH	+ " text, "
+					+ COLUMN_SIGHT_STATUS		+ " integer, ";
 		for(String locationLevelColumn: COLUMNS_LOCATION_LEVEL){
 			createStatement += locationLevelColumn + " text, ";
 		}
