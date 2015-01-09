@@ -3,12 +3,6 @@ package com.iolab.sightlocator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,8 +16,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class SightsTextFragment extends Fragment implements OnMapClickListener,
-		OnMapLongClickListener, OnMarkerClickListener {
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.iolab.sightlocator.Appl.ViewUpdateListener;
+
+public class SightsTextFragment extends Fragment implements 
+											OnMapClickListener,
+											OnMapLongClickListener,
+											OnMarkerClickListener, 
+											ViewUpdateListener {
 
 	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860,23.993669);
 	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
@@ -31,13 +35,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	private static String PathToSdcard = Environment
 			.getExternalStorageDirectory() + "/Download/";
-	private static final String ONE_PIXEL = PathToSdcard + "onePixel.jpg";
-	private static final String STRING_STS_OLHA_AND_ELISABETH = PathToSdcard
-			+ "elis.jpg";
-	private static final String STRING_RAILWAY_STATION = PathToSdcard
-			+ "railway.jpg";
-	private static final String STRING_SOFTSERVE_OFFICE_4 = PathToSdcard
-			+ "ss_logo.jpg";
+	private static final String ONE_PIXEL = 					PathToSdcard + "onePixel.jpg";
+	private static final String STRING_STS_OLHA_AND_ELISABETH = PathToSdcard + "elis.jpg";
+	private static final String STRING_RAILWAY_STATION = 		PathToSdcard + "railway.jpg";
+	private static final String STRING_SOFTSERVE_OFFICE_4 = 	PathToSdcard + "ss_logo.jpg";
 	
 	private final int ICON_SIZE = 200;
 
@@ -76,9 +77,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onResume() {
 		super.onResume();
-		Appl.subscribeForMarkerClickUpdates(this);
-		Appl.subscribeForMapClickUpdates(this);
-		Appl.subscribeForMapLongClickUpdates(this);
+//		Appl.subscribeForMarkerClickUpdates(this);
+//		Appl.subscribeForMapClickUpdates(this);
+//		Appl.subscribeForMapLongClickUpdates(this);
+		Appl.subscribeForViewUpdates(this);
 	}
 
 	/**
@@ -160,35 +162,40 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	}
 
 	public boolean onMarkerClick(final Marker marker) {
-
-		String railwayStation = this.getString(R.string.railway_station_wiki);
-		String softserveOffice4 = this.getString(R.string.softserve_office_4);
-		String stsOlhaAndElisabeth = this
-				.getString(R.string.sts_olha_and_elisabeth);
-
-		if (marker.getPosition().equals(RAILWAY_STATION)) {
-			marker.showInfoWindow();
-			changeTextFragment(railwayStation);
-			changeImageFragmentUsingImageUri(STRING_RAILWAY_STATION);
-			return true;
-		}
-
-		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
-			marker.showInfoWindow();
-			changeTextFragment(softserveOffice4);
-			changeImageFragmentUsingImageUri(STRING_SOFTSERVE_OFFICE_4);
-			return true;
-		}
-
-		if (marker.getPosition().equals(STS_OLHA_AND_ELISABETH)) {
-			marker.showInfoWindow();
-			changeTextFragment(stsOlhaAndElisabeth);
-			changeImageFragmentUsingImageUri(STRING_STS_OLHA_AND_ELISABETH);
-			return true;
-		}
-
+		Log.d("MSG", "onMarkerClick(final Marker marker)");
 		return false;
-	}
+		}
+	
+//	public boolean onMarkerClick(final Marker marker) {
+//
+//		String railwayStation = this.getString(R.string.railway_station_wiki);
+//		String softserveOffice4 = this.getString(R.string.softserve_office_4);
+//		String stsOlhaAndElisabeth = this
+//				.getString(R.string.sts_olha_and_elisabeth);
+//
+//		if (marker.getPosition().equals(RAILWAY_STATION)) {
+//			marker.showInfoWindow();
+//			changeTextFragment(railwayStation);
+//			changeImageFragmentUsingImageUri(STRING_RAILWAY_STATION);
+//			return true;
+//		}
+//
+//		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
+//			marker.showInfoWindow();
+//			changeTextFragment(softserveOffice4);
+//			changeImageFragmentUsingImageUri(STRING_SOFTSERVE_OFFICE_4);
+//			return true;
+//		}
+//
+//		if (marker.getPosition().equals(STS_OLHA_AND_ELISABETH)) {
+//			marker.showInfoWindow();
+//			changeTextFragment(stsOlhaAndElisabeth);
+//			changeImageFragmentUsingImageUri(STRING_STS_OLHA_AND_ELISABETH);
+//			return true;
+//		}
+//
+//		return false;
+//	}
 
 	@Override
 	public void onMapLongClick(LatLng arg0) {
@@ -236,8 +243,23 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onPause(){
 		super.onPause();
-		Appl.unsubscribeFromMarkerClickUpdates(this);
-		Appl.unsubscribeFromMapClickUpdates(this);
-		Appl.unsubscribeFromMapLongClickUpdates(this);
+//		Appl.unsubscribeFromMarkerClickUpdates(this);
+//		Appl.unsubscribeFromMapClickUpdates(this);
+//		Appl.unsubscribeFromMapLongClickUpdates(this);
+		Appl.subscribeForViewUpdates(this);
 	}
+	
+	@Override
+	public void onUpdateView(Bundle bundle) {
+		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
+		Log.d("MSG", "onUpdateView:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
+		Log.d("MSG", "onUpdateView:  Bundle updateViewCallIndex: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+		
+		if (sightDescription == null) {
+			changeTextFragment("Welcome to Sight Locator");
+		} else {
+			changeTextFragment(sightDescription);
+		}
+	}
+	
 }

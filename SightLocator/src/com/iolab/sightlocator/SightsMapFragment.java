@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,7 +35,10 @@ import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
-public class SightsMapFragment extends Fragment implements OnMarkerClickListener, NewLocationUser, ViewUpdateListener{
+public class SightsMapFragment extends Fragment implements 
+											//OnMarkerClickListener, 
+											NewLocationUser, 
+											ViewUpdateListener{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
@@ -119,17 +121,17 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		}
 	}
 
-	public boolean onMarkerClick(final Marker marker) {
-		// the user wants to stay here
-		moveMapOnLocationUpdate = false;
-		marker.showInfoWindow();
-		
-		for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
-			listener.onMarkerClick(marker);
-		}
-
-		return true;
-	}
+//	public boolean onMarkerClick(final Marker marker) {
+//		// the user wants to stay here
+//		moveMapOnLocationUpdate = false;
+//		marker.showInfoWindow();
+//		
+//		for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
+//			listener.onMarkerClick(marker);
+//		}
+//
+//		return true;
+//	}
 	
 	public void addMarkers() {
 		if (gMap != null) {
@@ -226,7 +228,32 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 			}
 		});
 	}
-	
+
+	private void registerMarkerClickListener() {
+		gMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+			
+			@Override
+			public boolean onMarkerClick(Marker marker) {
+				Log.d("MSG", "registerMarkerClickListener>onMarkerClick, marker " + marker.getTitle());
+
+				for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
+					listener.onMarkerClick(marker);
+				}
+				
+				moveMapOnLocationUpdate = false;
+				marker.showInfoWindow();
+				
+				Intent intent = new Intent(getActivity(), SightsIntentService.class);
+				LatLng position = marker.getPosition();
+				Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
+				intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++updateViewCallIndex));
+				intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
+				getActivity().startService(intent);
+				return true;
+			}
+		});
+	}
+
 	//this will disable automatic zooming to the user's location if the map was touched
 	private void registerOnMapTouchedListener() {
 		((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).registerOnMapTouchListener(new OnMapTouchedListener() {
@@ -265,6 +292,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		});
 	}
 
+
 	@Override
 	public void onResume() {
 
@@ -289,7 +317,8 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//registerMapClickListener();
 
 		// Register a marker listener to receive marker clicks updates
-		gMap.setOnMarkerClickListener(this);
+//		gMap.setOnMarkerClickListener(this);
+		registerMarkerClickListener();
 		
 		//zooming in to the user's location so that the user doesn't have to press the Google-provided "Locate me" button
 		//zoomInToUsersLastLocation();
@@ -314,7 +343,7 @@ public class SightsMapFragment extends Fragment implements OnMarkerClickListener
 		//for debugging
 		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle args){
 		super.onSaveInstanceState(args);

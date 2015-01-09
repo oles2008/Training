@@ -63,20 +63,23 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		Log.d("MyLogs", "Starting runUnService(), updateViewCallIndex: "+this.viewUpdateCallIndex);
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.query(TABLE_NAME,
-						new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
-								SIGHT_NAME+"en", SIGHT_ADDRESS+"en", COLUMN_SIGHT_STATUS,
+						new String[] { COLUMN_LATITUDE,
+								COLUMN_LONGITUDE,
+								SIGHT_NAME+"en",
+								SIGHT_ADDRESS+"en",
+								COLUMN_SIGHT_STATUS,
 								COLUMNS_LOCATION_LEVEL[0],
 								COLUMNS_LOCATION_LEVEL[1],
 								COLUMNS_LOCATION_LEVEL[2],
 								COLUMNS_LOCATION_LEVEL[3],
 								COLUMNS_LOCATION_LEVEL[4] },
-						"(" + COLUMN_LATITUDE + " BETWEEN "
+							"(" + COLUMN_LATITUDE + " BETWEEN "
 								+ latLngBounds.southwest.latitude + " AND "
 								+ latLngBounds.northeast.latitude + ") AND ("
 								+ COLUMN_LONGITUDE + " BETWEEN "
 								+ latLngBounds.southwest.longitude + " AND "
-								+ latLngBounds.northeast.longitude + ")", null,
-						null, null, null);
+								+ latLngBounds.northeast.longitude + ")",
+								null, null, null, null);
 //		Log.d("MyLogs", "Where statement: "+"(" + COLUMN_LATITUDE + " BETWEEN "
 //								+ latLngBounds.northeast.latitude + " AND "
 //								+ latLngBounds.southwest.latitude + ") AND ("
@@ -87,15 +90,19 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		ArrayList<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
 		if (cursor.moveToFirst()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
-					cursor.getDouble(1));
-			markerOptionsList.add(new MarkerOptions().position(position)
-					.title(cursor.getString(2)).snippet(cursor.getString(3)));
+										cursor.getDouble(1));
+			markerOptionsList.add(new MarkerOptions()
+										.position(position)
+										.title(cursor.getString(2))
+										.snippet(cursor.getString(3)));
 		}
 		while (cursor.moveToNext()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
-					cursor.getDouble(1));
-			markerOptionsList.add(new MarkerOptions().position(position)
-					.title(cursor.getString(2)).snippet(cursor.getString(3)));
+										cursor.getDouble(1));
+			markerOptionsList.add(new MarkerOptions()
+										.position(position)
+										.title(cursor.getString(2))
+										.snippet(cursor.getString(3)));
 		}
 		Bundle resultData = new Bundle();
 		resultData.putParcelableArrayList(Tags.MARKERS, markerOptionsList);
