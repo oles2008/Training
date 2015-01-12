@@ -30,20 +30,11 @@ public class SightsTextFragment extends Fragment implements
 											OnMarkerClickListener, 
 											ViewUpdateListener {
 
-	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860,23.993669);
-	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
-	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786,23.997022);
-
 	private static String PathToSdcard = Environment
 			.getExternalStorageDirectory() + "/Download/";
-	private static final String ONE_PIXEL = 					PathToSdcard + "onePixel.jpg";
-	private static final String STRING_STS_OLHA_AND_ELISABETH = PathToSdcard + "elis.jpg";
-	private static final String STRING_RAILWAY_STATION = 		PathToSdcard + "railway.jpg";
-	private static final String STRING_SOFTSERVE_OFFICE_4 = 	PathToSdcard + "ss_logo.jpg";
-	
+	private static final String ONE_PIXEL = PathToSdcard + "onePixel.jpg";
 	private final int ICON_SIZE = 200;
 	public static long updateMarkerClickIndex=0;
-	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +44,6 @@ public class SightsTextFragment extends Fragment implements
 		}
 	}
 
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -130,15 +120,9 @@ public class SightsTextFragment extends Fragment implements
 	}
 
 	private TextView getTextView() {
-		if (getActivity().getFragmentManager() == null){
-			Log.d("MSG","getFragmentManager is null ");
-			
-//			return (TextView) getView().findViewById(R.id.textView);
-		}
-
 		Fragment textFragmet = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
 		TextView textView = (TextView) textFragmet.getView().findViewById(R.id.textView);
-		//TextView textView = (TextView) getView().findViewById(R.id.textView);
+		
 		return textView;
 	}
 
@@ -166,59 +150,24 @@ public class SightsTextFragment extends Fragment implements
 	}
 
 	protected ImageView getImageView() {
-		Fragment fragment = getFragmentManager().findFragmentById(
-				R.id.text_fragment);
-		ImageView imageView = (ImageView) fragment.getView().findViewById(
-				R.id.imageView);
+		Fragment fragment = getFragmentManager().findFragmentById(R.id.text_fragment);
+		ImageView imageView = (ImageView) fragment.getView().findViewById(R.id.imageView);
+		
 		return imageView;
 	}
 
 	public boolean onMarkerClick(final Marker marker) {
-		Log.d("MSG", "onMarkerClick(final Marker marker)");
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
-		Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
 		intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
-		//intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
+		intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateMarkerClickIndex);
 		getActivity().startService(intent);
 
 		return true;
 		}
-	
-//	public boolean onMarkerClick(final Marker marker) {
-//
-//		String railwayStation = this.getString(R.string.railway_station_wiki);
-//		String softserveOffice4 = this.getString(R.string.softserve_office_4);
-//		String stsOlhaAndElisabeth = this
-//				.getString(R.string.sts_olha_and_elisabeth);
-//
-//		if (marker.getPosition().equals(RAILWAY_STATION)) {
-//			marker.showInfoWindow();
-//			changeTextFragment(railwayStation);
-//			changeImageFragmentUsingImageUri(STRING_RAILWAY_STATION);
-//			return true;
-//		}
-//
-//		if (marker.getPosition().equals(SOFTSERVE_OFFICE_4)) {
-//			marker.showInfoWindow();
-//			changeTextFragment(softserveOffice4);
-//			changeImageFragmentUsingImageUri(STRING_SOFTSERVE_OFFICE_4);
-//			return true;
-//		}
-//
-//		if (marker.getPosition().equals(STS_OLHA_AND_ELISABETH)) {
-//			marker.showInfoWindow();
-//			changeTextFragment(stsOlhaAndElisabeth);
-//			changeImageFragmentUsingImageUri(STRING_STS_OLHA_AND_ELISABETH);
-//			return true;
-//		}
-//
-//		return false;
-//	}
 
 	@Override
 	public void onMapLongClick(LatLng arg0) {
-
 		String loremIpsum = getString(R.string.lorem_ipsum);
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
@@ -228,7 +177,6 @@ public class SightsTextFragment extends Fragment implements
 
 	@Override
 	public void onMapClick(LatLng arg0) {
-
 		String loremIpsum = getString(R.string.lorem_ipsum);
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
@@ -250,8 +198,7 @@ public class SightsTextFragment extends Fragment implements
 	@Override
 	public void onSaveInstanceState(Bundle args) {
 		super.onSaveInstanceState(args);
-		ImageView imageView = (ImageView) getActivity().findViewById(
-				R.id.imageView);
+		ImageView imageView = (ImageView) getActivity().findViewById(R.id.imageView);
 		String uri = (String) imageView.getTag(R.string.imageview_tag_uri);
 		if (null != uri) {
 			args.putString("uri", uri);
@@ -270,27 +217,8 @@ public class SightsTextFragment extends Fragment implements
 	
 	@Override
 	public void onUpdateView(Bundle bundle) {
-//		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
-			Log.d("MSG", "onUpdateView TXT:  Bundle String sightDescription: "
-					+ bundle.getString(Tags.SIGHT_DESCRIPTION));
-			String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
-
-			// Log.d("MSG",
-			// "onUpdateView:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
-			Log.d("MSG", "onUpdateView TXT:  Bundle ON_MARKER_CLICK_INDEX: "
-					+ bundle.getLong(Tags.ON_MARKER_CLICK_INDEX));
-			Log.d("MSG", "onUpdateView TXT:  Bundle updateMarkerClickIndex: "
-					+ updateMarkerClickIndex);
-			
-			changeTextFragment(sightDescription);
-
-//			if (sightDescription == null
-//					&& bundle.getLong(Tags.ON_MARKER_CLICK_INDEX) == updateMarkerClickIndex) {
-//				changeTextFragment("Welcome to Sight Locator");
-//			} else {
-//				changeTextFragment(sightDescription);
-//			}
+			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
 		}
 	}
 	
