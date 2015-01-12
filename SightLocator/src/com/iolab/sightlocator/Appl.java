@@ -43,9 +43,7 @@ public class Appl extends Application{
 			new Handler()) {
 
 		@Override
-		protected void onReceiveResult(final int resultCode,
-				final Bundle resultData) {
-			//Log.d("MSG", "onReceiveResult " + resultData.toString());
+		protected void onReceiveResult(final int resultCode, final Bundle resultData) {
 			for (ViewUpdateListener viewUpdateListener : viewUpdateListeners) {
 				viewUpdateListener.onUpdateView(resultData);
 			}
