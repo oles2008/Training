@@ -32,7 +32,7 @@ public class SightsTextFragment extends Fragment implements
 
 	private static String PathToSdcard = Environment
 			.getExternalStorageDirectory() + "/Download/";
-	private static final String ONE_PIXEL = PathToSdcard + "onePixel.jpg";
+	private static final String ONE_PIXEL = PathToSdcard + Tags.ONE_PIXEL_JPEG;
 	private final int ICON_SIZE = 200;
 	public static long markerClickCounter=0;
 	
@@ -219,6 +219,10 @@ public class SightsTextFragment extends Fragment implements
 	public void onUpdateView(Bundle bundle) {
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
+		}
+		
+		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
+			changeImageFragmentUsingImageUri(PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
 		}
 	}
 	

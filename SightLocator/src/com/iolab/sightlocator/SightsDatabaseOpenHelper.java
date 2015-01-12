@@ -130,7 +130,7 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 							"49.838502",
 							"24.012944",
 							"\'St. George\'\'s cathedral, Lviv\'",
-							"\'saint_georges.jpg\'",
+							"\'saint_george.jpg\'",
 							"\'St. George\'\' Cathedral (Ukrainian: Собор святого Юра, translit. Sobor sviatoho Yura) is a baroque-rococo cathedral located in the city of Lviv, the historic capital of western Ukraine. It was constructed between 1744-1760[1] on a hill overlooking the city. This is the third manifestation of a church to inhabit the site since the 13th century, and its prominence has repeatedly made it a target for invaders and vandals. The cathedral also holds a predominant position in Ukrainian religious and cultural terms. During 19th and 20th centuries, the cathedral served as the mother church of the Ukrainian Greek Catholic Church (UGCC) (Eastern Rite Catholic).\'" }));
 			db.execSQL(getDatabaseInsertStatement(
 					new String[] { 	COLUMN_LATITUDE,

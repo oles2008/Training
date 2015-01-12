@@ -4,10 +4,12 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -57,7 +59,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				.query(TABLE_NAME,
 						new String[] { COLUMN_LATITUDE,
 								COLUMN_LONGITUDE,
-								SIGHT_DESCRIPTION + "en" },
+								COLUMN_SIGHT_IMAGE_PATH,
+								SIGHT_DESCRIPTION + "en"},
 							"(" + COLUMN_LATITUDE + " = "
 								+ position.latitude + " AND "
 								+ COLUMN_LONGITUDE + " = "
@@ -65,14 +68,25 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								null, null, null, null);
 
 		String sightDescription = null;
+		String pathToImage= null;
 
 		if (cursor.moveToFirst()) {
-			sightDescription = cursor.getString(2);
+			pathToImage = cursor.getString(2);
+			sightDescription = cursor.getString(3);
 		}
 
+		if (pathToImage.startsWith("/")){
+			pathToImage = pathToImage.substring(1, pathToImage.length());
+		}
+		
+		if (pathToImage == null || pathToImage.isEmpty()){
+			pathToImage = Tags.ONE_PIXEL_JPEG;
+		}
+		
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
 		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+		resultData.putString(Tags.PATH_TO_IMAGE, pathToImage);
 		Appl.receiver.send(0, resultData);
 	}
 	
