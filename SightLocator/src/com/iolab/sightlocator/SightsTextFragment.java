@@ -41,12 +41,18 @@ public class SightsTextFragment extends Fragment implements
 	private static final String STRING_SOFTSERVE_OFFICE_4 = 	PathToSdcard + "ss_logo.jpg";
 	
 	private final int ICON_SIZE = 200;
-
+	public static long updateMarkerClickIndex=0;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			updateMarkerClickIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
+		}
 	}
 
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -77,9 +83,9 @@ public class SightsTextFragment extends Fragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-//		Appl.subscribeForMarkerClickUpdates(this);
-//		Appl.subscribeForMapClickUpdates(this);
-//		Appl.subscribeForMapLongClickUpdates(this);
+		Appl.subscribeForMarkerClickUpdates(this);
+		Appl.subscribeForMapClickUpdates(this);
+		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
 	}
 
@@ -123,10 +129,16 @@ public class SightsTextFragment extends Fragment implements
 	}
 
 	private TextView getTextView() {
+		if (getFragmentManager() == null){
+			Log.d("MSG","getFragmentManager is null ");
+			
+//			return (TextView) getView().findViewById(R.id.textView);
+		}
 		Fragment fragment = getFragmentManager().findFragmentById(
 				R.id.text_fragment);
 		TextView textView = (TextView) fragment.getView().findViewById(
 				R.id.textView);
+		
 		return textView;
 	}
 
@@ -237,25 +249,29 @@ public class SightsTextFragment extends Fragment implements
 		if (null != uri) {
 			args.putString("uri", uri);
 		}
-//		Log.d("MSG", " > URI 2 > " + uri);
+		args.putLong("updateMarkerClickIndex", updateMarkerClickIndex);
 	}
 	
 	@Override
 	public void onPause(){
 		super.onPause();
-//		Appl.unsubscribeFromMarkerClickUpdates(this);
-//		Appl.unsubscribeFromMapClickUpdates(this);
-//		Appl.unsubscribeFromMapLongClickUpdates(this);
+		Appl.unsubscribeFromMarkerClickUpdates(this);
+		Appl.unsubscribeFromMapClickUpdates(this);
+		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
 	}
 	
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
-		Log.d("MSG", "onUpdateView:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
-		Log.d("MSG", "onUpdateView:  Bundle updateViewCallIndex: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+		if (bundle.getString(Tags.SIGHT_DESCRIPTION) == null){
+			Log.d("MSG", "onUpdateView TXT:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
+		}
+		//Log.d("MSG", "onUpdateView:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
+		Log.d("MSG", "onUpdateView TXT:  Bundle ON_MARKER_CLICK_INDEX: "+bundle.getLong(Tags.ON_MARKER_CLICK_INDEX));
+		Log.d("MSG", "onUpdateView TXT:  Bundle updateMarkerClickIndex: "+updateMarkerClickIndex);
 		
-		if (sightDescription == null) {
+		if (sightDescription == null && bundle.getLong(Tags.ON_MARKER_CLICK_INDEX)==updateMarkerClickIndex) {
 			changeTextFragment("Welcome to Sight Locator");
 		} else {
 			changeTextFragment(sightDescription);

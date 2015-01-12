@@ -50,6 +50,7 @@ public class SightsMapFragment extends Fragment implements
 	private List<Marker> markerList = new ArrayList<Marker>();
 	
 	private long updateViewCallIndex=0;
+	//public static long updateMarkerClickIndex=0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -246,7 +247,7 @@ public class SightsMapFragment extends Fragment implements
 				Intent intent = new Intent(getActivity(), SightsIntentService.class);
 				LatLng position = marker.getPosition();
 				Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
-				intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++updateViewCallIndex));
+				intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
 				intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
 				getActivity().startService(intent);
 				return true;
@@ -362,7 +363,13 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
-		Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+		
+		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
+		if (bundle.getString(Tags.SIGHT_DESCRIPTION) == null){
+			Log.d("MSG", "onUpdateView MAP:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
+		}
+		
 		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
 			for(Marker marker: markerList){
 				marker.remove();

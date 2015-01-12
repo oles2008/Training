@@ -71,7 +71,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (cursor.moveToFirst()) {
 			sightDescription = cursor.getString(2);
 		}
-		Log.d("MSG","runInService, String sightDescription : " + sightDescription);
+		//Log.d("MSG","runInService, String sightDescription : " + sightDescription);
 
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
