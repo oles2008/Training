@@ -34,13 +34,13 @@ public class SightsTextFragment extends Fragment implements
 			.getExternalStorageDirectory() + "/Download/";
 	private static final String ONE_PIXEL = PathToSdcard + "onePixel.jpg";
 	private final int ICON_SIZE = 200;
-	public static long updateMarkerClickIndex=0;
+	public static long markerClickCounter=0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			updateMarkerClickIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
+			markerClickCounter = savedInstanceState.getLong(Tags.ON_MARKER_CLICK_COUNTER, 0);
 		}
 	}
 
@@ -159,8 +159,8 @@ public class SightsTextFragment extends Fragment implements
 	public boolean onMarkerClick(final Marker marker) {
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
-		intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
-		intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateMarkerClickIndex);
+		intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++markerClickCounter));
+		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 		getActivity().startService(intent);
 
 		return true;
@@ -203,7 +203,7 @@ public class SightsTextFragment extends Fragment implements
 		if (null != uri) {
 			args.putString("uri", uri);
 		}
-		args.putLong("updateMarkerClickIndex", updateMarkerClickIndex);
+		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 	}
 	
 	@Override

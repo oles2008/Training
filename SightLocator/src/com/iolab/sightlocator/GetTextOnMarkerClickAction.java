@@ -72,7 +72,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
-		resultData.putLong(Tags.ON_MARKER_CLICK_INDEX, markerClickCounter);
+		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 		Appl.receiver.send(0, resultData);
 	}
 	
