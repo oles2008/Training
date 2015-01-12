@@ -129,16 +129,15 @@ public class SightsTextFragment extends Fragment implements
 	}
 
 	private TextView getTextView() {
-		if (getFragmentManager() == null){
+		if (getActivity().getFragmentManager() == null){
 			Log.d("MSG","getFragmentManager is null ");
 			
 //			return (TextView) getView().findViewById(R.id.textView);
 		}
-		Fragment fragment = getFragmentManager().findFragmentById(
-				R.id.text_fragment);
-		TextView textView = (TextView) fragment.getView().findViewById(
-				R.id.textView);
-		
+
+		Fragment textFragmet = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
+		TextView textView = (TextView) textFragmet.getView().findViewById(R.id.textView);
+		//TextView textView = (TextView) getView().findViewById(R.id.textView);
 		return textView;
 	}
 
@@ -263,18 +262,27 @@ public class SightsTextFragment extends Fragment implements
 	
 	@Override
 	public void onUpdateView(Bundle bundle) {
-		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
-		if (bundle.getString(Tags.SIGHT_DESCRIPTION) == null){
-			Log.d("MSG", "onUpdateView TXT:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
-		}
-		//Log.d("MSG", "onUpdateView:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
-		Log.d("MSG", "onUpdateView TXT:  Bundle ON_MARKER_CLICK_INDEX: "+bundle.getLong(Tags.ON_MARKER_CLICK_INDEX));
-		Log.d("MSG", "onUpdateView TXT:  Bundle updateMarkerClickIndex: "+updateMarkerClickIndex);
-		
-		if (sightDescription == null && bundle.getLong(Tags.ON_MARKER_CLICK_INDEX)==updateMarkerClickIndex) {
-			changeTextFragment("Welcome to Sight Locator");
-		} else {
+//		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
+		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
+			Log.d("MSG", "onUpdateView TXT:  Bundle String sightDescription: "
+					+ bundle.getString(Tags.SIGHT_DESCRIPTION));
+			String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
+
+			// Log.d("MSG",
+			// "onUpdateView:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
+			Log.d("MSG", "onUpdateView TXT:  Bundle ON_MARKER_CLICK_INDEX: "
+					+ bundle.getLong(Tags.ON_MARKER_CLICK_INDEX));
+			Log.d("MSG", "onUpdateView TXT:  Bundle updateMarkerClickIndex: "
+					+ updateMarkerClickIndex);
+			
 			changeTextFragment(sightDescription);
+
+//			if (sightDescription == null
+//					&& bundle.getLong(Tags.ON_MARKER_CLICK_INDEX) == updateMarkerClickIndex) {
+//				changeTextFragment("Welcome to Sight Locator");
+//			} else {
+//				changeTextFragment(sightDescription);
+//			}
 		}
 	}
 	
