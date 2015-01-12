@@ -25,7 +25,6 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -36,29 +35,22 @@ import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
 public class SightsMapFragment extends Fragment implements 
-											//OnMarkerClickListener, 
 											NewLocationUser, 
 											ViewUpdateListener{
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
-//	private boolean showToastToNavigateClickOnMap = true;
 
-	private static final LatLng RAILWAY_STATION 			= new LatLng(49.839860, 23.993669);
-	private static final LatLng STS_OLHA_AND_ELISABETH 		= new LatLng(49.8367019,24.0048451);
-	private static final LatLng SOFTSERVE_OFFICE_4 			= new LatLng(49.832786, 23.997022);
 	private List<Marker> markerList = new ArrayList<Marker>();
 	
 	private long updateViewCallIndex=0;
-	//public static long updateMarkerClickIndex=0;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState!=null){
 			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
 			updateViewCallIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
-			//showToastToNavigateClickOnMap = savedInstanceState.getBoolean("showToastToNavigateClickOnMap", false);
 		}
 	}
 
@@ -122,49 +114,6 @@ public class SightsMapFragment extends Fragment implements
 		}
 	}
 
-//	public boolean onMarkerClick(final Marker marker) {
-//		// the user wants to stay here
-//		moveMapOnLocationUpdate = false;
-//		marker.showInfoWindow();
-//		
-//		for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
-//			listener.onMarkerClick(marker);
-//		}
-//
-//		return true;
-//	}
-	
-	public void addMarkers() {
-		if (gMap != null) {
-			gMap.addMarker(new MarkerOptions()
-				.position(RAILWAY_STATION)
-				.title("Railway station, Lviv")
-				.snippet("Address")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-			gMap.addMarker(new MarkerOptions()
-				.position(SOFTSERVE_OFFICE_4)
-				.title("Softserve office #4, Lviv")
-				.snippet("Address")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-			gMap.addMarker(new MarkerOptions()
-				.position(STS_OLHA_AND_ELISABETH)
-				.title("Church of Sts. Olha and Elizabeth, Lviv")
-				.snippet("Address")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-		}
-	}
-
-	private void addMarkersPositions() {
-		MarkerOptions markersPositions = new MarkerOptions();
-		markersPositions.position(RAILWAY_STATION);
-		markersPositions.position(SOFTSERVE_OFFICE_4);
-		markersPositions.position(STS_OLHA_AND_ELISABETH);
-		gMap.addMarker(markersPositions);
-	}
-	
 	private void registerMapClickListener() {
 		gMap.setOnMapClickListener(new OnMapClickListener() {
 			@Override
@@ -215,17 +164,6 @@ public class SightsMapFragment extends Fragment implements
 				intent.putExtra(SightsIntentService.ACTION, new GetMarkersOnCameraUpdateAction(currentMapBounds, ++updateViewCallIndex));
 				intent.putExtra(Tags.ON_CAMERA_CHANGE_CALL_INDEX, updateViewCallIndex);
 				getActivity().startService(intent);
-//				Log.d("MyLogs", "onCameraChange() with updateViewIndex "+updateViewCallIndex);
-//				boolean mapIsTouched = ((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).mMapIsTouched;
-//				if (mapIsTouched && showToastToNavigateClickOnMap) {
-//					Toast toast = Toast
-//							.makeText(
-//									Appl.appContext,
-//									"To NAVIGATE away from your position, LONG CLICK on the map",
-//									Toast.LENGTH_SHORT);
-//					toast.show();
-//					showToastToNavigateClickOnMap = false;
-//				}
 			}
 		});
 	}
@@ -240,16 +178,10 @@ public class SightsMapFragment extends Fragment implements
 				for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
 					listener.onMarkerClick(marker);
 				}
-				
+
 				moveMapOnLocationUpdate = false;
 				marker.showInfoWindow();
 				
-//				Intent intent = new Intent(getActivity(), SightsIntentService.class);
-//				LatLng position = marker.getPosition();
-//				Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
-//				intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
-//				intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
-//				getActivity().startService(intent);
 				return true;
 			}
 		});
@@ -270,16 +202,6 @@ public class SightsMapFragment extends Fragment implements
 		gMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
 			@Override
 			public boolean onMyLocationButtonClick() {
-				//no more toasts "To navigate from your position, LONG CLICK on map"
-//				if(!moveMapOnLocationUpdate){
-//					Toast toast = Toast
-//							.makeText(
-//									Appl.appContext,
-//									"To NAVIGATE away from your position again, LONG CLICK on the map",
-//									Toast.LENGTH_SHORT);
-//					toast.show();
-//				}
-				
 				//the user probably wants his location to be show and updated
 				moveMapOnLocationUpdate = true;
 				
@@ -304,7 +226,6 @@ public class SightsMapFragment extends Fragment implements
 		gMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map))
 				.getMap();
-		
 
 		//here, we do not set sightLocationSource as the location source, because that instance of SightLocationSource  
 		//is used for the marking the user's location and for zooming in to the user's location,
@@ -318,7 +239,6 @@ public class SightsMapFragment extends Fragment implements
 		//registerMapClickListener();
 
 		// Register a marker listener to receive marker clicks updates
-//		gMap.setOnMarkerClickListener(this);
 		registerMarkerClickListener();
 		
 		//zooming in to the user's location so that the user doesn't have to press the Google-provided "Locate me" button
@@ -335,12 +255,6 @@ public class SightsMapFragment extends Fragment implements
 		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
 
-		// add markers LatLng positions
-		//addMarkersPositions();
-
-		// add markers with markers details
-		//addMarkers();
-		
 		//for debugging
 		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));
 	}
@@ -349,7 +263,6 @@ public class SightsMapFragment extends Fragment implements
 	public void onSaveInstanceState(Bundle args){
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
-		//args.putBoolean("showToastToNavigateClickOnMap", showToastToNavigateClickOnMap);
 		args.putLong("updateViewCallIndex", updateViewCallIndex);
 	}
 	
@@ -365,18 +278,12 @@ public class SightsMapFragment extends Fragment implements
 		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
 		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
 		
-		String sightDescription = bundle.getString(Tags.SIGHT_DESCRIPTION);
-		if (bundle.getString(Tags.SIGHT_DESCRIPTION) == null){
-			Log.d("MSG", "onUpdateView MAP:  Bundle String sightDescription: "+bundle.getString(Tags.SIGHT_DESCRIPTION));
-		}
-		
 		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
 			for(Marker marker: markerList){
 				marker.remove();
 			}
 			markerList.clear();
 			for(MarkerOptions markerOptions: markerOptionsList){
-//				Log.d("MyLogs", "adding marker "+markerOptions.getTitle());
 				markerList.add(gMap.addMarker(markerOptions));
 			}
 		}
