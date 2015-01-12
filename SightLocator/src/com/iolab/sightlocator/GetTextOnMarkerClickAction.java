@@ -8,23 +8,22 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
 public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
 	private LatLng position;
-	private long viewUpdateCallIndex;
+	private long markerClickCounter;
 	
-	public GetTextOnMarkerClickAction(LatLng position, long viewUpdateCallIndex) {
+	public GetTextOnMarkerClickAction(LatLng position, long markerClickCounter) {
 		this.position = position;
-		this.viewUpdateCallIndex = viewUpdateCallIndex;
+		this.markerClickCounter = markerClickCounter;
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
 		this.position = parcel.readParcelable(LatLng.class.getClassLoader());
-		this.viewUpdateCallIndex = parcel.readLong();
+		this.markerClickCounter = parcel.readLong();
 	}
 
 	@Override
@@ -36,7 +35,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeParcelable(position, flags);
-		dest.writeLong(viewUpdateCallIndex);
+		dest.writeLong(markerClickCounter);
 		
 	}
 
@@ -53,7 +52,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	
 	@Override
 	public void runInService() {
-		Log.d("MSG", "runInService , updateViewCallIndex: " + this.viewUpdateCallIndex);
 		
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.query(TABLE_NAME,
@@ -71,11 +69,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (cursor.moveToFirst()) {
 			sightDescription = cursor.getString(2);
 		}
-		//Log.d("MSG","runInService, String sightDescription : " + sightDescription);
 
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
-		resultData.putLong(Tags.ON_MARKER_CLICK_INDEX, viewUpdateCallIndex);
+		resultData.putLong(Tags.ON_MARKER_CLICK_INDEX, markerClickCounter);
 		Appl.receiver.send(0, resultData);
 	}
 	
