@@ -63,7 +63,8 @@ public class SightsLocationSource implements LocationSource, LocationListener {
 			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
 		if(lastKnownLocation!=null){
-		onLocationChangedListener.onLocationChanged(lastKnownLocation);}
+		onLocationChangedListener.onLocationChanged(lastKnownLocation);
+		}
 	}
 
 	@Override
