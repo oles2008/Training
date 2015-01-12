@@ -244,12 +244,12 @@ public class SightsMapFragment extends Fragment implements
 				moveMapOnLocationUpdate = false;
 				marker.showInfoWindow();
 				
-				Intent intent = new Intent(getActivity(), SightsIntentService.class);
-				LatLng position = marker.getPosition();
-				Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
-				intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
-				intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
-				getActivity().startService(intent);
+//				Intent intent = new Intent(getActivity(), SightsIntentService.class);
+//				LatLng position = marker.getPosition();
+//				Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
+//				intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
+//				intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
+//				getActivity().startService(intent);
 				return true;
 			}
 		});

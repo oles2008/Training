@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -174,7 +175,14 @@ public class SightsTextFragment extends Fragment implements
 
 	public boolean onMarkerClick(final Marker marker) {
 		Log.d("MSG", "onMarkerClick(final Marker marker)");
-		return false;
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		LatLng position = marker.getPosition();
+		Log.d("MSG","registerMarkerClickListener>onMarkerClick, position " + position.toString());
+		intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++SightsTextFragment.updateMarkerClickIndex));
+		//intent.putExtra(Tags.ON_MARKER_CLICK_INDEX, updateViewCallIndex);
+		getActivity().startService(intent);
+
+		return true;
 		}
 	
 //	public boolean onMarkerClick(final Marker marker) {
@@ -257,7 +265,7 @@ public class SightsTextFragment extends Fragment implements
 		Appl.unsubscribeFromMarkerClickUpdates(this);
 		Appl.unsubscribeFromMapClickUpdates(this);
 		Appl.unsubscribeFromMapLongClickUpdates(this);
-		Appl.subscribeForViewUpdates(this);
+		Appl.unsubscribeFromViewUpdates(this);
 	}
 	
 	@Override
