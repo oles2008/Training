@@ -89,7 +89,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			boolean b =	Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
 			File f = new File(Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
 			Log.d("MyLogs","b:" + b);
-			Log.d("MyLogs","file exists "+f.exists());
+			Log.d("MyLogs"," file exists "+f.exists());
 		}
 		
 		

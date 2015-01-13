@@ -45,7 +45,7 @@ public class Utils {
 			fos = new FileOutputStream(f);
 			fos.write(buffer);
 			} catch (Exception e) {
-			Log.d("MyLogs","exception 3:"+e.toString());
+			Log.d("MyLogs","exception  3:"+e.toString());
 			e.printStackTrace();
 			return false;
 		} finally {

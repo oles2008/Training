@@ -1,6 +1,6 @@
 package com.iolab.sightlocator;
 
-public class Tags {
+public class Tags {/**/
 
 	public final static String MARKERS = "markers";
 	public final static String SIGHT_DESCRIPTION = "sight_description";
