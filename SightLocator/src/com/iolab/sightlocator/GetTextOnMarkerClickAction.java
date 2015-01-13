@@ -5,6 +5,9 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
+
+import java.io.File;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -81,7 +84,15 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
+		}else{
+			Log.d("MyLogs",Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
+			boolean b =	Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
+			File f = new File(Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
+			Log.d("MyLogs","b:" + b);
+			Log.d("MyLogs","file exists "+f.exists());
 		}
+		
+		
 		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();

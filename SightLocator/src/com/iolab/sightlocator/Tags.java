@@ -8,4 +8,5 @@ public class Tags {
 	public final static String ON_CAMERA_CHANGE_CALL_INDEX = "updateViewCallIndex";
 	public final static String ON_MARKER_CLICK_COUNTER = "markerClickCounter";
 	public final static String ONE_PIXEL_JPEG = "onePixel.jpeg";
+	public final static String PATH_TO_IMAGES_IN_ASSETS = "images/";
 }
