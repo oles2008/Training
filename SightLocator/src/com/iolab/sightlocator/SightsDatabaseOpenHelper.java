@@ -119,7 +119,7 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 							"24.0048451",
 							"\'Church of Sts. Olha and Elizabeth, Lviv\'",
 							"\'elis.jpg\'",
-							"\'The Church of Sts. Olha and Elizabeth in Lviv, Ukraine, is located between the citys main rail station and the Old Town. It was originally built as the Roman Catholic Church of St. Elizabeth and today serves as the Greek Catholic Church of Sts. Olha and Elizabeth. The church was built by the Latin Archbishop of Lviv Saint Joseph Bilczewski in the years 1903&#8211;1911 as a parish church for the dynamically developing western suburb. It was designed by Polish architect Teodor Talowski.\'" }));
+							"\'The Church of Sts. Olha and Elizabeth in Lviv, Ukraine, is located between the citys main rail station and the Old Town. It was originally built as the Roman Catholic Church of St. Elizabeth and today serves as the Greek Catholic Church of Sts. Olha and Elizabeth. The church was built by the Latin Archbishop of Lviv Saint Joseph Bilczewski in the years 1903-1911 as a parish church for the dynamically developing western suburb. It was designed by Polish architect Teodor Talowski.\'" }));
 			db.execSQL(getDatabaseInsertStatement(
 					new String[] { 	COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,

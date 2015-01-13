@@ -61,7 +61,7 @@ public class SightsTextFragment extends Fragment implements
 				ImageView imageView = (ImageView) getActivity().findViewById(
 						R.id.imageView);
 				imageView.setImageURI(Uri.parse(uri));
-				if (!uri.contains("onePixel")) {
+				if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
 					imageView.setImageBitmap(resizeBitmap(imageView, ICON_SIZE));
 				}
 
@@ -141,7 +141,7 @@ public class SightsTextFragment extends Fragment implements
 
 		imageView.setImageURI(Uri.parse(uri));
 
-		if (!uri.contains("onePixel")) {
+		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
 			Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
 			imageView.setImageBitmap(resizedBitmap);
 		}
@@ -222,6 +222,7 @@ public class SightsTextFragment extends Fragment implements
 		}
 		
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
+			Log.d("MSG","Tags.PATH_TO_IMAGE > " + bundle.getString(Tags.PATH_TO_IMAGE));
 			changeImageFragmentUsingImageUri(PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
 		}
 	}
