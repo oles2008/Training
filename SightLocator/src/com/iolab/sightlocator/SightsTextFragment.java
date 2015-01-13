@@ -5,8 +5,10 @@ import java.io.IOException;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,7 +34,6 @@ public class SightsTextFragment extends Fragment implements
 
 	private static String PathToSdcard = Environment
 			.getExternalStorageDirectory() + "/Download/";
-	private static final String ONE_PIXEL = PathToSdcard + Tags.ONE_PIXEL_JPEG;
 	private final int ICON_SIZE = 200;
 	public static long markerClickCounter=0;
 	
@@ -62,7 +63,10 @@ public class SightsTextFragment extends Fragment implements
 						R.id.imageView);
 				imageView.setImageURI(Uri.parse(uri));
 				if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
-					imageView.setImageBitmap(resizeBitmap(imageView, ICON_SIZE));
+					Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
+					if (resizedBitmap != null) {
+						imageView.setImageBitmap(resizedBitmap);
+					}
 				}
 
 				imageView.setTag(R.string.imageview_tag_uri, uri);
@@ -90,6 +94,11 @@ public class SightsTextFragment extends Fragment implements
 	 */
 	protected Bitmap resizeBitmap(ImageView imageView, int newWidth) {
 		// get the bitmap from Image View
+		Drawable drawable = imageView.getDrawable();
+		if (drawable == null){
+			changeImageFragmentToOnePixel();
+			return null;
+		}
 		Bitmap bitmapFromImageView = ((BitmapDrawable) imageView.getDrawable())
 				.getBitmap();
 		// get Width and Height
@@ -143,12 +152,22 @@ public class SightsTextFragment extends Fragment implements
 
 		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
 			Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
-			imageView.setImageBitmap(resizedBitmap);
+			if (resizedBitmap != null) {
+				imageView.setImageBitmap(resizedBitmap);
+			}
 		}
 
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
 
+	private void changeImageFragmentToOnePixel() {
+		ImageView imageView = getImageView();
+
+		Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.one_pixel);
+		imageView.setImageDrawable(drawable);
+	}
+	
 	protected ImageView getImageView() {
 		Fragment fragment = getFragmentManager().findFragmentById(R.id.text_fragment);
 		ImageView imageView = (ImageView) fragment.getView().findViewById(R.id.imageView);
@@ -172,7 +191,7 @@ public class SightsTextFragment extends Fragment implements
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
-		changeImageFragmentUsingImageUri(ONE_PIXEL);
+		changeImageFragmentUsingImageUri(PathToSdcard + Tags.ONE_PIXEL_JPEG);
 	}
 
 	@Override
@@ -181,7 +200,9 @@ public class SightsTextFragment extends Fragment implements
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
-		changeImageFragmentUsingImageUri(ONE_PIXEL);
+//		changeImageFragmentUsingImageUri(PathToSdcard + Tags.ONE_PIXEL_JPEG);
+
+		changeImageFragmentToOnePixel();
 	}
 
 	private void registerImageViewClickListener() {
@@ -222,7 +243,7 @@ public class SightsTextFragment extends Fragment implements
 		}
 		
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-			Log.d("MSG","Tags.PATH_TO_IMAGE > " + bundle.getString(Tags.PATH_TO_IMAGE));
+			Log.d("MSG","Tags.PATH_TO_IMAGE > " + PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
 			changeImageFragmentUsingImageUri(PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
 		}
 	}

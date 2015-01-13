@@ -82,6 +82,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
 		}
+		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
