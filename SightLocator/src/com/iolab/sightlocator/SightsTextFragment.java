@@ -96,11 +96,11 @@ public class SightsTextFragment extends Fragment implements
 		// get the bitmap from Image View
 		Drawable drawable = imageView.getDrawable();
 		if (drawable == null){
-			changeImageFragmentToOnePixel();
+			Resources res = getResources();
+			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
 			return null;
 		}
-		Bitmap bitmapFromImageView = ((BitmapDrawable) imageView.getDrawable())
-				.getBitmap();
+		Bitmap bitmapFromImageView = ((BitmapDrawable) drawable).getBitmap();
 		// get Width and Height
 		int originalWidth = bitmapFromImageView.getWidth();
 		int originalHeight = bitmapFromImageView.getHeight();
@@ -160,12 +160,13 @@ public class SightsTextFragment extends Fragment implements
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
 
-	private void changeImageFragmentToOnePixel() {
+	private void changeImageFragmentToOnePixel(String uri) {
 		ImageView imageView = getImageView();
 
 		Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.one_pixel);
 		imageView.setImageDrawable(drawable);
+		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
 	
 	protected ImageView getImageView() {
@@ -191,7 +192,9 @@ public class SightsTextFragment extends Fragment implements
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
-		changeImageFragmentUsingImageUri(PathToSdcard + Tags.ONE_PIXEL_JPEG);
+		Resources res = getResources();
+		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
+
 	}
 
 	@Override
@@ -200,9 +203,8 @@ public class SightsTextFragment extends Fragment implements
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
-//		changeImageFragmentUsingImageUri(PathToSdcard + Tags.ONE_PIXEL_JPEG);
-
-		changeImageFragmentToOnePixel();
+		Resources res = getResources();
+		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
 	}
 
 	private void registerImageViewClickListener() {
