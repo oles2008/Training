@@ -192,7 +192,9 @@ public class SightsTextFragment extends Fragment implements
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
-		changeImageFragmentUsingImageUri(PathToSdcard + Tags.ONE_PIXEL_JPEG);
+		Resources res = getResources();
+		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
+
 	}
 
 	@Override
@@ -201,8 +203,6 @@ public class SightsTextFragment extends Fragment implements
 		// changes the text fragment to default (lorem ipsum text)
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
-//		changeImageFragmentUsingImageUri(PathToSdcard + Tags.ONE_PIXEL_JPEG);
-
 		Resources res = getResources();
 		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
 	}
