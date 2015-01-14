@@ -10,6 +10,7 @@ import java.io.File;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -85,9 +86,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
 		}else{
-			Log.d("MyLogs",Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
-			boolean b =	Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
-			File f = new File(Appl.appContext.getCacheDir()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage);
+			String path=Environment.getExternalStorageDirectory().getPath()+"/com.iolab.sightlocator/"+Tags.PATH_TO_IMAGES_IN_ASSETS;
+			File dir = new File(path);
+			if (!dir.exists()) {dir.mkdirs();}
+			Log.d("MyLogs","destination path to image:"+path + pathToImage);/*redundant logs have to be removed after development*/
+			boolean b =	Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, path + pathToImage);
+			File f = new File(path + pathToImage);
 			Log.d("MyLogs","b:" + b);
 			Log.d("MyLogs"," file exists "+f.exists());
 		}
