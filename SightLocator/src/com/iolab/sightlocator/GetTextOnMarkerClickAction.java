@@ -72,7 +72,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								null, null, null, null);
 
 		String sightDescription = null;
-		String pathToImage= null;
+		String pathToImage = null;
 
 		if (cursor.moveToFirst()) {
 			pathToImage = cursor.getString(2);
@@ -86,14 +86,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
 		}else{
-			String path=Environment.getExternalStorageDirectory().getPath()+"/com.iolab.sightlocator/"+Tags.PATH_TO_IMAGES_IN_ASSETS;
-			File dir = new File(path);
-			if (!dir.exists()) {dir.mkdirs();}
-			Log.d("MyLogs","destination path to image:"+path + pathToImage);/*redundant logs have to be removed after development*/
-			boolean b =	Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, path + pathToImage);
-			File f = new File(path + pathToImage);
-			Log.d("MyLogs","b:" + b);
-			Log.d("MyLogs"," file exists "+f.exists());
+			String destinationPath = Environment.getExternalStorageDirectory().getPath()+"/com.iolab.sightlocator/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
+			Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, destinationPath);
 		}
 		
 		

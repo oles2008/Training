@@ -13,11 +13,14 @@ public class Utils {
 	 * @param args
 	 */
 	public static boolean copyFromAssets(String pathInAssets, String destinationPath){
-		File f = new File(destinationPath);
+		File dir = new File(destinationPath.substring(0,destinationPath.lastIndexOf("/")));
+		if (!dir.exists()) {dir.mkdirs();}
 		
+		File f = new File(destinationPath);
 		byte[] buffer = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
+		
 		if (!f.exists())
 			try {
 
@@ -26,7 +29,6 @@ public class Utils {
 				buffer = new byte[size];
 				is.read(buffer);
 			} catch (Exception e) {
-				Log.d("MyLogs","exception 1");
 				e.printStackTrace();
 				return false;
 			} finally {
@@ -35,7 +37,6 @@ public class Utils {
 						is.close();
 					}
 				} catch (IOException e) {
-					Log.d("MyLogs","exception 2");
 					e.printStackTrace();
 					return false;
 				}
@@ -45,7 +46,6 @@ public class Utils {
 			fos = new FileOutputStream(f);
 			fos.write(buffer);
 			} catch (Exception e) {
-			Log.d("MyLogs","exception  3:"+e.toString());
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -54,7 +54,6 @@ public class Utils {
 					fos.close();
 				}
 			} catch (IOException e) {
-				Log.d("MyLogs","exception 4");
 				e.printStackTrace();
 				return false;
 			}
