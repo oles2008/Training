@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +26,8 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
+
+import com.iolab.sightlocator.Tags;
 
 public class SightsTextFragment extends Fragment implements 
 											OnMapClickListener,
@@ -73,6 +76,7 @@ public class SightsTextFragment extends Fragment implements
 			}
 		}
 		registerImageViewClickListener();
+		registerTexViewClickListener();
 	}
 	
 	@Override
@@ -213,10 +217,25 @@ public class SightsTextFragment extends Fragment implements
 
 			@Override
 			public void onClick(View v) {
-//				Log.d("MSG", " view click");
+				Log.d("MSG", "Image View click");
 			}
 		});
 	}
+	
+	private void registerTexViewClickListener() {
+		final TextView textView = getTextView();
+		textView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String text = textView.getText().toString();
+				Intent intent =  new Intent(getActivity(), DisplayFullScreenText.class);
+				intent.putExtra(Tags.EXTRA_TEXT, text);
+				startActivity(intent);
+			}
+		});
+	}
+
 
 	@Override
 	public void onSaveInstanceState(Bundle args) {
@@ -249,5 +268,6 @@ public class SightsTextFragment extends Fragment implements
 			changeImageFragmentUsingImageUri(PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
 		}
 	}
+
 	
 }
