@@ -5,8 +5,12 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
+
+import java.io.File;
+
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -68,7 +72,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								null, null, null, null);
 
 		String sightDescription = null;
-		String pathToImage= null;
+		String pathToImage = null;
 
 		if (cursor.moveToFirst()) {
 			pathToImage = cursor.getString(2);
@@ -81,7 +85,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
+		}else{
+			String destinationPath = Environment.getExternalStorageDirectory().getPath()+"/com.iolab.sightlocator/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
+			Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, destinationPath);
 		}
+		
+		
 		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
