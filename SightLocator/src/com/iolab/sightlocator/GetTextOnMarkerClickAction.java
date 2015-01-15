@@ -88,6 +88,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		}else{
 			String destinationPath = Environment.getExternalStorageDirectory().getPath()+"/com.iolab.sightlocator/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
 			Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, destinationPath);
+			pathToImage=destinationPath;
 		}
 		
 		
