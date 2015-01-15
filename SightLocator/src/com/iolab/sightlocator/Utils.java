@@ -21,7 +21,7 @@ public class Utils {
 		InputStream is = null;
 		FileOutputStream fos = null;
 		
-		if (!f.exists())
+		if (!f.exists()){
 			try {
 
 				is = Appl.appContext.getAssets().open(pathInAssets);
@@ -57,6 +57,7 @@ public class Utils {
 				e.printStackTrace();
 				return false;
 			}
+		}
 		}
 		return true;
 	}
