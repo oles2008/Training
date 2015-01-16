@@ -35,8 +35,7 @@ public class SightsTextFragment extends Fragment implements
 											OnMarkerClickListener, 
 											ViewUpdateListener {
 
-	private static String PathToSdcard = Environment
-			.getExternalStorageDirectory() + "/Download/";
+
 	private final int ICON_SIZE = 200;
 	public static long markerClickCounter=0;
 	
@@ -266,9 +265,10 @@ public class SightsTextFragment extends Fragment implements
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
 		}
 		
+
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-			Log.d("MSG","Tags.PATH_TO_IMAGE > " + PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
-			changeImageFragmentUsingImageUri(PathToSdcard + bundle.getString(Tags.PATH_TO_IMAGE));
+			Log.d("MSG","Tags.PATH_TO_IMAGE > " + bundle.getString(Tags.PATH_TO_IMAGE));
+			changeImageFragmentUsingImageUri(bundle.getString(Tags.PATH_TO_IMAGE));
 		}
 	}
 

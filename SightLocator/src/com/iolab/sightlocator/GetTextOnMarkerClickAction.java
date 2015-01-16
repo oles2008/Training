@@ -86,8 +86,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
 		}else{
-			String destinationPath = Environment.getExternalStorageDirectory().getPath()+"/com.iolab.sightlocator/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
+			String destinationPath = Environment.getExternalStorageDirectory().getPath()+"/"+Appl.appContext.getPackageName()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
 			Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, destinationPath);
+			pathToImage=destinationPath;
 		}
 		
 		
