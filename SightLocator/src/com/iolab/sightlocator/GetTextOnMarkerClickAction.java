@@ -79,7 +79,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			sightDescription = cursor.getString(3);
 		}
 
-		if (pathToImage.startsWith("/")){
+		if (pathToImage !=null && pathToImage.startsWith("/")){
 			pathToImage = pathToImage.substring(1, pathToImage.length());
 		}
 		

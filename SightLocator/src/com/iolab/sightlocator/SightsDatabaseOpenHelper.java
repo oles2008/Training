@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.util.Log;
 
 public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	
@@ -88,11 +91,24 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 
 	public SightsDatabaseOpenHelper(Context context, int version) {
 		super(context, DATABASE_NAME, null, version);
-		// TODO Auto-generated constructor stub
+//		File database = new File(Environment.getDataDirectory()+"/data/"+Appl.appContext.getPackageName()+"/databases/"+DATABASE_NAME);
+//		Log.d("MyLogs", "database exists before: "+database.exists());
+//		Log.d("MyLogs", "database size before: "+database.length());
+		copyDatabaseFromAssets();
+//		Log.d("MyLogs", "database size after: "+database.length());
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		
+	}
+	
+	/**
+	 * Creates the hardcoded sights table.
+	 *
+	 * @param db the db
+	 */
+	private void createHardcodedSightsTable(SQLiteDatabase db){
 		db.execSQL(getDatabaseCreateStatement(getLanguageTagsList("en","uk")));
 		db.beginTransaction();
 		try{
@@ -160,6 +176,12 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 		}finally{
 			db.endTransaction();
 		}
+	}
+	
+	private void copyDatabaseFromAssets(){
+		//Log.d("MyLogs", "dest: "+Environment.getDataDirectory()+"/data/"+Appl.appContext.getPackageName()+"/databases/"+DATABASE_NAME);
+		Utils.copyFromAssets(DATABASE_NAME, Environment.getDataDirectory()+"/data/"+Appl.appContext.getPackageName()+"/databases/"+DATABASE_NAME);
+		
 	}
 
 	@Override
