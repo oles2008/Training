@@ -12,18 +12,21 @@ public class Utils {
 	/**
 	 * @param args
 	 */
-	public static boolean copyFromAssets(String pathInAssets, String destinationPath){
-		File dir = new File(destinationPath.substring(0,destinationPath.lastIndexOf("/")));
-		if (!dir.exists()) {dir.mkdirs();}
-		
+	public static boolean copyFromAssets(String pathInAssets,
+			String destinationPath) {
+		File dir = new File(destinationPath.substring(0,
+				destinationPath.lastIndexOf("/")));
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
 		File f = new File(destinationPath);
 		byte[] buffer = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
 		
-		if (!f.exists()){
+		if (f.length() == 0) {
 			try {
-
 				is = Appl.appContext.getAssets().open(pathInAssets);
 				int size = is.available();
 				buffer = new byte[size];
@@ -41,26 +44,65 @@ public class Utils {
 					return false;
 				}
 			}
-		
-		try {
-			fos = new FileOutputStream(f);
-			fos.write(buffer);
-			} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
+
 			try {
-				if (fos != null) {
-					fos.close();
-				}
-			} catch (IOException e) {
+				fos = new FileOutputStream(f);
+				fos.write(buffer);
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
+			} finally {
+				try {
+					if (fos != null) {
+						fos.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
 			}
 		}
+		
+		// have to do this check twice as sometimes empty files are copied (length == 0) 
+		if (f.length() == 0) {
+			try {
+				is = Appl.appContext.getAssets().open(pathInAssets);
+				int size = is.available();
+				buffer = new byte[size];
+				is.read(buffer);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			} finally {
+				try {
+					if (is != null) {
+						is.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+			try {
+				fos = new FileOutputStream(f);
+				fos.write(buffer);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			} finally {
+				try {
+					if (fos != null) {
+						fos.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
 		}
+
 		return true;
 	}
-
 
 }
