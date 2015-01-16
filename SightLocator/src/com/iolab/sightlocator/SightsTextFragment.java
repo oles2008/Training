@@ -224,6 +224,8 @@ public class SightsTextFragment extends Fragment implements
 	
 	private void registerTexViewClickListener() {
 		final TextView textView = getTextView();
+		final ImageView imageView = getImageView();
+		
 		textView.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -231,6 +233,7 @@ public class SightsTextFragment extends Fragment implements
 				String text = textView.getText().toString();
 				Intent intent =  new Intent(getActivity(), DisplayFullScreenText.class);
 				intent.putExtra(Tags.EXTRA_TEXT, text);
+				//intent.putExtra("image", imageView.get);
 				startActivity(intent);
 			}
 		});
