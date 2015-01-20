@@ -15,14 +15,17 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:clickable="true"
-            android:src="@drawable/one_pixel" />
+            android:src="@drawable/one_pixel" 
+            android:layout_marginBottom="5dp"
+    		android:layout_marginLeft="5dp"/>
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:freezesText="true"
-            android:text="@string/welcome_screen_text" />
+            android:text="@string/welcome_screen_text"
+            android:layout_marginLeft="5dp" />
     </LinearLayout>
 
 </ScrollView>

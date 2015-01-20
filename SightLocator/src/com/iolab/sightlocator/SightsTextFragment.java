@@ -29,21 +29,18 @@ import com.iolab.sightlocator.Appl.ViewUpdateListener;
 
 import com.iolab.sightlocator.Tags;
 
-public class SightsTextFragment extends Fragment implements 
-											OnMapClickListener,
-											OnMapLongClickListener,
-											OnMarkerClickListener, 
-											ViewUpdateListener {
-
+public class SightsTextFragment extends Fragment implements OnMapClickListener,
+		OnMapLongClickListener, OnMarkerClickListener, ViewUpdateListener {
 
 	private final int ICON_SIZE = 200;
-	public static long markerClickCounter=0;
-	
+	public static long markerClickCounter = 0;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			markerClickCounter = savedInstanceState.getLong(Tags.ON_MARKER_CLICK_COUNTER, 0);
+			markerClickCounter = savedInstanceState.getLong(
+					Tags.ON_MARKER_CLICK_COUNTER, 0);
 		}
 	}
 
@@ -77,7 +74,7 @@ public class SightsTextFragment extends Fragment implements
 		registerImageViewClickListener();
 		registerTexViewClickListener();
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -87,20 +84,13 @@ public class SightsTextFragment extends Fragment implements
 		Appl.subscribeForViewUpdates(this);
 	}
 
-	/**
-	 * Resize bitmap to New Width (set by method argument) by New
-	 * Height(calculated according aspect ratio)
-	 * 
-	 * @param imageView
-	 *            the Image View where the bitmap is placed
-	 * @return the resized image bitmap
-	 */
 	protected Bitmap resizeBitmap(ImageView imageView, int newWidth) {
 		// get the bitmap from Image View
 		Drawable drawable = imageView.getDrawable();
-		if (drawable == null){
+		if (drawable == null) {
 			Resources res = getResources();
-			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
+			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+					.toString());
 			return null;
 		}
 		Bitmap bitmapFromImageView = ((BitmapDrawable) drawable).getBitmap();
@@ -112,11 +102,8 @@ public class SightsTextFragment extends Fragment implements
 		// find new Height keeping aspect ratio
 		int newHeight = (int) Math.round(originalHeight * scale);
 		// get new resized Bitmap
-		Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-				bitmapFromImageView,
-				newWidth, 
-				newHeight, 
-				true);
+		Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmapFromImageView,
+				newWidth, newHeight, true);
 		return resizedBitmap;
 	}
 
@@ -132,9 +119,11 @@ public class SightsTextFragment extends Fragment implements
 	}
 
 	private TextView getTextView() {
-		Fragment textFragmet = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
-		TextView textView = (TextView) textFragmet.getView().findViewById(R.id.textView);
-		
+		Fragment textFragmet = getActivity().getFragmentManager()
+				.findFragmentById(R.id.text_fragment);
+		TextView textView = (TextView) textFragmet.getView().findViewById(
+				R.id.textView);
+
 		return textView;
 	}
 
@@ -171,23 +160,26 @@ public class SightsTextFragment extends Fragment implements
 		imageView.setImageDrawable(drawable);
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
-	
+
 	protected ImageView getImageView() {
-		Fragment fragment = getFragmentManager().findFragmentById(R.id.text_fragment);
-		ImageView imageView = (ImageView) fragment.getView().findViewById(R.id.imageView);
-		
+		Fragment fragment = getFragmentManager().findFragmentById(
+				R.id.text_fragment);
+		ImageView imageView = (ImageView) fragment.getView().findViewById(
+				R.id.imageView);
+
 		return imageView;
 	}
 
 	public boolean onMarkerClick(final Marker marker) {
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
-		intent.putExtra(SightsIntentService.ACTION, new GetTextOnMarkerClickAction(position, ++markerClickCounter));
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
 		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 		getActivity().startService(intent);
 
 		return true;
-		}
+	}
 
 	@Override
 	public void onMapLongClick(LatLng arg0) {
@@ -196,7 +188,8 @@ public class SightsTextFragment extends Fragment implements
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
 		Resources res = getResources();
-		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
+		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+				.toString());
 
 	}
 
@@ -207,7 +200,8 @@ public class SightsTextFragment extends Fragment implements
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
 		Resources res = getResources();
-		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel).toString());
+		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+				.toString());
 	}
 
 	private void registerImageViewClickListener() {
@@ -220,57 +214,65 @@ public class SightsTextFragment extends Fragment implements
 			}
 		});
 	}
-	
+
 	private void registerTexViewClickListener() {
 		final TextView textView = getTextView();
 		final ImageView imageView = getImageView();
+		
 		
 		textView.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
+				String image_tag = null;
+				if (imageView.getTag(R.string.imageview_tag_uri) != null) {
+					image_tag = imageView.getTag(R.string.imageview_tag_uri).toString();
+				}
+				
 				String text = textView.getText().toString();
-				Intent intent =  new Intent(getActivity(), DisplayFullScreenText.class);
+				Intent intent =  new Intent(getActivity(), DisplayFullScreenTextActivity.class);
 				intent.putExtra(Tags.EXTRA_TEXT, text);
-				//intent.putExtra("image", imageView.get);
+				intent.putExtra("image", image_tag);
+				intent.putExtra("layout", R.layout.text_fragment);
 				startActivity(intent);
 			}
 		});
 	}
 
-
 	@Override
 	public void onSaveInstanceState(Bundle args) {
 		super.onSaveInstanceState(args);
-		ImageView imageView = (ImageView) getActivity().findViewById(R.id.imageView);
+		ImageView imageView = (ImageView) getActivity().findViewById(
+				R.id.imageView);
 		String uri = (String) imageView.getTag(R.string.imageview_tag_uri);
 		if (null != uri) {
 			args.putString("uri", uri);
 		}
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 	}
-	
+
 	@Override
-	public void onPause(){
+	public void onPause() {
 		super.onPause();
 		Appl.unsubscribeFromMarkerClickUpdates(this);
 		Appl.unsubscribeFromMapClickUpdates(this);
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
 	}
-	
+
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
 		}
-		
 
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-			Log.d("MSG","Tags.PATH_TO_IMAGE > " + bundle.getString(Tags.PATH_TO_IMAGE));
-			changeImageFragmentUsingImageUri(bundle.getString(Tags.PATH_TO_IMAGE));
+			Log.d("MSG",
+					"Tags.PATH_TO_IMAGE > "
+							+ bundle.getString(Tags.PATH_TO_IMAGE));
+			changeImageFragmentUsingImageUri(bundle
+					.getString(Tags.PATH_TO_IMAGE));
 		}
 	}
 
-	
 }

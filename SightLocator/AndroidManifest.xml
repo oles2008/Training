@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.iolab.sightlocator.DisplayFullScreenText"
+            android:name="com.iolab.sightlocator.DisplayFullScreenTextActivity"
             android:label="@string/display_full_screen_text"
             android:parentActivityName="com.iolab.sightlocator.MainActivity">
             <meta-data 

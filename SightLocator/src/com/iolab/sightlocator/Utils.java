@@ -5,7 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.util.Log;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 public class Utils {
 
@@ -103,6 +109,55 @@ public class Utils {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Resize bitmap to New Width (set by method argument) by New
+	 * Height(calculated according aspect ratio)
+	 * 
+	 * @param imageView
+	 *            the Image View where the bitmap is placed
+	 * @return the resized image bitmap
+	 */
+	public static Bitmap resizeBitmap(ImageView imageView, int newWidth, Resources res, FragmentManager fragmentManager) {
+		// get the bitmap from Image View
+		Drawable drawable = imageView.getDrawable();
+		
+		if (drawable == null) {
+			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+					.toString(), res, fragmentManager);
+			return null;
+		}
+
+		Bitmap bitmapFromImageView = ((BitmapDrawable) drawable).getBitmap();
+		// get Width and Height
+		int originalWidth = bitmapFromImageView.getWidth();
+		int originalHeight = bitmapFromImageView.getHeight();
+		// find the proportion (aspect ratio)
+		float scale = (float) newWidth / originalWidth;
+		// find new Height keeping aspect ratio
+		int newHeight = (int) Math.round(originalHeight * scale);
+		// get new resized Bitmap
+		Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmapFromImageView,
+				newWidth, newHeight, true);
+		return resizedBitmap;
+	}
+	
+	public static void changeImageFragmentToOnePixel(String uri, Resources res, FragmentManager fragmentManager) {
+		ImageView imageView = getImageView(fragmentManager);
+
+		Drawable drawable = res.getDrawable(R.drawable.one_pixel);
+		imageView.setImageDrawable(drawable);
+		imageView.setTag(R.string.imageview_tag_uri, uri);
+	}
+
+	public static ImageView getImageView(FragmentManager fragmentManager) {
+		Fragment fragment = fragmentManager.findFragmentById(
+				R.id.text_fragment);
+		ImageView imageView = (ImageView) fragment.getView().findViewById(
+				R.id.imageView);
+
+		return imageView;
 	}
 
 }
