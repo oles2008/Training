@@ -125,8 +125,8 @@ public class Utils {
 		Drawable drawable = imageView.getDrawable();
 		
 		if (drawable == null) {
-			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-					.toString(), res, fragmentManager);
+//			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+//					.toString(), res, fragmentManager);
 			return null;
 		}
 		
