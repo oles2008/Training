@@ -173,7 +173,7 @@ public class SightsMapFragment extends Fragment implements
 			
 			@Override
 			public boolean onMarkerClick(Marker marker) {
-				Log.d("MSG", "registerMarkerClickListener>onMarkerClick, marker " + marker.getTitle());
+//				Log.d("MSG", "registerMarkerClickListener>onMarkerClick, marker " + marker.getTitle());
 
 				for(OnMarkerClickListener listener: Appl.onMarkerClickListeners){
 					listener.onMarkerClick(marker);

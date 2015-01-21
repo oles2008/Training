@@ -10,4 +10,5 @@ public class Tags {/**/
 	public final static String ONE_PIXEL_JPEG = "one_pixel.JPG";
 	public final static String PATH_TO_IMAGES_IN_ASSETS = "images/";
 	public final static String EXTRA_TEXT = "extratext";
+	public final static String URI = "uri";
 }

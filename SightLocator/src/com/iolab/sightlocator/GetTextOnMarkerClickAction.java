@@ -90,9 +90,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, destinationPath);
 			pathToImage=destinationPath;
 		}
-		
-		
-		Log.d("MSG","runInService pathToImage > " + pathToImage);
+
+//		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +26,6 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
-
-import com.iolab.sightlocator.Tags;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		OnMapLongClickListener, OnMarkerClickListener, ViewUpdateListener {
@@ -55,7 +53,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		super.onActivityCreated(savedInstanceState);
 
 		if (savedInstanceState != null) {
-			String uri = savedInstanceState.getString("uri");
+			String uri = savedInstanceState.getString(Tags.URI);
 
 			if (null != uri) {
 				ImageView imageView = (ImageView) getActivity().findViewById(
@@ -89,8 +87,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Drawable drawable = imageView.getDrawable();
 		if (drawable == null) {
 			Resources res = getResources();
-			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-					.toString());
+			FragmentManager fragmentManager = getFragmentManager();
+			Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+					.toString(), res, fragmentManager);
 			return null;
 		}
 		Bitmap bitmapFromImageView = ((BitmapDrawable) drawable).getBitmap();
@@ -138,12 +137,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @throws FileNotFoundException
 	 */
 	private void changeImageFragmentUsingImageUri(String uri) {
-		ImageView imageView = getImageView();
+		Resources res = getResources();
+		FragmentManager fragmentManager = getFragmentManager();
+		ImageView imageView = Utils.getImageView(fragmentManager);
 
 		imageView.setImageURI(Uri.parse(uri));
 
 		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
-			Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
+			Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE, res, fragmentManager);
+			//Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
 			if (resizedBitmap != null) {
 				imageView.setImageBitmap(resizedBitmap);
 			}
@@ -152,23 +154,23 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
 
-	private void changeImageFragmentToOnePixel(String uri) {
-		ImageView imageView = getImageView();
+//	private void changeImageFragmentToOnePixel(String uri) {
+//		ImageView imageView = getImageView();
+//
+//		Resources res = getResources();
+//		Drawable drawable = res.getDrawable(R.drawable.one_pixel);
+//		imageView.setImageDrawable(drawable);
+//		imageView.setTag(R.string.imageview_tag_uri, uri);
+//	}
 
-		Resources res = getResources();
-		Drawable drawable = res.getDrawable(R.drawable.one_pixel);
-		imageView.setImageDrawable(drawable);
-		imageView.setTag(R.string.imageview_tag_uri, uri);
-	}
-
-	protected ImageView getImageView() {
-		Fragment fragment = getFragmentManager().findFragmentById(
-				R.id.text_fragment);
-		ImageView imageView = (ImageView) fragment.getView().findViewById(
-				R.id.imageView);
-
-		return imageView;
-	}
+//	protected ImageView getImageView() {
+//		Fragment fragment = getFragmentManager().findFragmentById(
+//				R.id.text_fragment);
+//		ImageView imageView = (ImageView) fragment.getView().findViewById(
+//				R.id.imageView);
+//
+//		return imageView;
+//	}
 
 	public boolean onMarkerClick(final Marker marker) {
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
@@ -188,8 +190,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
 		Resources res = getResources();
-		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-				.toString());
+		FragmentManager fragmentManager = getFragmentManager();
+
+		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+				.toString(), res, fragmentManager);
 
 	}
 
@@ -200,12 +204,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
 		Resources res = getResources();
-		changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-				.toString());
+		FragmentManager fragmentManager = getFragmentManager();
+
+		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+				.toString(), res, fragmentManager);
 	}
 
 	private void registerImageViewClickListener() {
-		ImageView imageView = getImageView();
+		FragmentManager fragmentManager = getFragmentManager();
+		ImageView imageView = Utils.getImageView(fragmentManager);
 		imageView.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -217,22 +224,23 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	private void registerTexViewClickListener() {
 		final TextView textView = getTextView();
-		final ImageView imageView = getImageView();
+		FragmentManager fragmentManager = getFragmentManager();
+		final ImageView imageView = Utils.getImageView(fragmentManager);
 		
 		
 		textView.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				String image_tag = null;
+				String imageTag = null;
 				if (imageView.getTag(R.string.imageview_tag_uri) != null) {
-					image_tag = imageView.getTag(R.string.imageview_tag_uri).toString();
+					imageTag = imageView.getTag(R.string.imageview_tag_uri).toString();
 				}
 				
 				String text = textView.getText().toString();
 				Intent intent =  new Intent(getActivity(), DisplayFullScreenTextActivity.class);
 				intent.putExtra(Tags.EXTRA_TEXT, text);
-				intent.putExtra("image", image_tag);
+				intent.putExtra(Tags.PATH_TO_IMAGE, imageTag);
 				intent.putExtra("layout", R.layout.text_fragment);
 				startActivity(intent);
 			}
@@ -246,7 +254,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				R.id.imageView);
 		String uri = (String) imageView.getTag(R.string.imageview_tag_uri);
 		if (null != uri) {
-			args.putString("uri", uri);
+			args.putString(Tags.URI, uri);
 		}
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 	}
@@ -267,9 +275,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-			Log.d("MSG",
-					"Tags.PATH_TO_IMAGE > "
-							+ bundle.getString(Tags.PATH_TO_IMAGE));
+//			Log.d("MSG", "Tags.PATH_TO_IMAGE > " + bundle.getString(Tags.PATH_TO_IMAGE));
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
 		}

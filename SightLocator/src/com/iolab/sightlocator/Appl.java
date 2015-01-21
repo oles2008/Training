@@ -31,7 +31,6 @@ public class Appl extends Application{
 		super.onCreate();
 		appContext = getApplicationContext();
 		sightsDatabaseOpenHelper = new SightsDatabaseOpenHelper(appContext, 1);
-		//Log.d("MyLogs", "Application onCreate() fired");
 	}
 	
 	/**

@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:freezesText="true"
             android:text="@string/welcome_screen_text"
-            android:layout_marginLeft="5dp" />
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp" />
     </LinearLayout>
 
 </ScrollView>

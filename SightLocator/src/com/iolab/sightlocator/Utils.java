@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class Utils {
@@ -128,7 +129,7 @@ public class Utils {
 					.toString(), res, fragmentManager);
 			return null;
 		}
-
+		
 		Bitmap bitmapFromImageView = ((BitmapDrawable) drawable).getBitmap();
 		// get Width and Height
 		int originalWidth = bitmapFromImageView.getWidth();
