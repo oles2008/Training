@@ -52,5 +52,7 @@ public class DisplayFullScreenTextActivity extends Activity{
 		super.onResume();
 	}
 	
-	//test
+	private void testPull(){
+		//to do
+	}
 }
