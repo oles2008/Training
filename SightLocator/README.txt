@@ -7,4 +7,4 @@ Hello from Volodia
 Good job!
 NK: I have just installed app at emulator 
 
-Hello from Ira!
+HHello from Ira!
