@@ -32,12 +32,8 @@ public class DisplayFullScreenTextActivity extends Activity{
 			imageView.setImageURI(Uri.parse(pathToImage));
 			Resources res = getResources();
 			FragmentManager fragmentManager = getFragmentManager();
-			try{
 			resizedBitmap = Utils.resizeBitmap(imageView, 400, res,
 					fragmentManager);
-			} catch (Exception e){
-				Log.d("MSG","can not get a bitmap");
-			}
 			if (resizedBitmap != null) {
 				imageView.setImageBitmap(resizedBitmap);
 			}

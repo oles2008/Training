@@ -146,9 +146,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
 			Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE, res, fragmentManager);
 			//Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
-			if (resizedBitmap != null) {
-				imageView.setImageBitmap(resizedBitmap);
-			}
+			imageView.setImageBitmap(resizedBitmap);
 		}
 
 		imageView.setTag(R.string.imageview_tag_uri, uri);
