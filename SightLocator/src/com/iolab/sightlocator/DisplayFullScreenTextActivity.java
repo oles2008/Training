@@ -52,4 +52,5 @@ public class DisplayFullScreenTextActivity extends Activity{
 		super.onResume();
 	}
 	
+	//test
 }
