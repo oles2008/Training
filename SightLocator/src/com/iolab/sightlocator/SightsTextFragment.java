@@ -140,14 +140,16 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Resources res = getResources();
 		FragmentManager fragmentManager = getFragmentManager();
 		ImageView imageView = Utils.getImageView(fragmentManager);
+		Log.d("MyLogs","image uri: "+(uri));
 
 		imageView.setImageURI(Uri.parse(uri));
 
-		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
+//		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
+			Log.d("MyLogs","not one_pixel ");
 			Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE, res, fragmentManager);
 			//Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
 			imageView.setImageBitmap(resizedBitmap);
-		}
+//		}
 
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
