@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.widget.ImageView;
 
 public class Utils {
@@ -120,13 +119,11 @@ public class Utils {
 	 *            the Image View where the bitmap is placed
 	 * @return the resized image bitmap
 	 */
-	public static Bitmap resizeBitmap(ImageView imageView, int newWidth, Resources res, FragmentManager fragmentManager) {
+	public static Bitmap resizeBitmap(ImageView imageView, int newWidth) {
 		// get the bitmap from Image View
 		Drawable drawable = imageView.getDrawable();
 		
 		if (drawable == null) {
-//			changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-//					.toString(), res, fragmentManager);
 			return null;
 		}
 		

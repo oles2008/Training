@@ -1,13 +1,10 @@
 package com.iolab.sightlocator;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,10 +27,7 @@ public class DisplayFullScreenTextActivity extends Activity{
 		
 		if (pathToImage != null) {
 			imageView.setImageURI(Uri.parse(pathToImage));
-			Resources res = getResources();
-			FragmentManager fragmentManager = getFragmentManager();
-			resizedBitmap = Utils.resizeBitmap(imageView, 400, res,
-					fragmentManager);
+			resizedBitmap = Utils.resizeBitmap(imageView, 400);
 			if (resizedBitmap != null) {
 				imageView.setImageBitmap(resizedBitmap);
 			}

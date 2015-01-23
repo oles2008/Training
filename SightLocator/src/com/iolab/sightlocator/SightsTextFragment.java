@@ -8,8 +8,6 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,7 +58,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 						R.id.imageView);
 				imageView.setImageURI(Uri.parse(uri));
 				if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
-					Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
+					Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE);
 					if (resizedBitmap != null) {
 						imageView.setImageBitmap(resizedBitmap);
 					}
@@ -80,30 +78,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.subscribeForMapClickUpdates(this);
 		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
-	}
-
-	protected Bitmap resizeBitmap(ImageView imageView, int newWidth) {
-		// get the bitmap from Image View
-		Drawable drawable = imageView.getDrawable();
-		if (drawable == null) {
-			Resources res = getResources();
-			FragmentManager fragmentManager = getFragmentManager();
-			Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-					.toString(), res, fragmentManager);
-			return null;
-		}
-		Bitmap bitmapFromImageView = ((BitmapDrawable) drawable).getBitmap();
-		// get Width and Height
-		int originalWidth = bitmapFromImageView.getWidth();
-		int originalHeight = bitmapFromImageView.getHeight();
-		// find the proportion (aspect ratio)
-		float scale = (float) newWidth / originalWidth;
-		// find new Height keeping aspect ratio
-		int newHeight = (int) Math.round(originalHeight * scale);
-		// get new resized Bitmap
-		Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmapFromImageView,
-				newWidth, newHeight, true);
-		return resizedBitmap;
 	}
 
 	/**
@@ -137,7 +111,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @throws FileNotFoundException
 	 */
 	private void changeImageFragmentUsingImageUri(String uri) {
-		Resources res = getResources();
 		FragmentManager fragmentManager = getFragmentManager();
 		ImageView imageView = Utils.getImageView(fragmentManager);
 		Log.d("MyLogs","image uri: "+(uri));
@@ -146,7 +119,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 //		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
 			Log.d("MyLogs","not one_pixel ");
-			Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE, res, fragmentManager);
+			Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE);
 			//Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
 			imageView.setImageBitmap(resizedBitmap);
 //		}
