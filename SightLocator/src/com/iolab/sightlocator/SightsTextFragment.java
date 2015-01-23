@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -31,6 +32,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		OnMapLongClickListener, OnMarkerClickListener, ViewUpdateListener {
 
 	private final int ICON_SIZE = 200;
+	private Marker selectedMarker = null;
 	public static long markerClickCounter = 0;
 
 	@Override
@@ -68,6 +70,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 				imageView.setTag(R.string.imageview_tag_uri, uri);
 			}
+			
+			final int scrollY = savedInstanceState.getInt(Tags.SCROLL_Y);
+			final ScrollView scr = (ScrollView) getView();
+			scr.post(new Runnable() {
+			    @Override
+			    public void run() {
+			        scr.scrollTo(0, scrollY);
+			    } 
+			});
 		}
 		registerImageViewClickListener();
 		registerTexViewClickListener();
@@ -173,6 +184,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 //	}
 
 	public boolean onMarkerClick(final Marker marker) {
+		if (selectedMarker!=null && marker.getPosition().equals(selectedMarker.getPosition())
+				&& marker.getTitle().equals(selectedMarker.getTitle())) {
+			return true;
+		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
 		intent.putExtra(SightsIntentService.ACTION,
@@ -257,6 +272,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			args.putString(Tags.URI, uri);
 		}
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+		args.putInt(Tags.SCROLL_Y, ((ScrollView) getView()).getScrollY());
 	}
 
 	@Override
@@ -271,6 +287,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
+			((ScrollView) getView()).scrollTo(0, 0);
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
 		}
 
