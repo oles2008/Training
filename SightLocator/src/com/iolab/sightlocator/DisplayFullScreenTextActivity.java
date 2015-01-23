@@ -48,6 +48,5 @@ public class DisplayFullScreenTextActivity extends Activity{
 		super.onResume();
 	}
 	
-	// changes for branch test1
 	
 }
