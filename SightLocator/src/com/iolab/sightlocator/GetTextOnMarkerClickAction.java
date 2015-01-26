@@ -86,9 +86,33 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
 		}else{
-			String destinationPath = Environment.getExternalStorageDirectory().getPath()+"/"+Appl.appContext.getPackageName()+"/"+Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
-			Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage, destinationPath);
-			pathToImage=destinationPath;
+			if (Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED))
+			{
+				Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
+			
+			
+				String destinationPath = Environment
+						.getExternalStorageDirectory().getPath()
+						+ "/"
+						+ Appl.appContext.getPackageName()
+						+ "/"
+						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
+				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
+						+ pathToImage, destinationPath);
+				pathToImage = destinationPath;
+				
+			} else
+			{
+				Log.d("Mytag","Internal storage:");
+				
+				
+				String destinationPath = Appl.appContext.getCacheDir() + "/"
+						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
+				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
+						+ pathToImage, destinationPath);
+				Log.d("Mytag","Destination:"+ destinationPath);
+			}
 		}
 
 //		Log.d("MSG","runInService pathToImage > " + pathToImage);
