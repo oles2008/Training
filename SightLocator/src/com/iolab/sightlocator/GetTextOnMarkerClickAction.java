@@ -111,6 +111,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
 				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
 						+ pathToImage, destinationPath);
+				pathToImage = destinationPath;
+				
 				Log.d("Mytag","Destination:"+ destinationPath);
 			}
 		}
