@@ -72,7 +72,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			}
 			
 			final int scrollY = savedInstanceState.getInt(Tags.SCROLL_Y);
-			final ScrollView scr = (ScrollView) getView();
+			final ScrollView scr = getScrollView();
 			scr.post(new Runnable() {
 			    @Override
 			    public void run() {
@@ -272,7 +272,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			args.putString(Tags.URI, uri);
 		}
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
-		args.putInt(Tags.SCROLL_Y, ((ScrollView) getView()).getScrollY());
+		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
 	}
 
 	@Override
@@ -283,11 +283,21 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
 	}
+	
+	private ScrollView getScrollView() {
+		ScrollView scr = null;
+		try{
+			scr = (ScrollView) getView();
+		}catch(ClassCastException e){
+			scr = (ScrollView) getView().findViewById(R.id.scrollView);
+		}
+		return scr;
+	}
 
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
-			((ScrollView) getView()).scrollTo(0, 0);
+			getScrollView().scrollTo(0, 0);
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
 		}
 
