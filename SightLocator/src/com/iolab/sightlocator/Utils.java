@@ -107,7 +107,7 @@ public class Utils {
 				}
 			}
 		}
-		Log.d("Mytag","Size:"+f.length());
+
 		return true;
 	}
 
