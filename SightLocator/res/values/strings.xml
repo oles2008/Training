@@ -11,7 +11,9 @@
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="softserve_office_4">SoftServe Inc. is a leading global outsourcing product and application development company dedicated to empowering businesses worldwide by providing end-to-end capabilities from product concept to completion. We are motivated and inspired to leverage advanced software technologies to accelerate your growth, strengthen your market position and exceed your customer\'s expectations. We\'ve created an internal ecosystem that combines our experience, intelligence and best practices with your needs and insights, building strong partnerships, delivering quality products and services, and giving you a competitive edge in your marketplace. Our mission is to be a strategic partner in product and application development providing our clients with innovation, faster time to market, and end-to-end capabilities from product concept to completion. As a leading global outsourced product and application development company, SoftServe, Inc. has several centers of excellence with dedicated domain and technology experts, with our corporate strategy to best serve our clients, employees and overall business objectives.</string>
     <string name="imageview_tag_uri">0</string>
-    <string name="display_full_screen_text">Info</string>
+    <string name="full_screen_activity_title">Info</string>
+    <string name="help_activity_title">Help</string>
+    <string name="help_activity_content">Here comes some suggestions how to have pleasure while using Sight Locator:\n\n 1. Use it\n 2. Share it among friends\n 3. Click evrywhere\n 4. Explore it</string>
     <string name="address">Address : to do</string>
 
 </resources>
