@@ -30,16 +30,23 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
+import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
 public class SightsMapFragment extends Fragment implements 
 											NewLocationUser, 
-											ViewUpdateListener{
+											ViewUpdateListener, 
+											ClusterManager.OnClusterClickListener<SightMarkerItem>,
+											ClusterManager.OnClusterItemClickListener<SightMarkerItem> {
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
+	private ClusterManager<SightMarkerItem> clusterManager;
 
 	private List<Marker> markerList = new ArrayList<Marker>();
 	
@@ -186,6 +193,25 @@ public class SightsMapFragment extends Fragment implements
 			}
 		});
 	}
+	
+	@Override
+    public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
+		moveMapOnLocationUpdate = false;
+		for(OnClusterClickListener<SightMarkerItem> listener: Appl.onClusterClickListeners){
+			listener.onClusterClick(cluster);
+		}
+        
+        return true;
+    }
+	
+	@Override
+    public boolean onClusterItemClick(SightMarkerItem item) {
+		moveMapOnLocationUpdate = false;
+		for(OnClusterItemClickListener<SightMarkerItem> listener: Appl.onClusterItemClickListeners){
+			listener.onClusterItemClick(item);
+		}
+        return false;
+    }
 
 	//this will disable automatic zooming to the user's location if the map was touched
 	private void registerOnMapTouchedListener() {
@@ -235,6 +261,12 @@ public class SightsMapFragment extends Fragment implements
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);
 		
+		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(), gMap);
+		clusterManager.setRenderer(new SightsRenderer(getActivity(), gMap, clusterManager));
+		
+		gMap.setOnCameraChangeListener(clusterManager);
+		gMap.setOnMarkerClickListener(clusterManager);
+		
 		// Define a map listener that responds on map clicks and register it
 		//registerMapClickListener();
 
@@ -273,18 +305,30 @@ public class SightsMapFragment extends Fragment implements
 		Appl.subscribeForViewUpdates(this);
 	}
 
+//	@Override
+//	public void onUpdateView(Bundle bundle) {
+//		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
+//		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+//		
+//		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
+//			for(Marker marker: markerList){
+//				marker.remove();
+//			}
+//			markerList.clear();
+//			for(MarkerOptions markerOptions: markerOptionsList){
+//				markerList.add(gMap.addMarker(markerOptions));
+//			}
+//		}
+//	}
+	
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
 		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
 		
 		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
-			for(Marker marker: markerList){
-				marker.remove();
-			}
-			markerList.clear();
 			for(MarkerOptions markerOptions: markerOptionsList){
-				markerList.add(gMap.addMarker(markerOptions));
+				clusterManager.addItem(new SightMarkerItem(markerOptions));
 			}
 		}
 	}
