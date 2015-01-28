@@ -32,6 +32,7 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	public static final String SIGHT_NAME = "name_";
 	public static final String SIGHT_ADDRESS = "address_";
 	public static final String SIGHT_DESCRIPTION = "description_";
+	public static final String MARKER_CATEGORY = "category";
 
 	private static String DATABASE_CREATE = null;
 
