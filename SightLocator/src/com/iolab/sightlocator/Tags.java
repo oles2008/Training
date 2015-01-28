@@ -12,4 +12,5 @@ public class Tags {/**/
 	public final static String EXTRA_TEXT = "extratext";
 	public final static String URI = "uri";
 	public static final String SCROLL_Y = "scrollY";
+	public static final String another_tag = "scrollY";
 }
