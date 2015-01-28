@@ -24,8 +24,8 @@ public class Appl extends Application{
 	//all the following listeners should perform their callback methods
 	//in the UI thread
 	public static List<OnMarkerClickListener> onMarkerClickListeners = new ArrayList<OnMarkerClickListener>();
-	public static List<ClusterManager.OnClusterItemClickListener> onClusterItemClickListeners = new ArrayList<OnClusterItemClickListener>();
-	public static List<OnClusterClickListener> onClusterClickListeners = new ArrayList<OnClusterClickListener>();
+	public static List<ClusterManager.OnClusterItemClickListener<SightMarkerItem>> onClusterItemClickListeners = new ArrayList<OnClusterItemClickListener<SightMarkerItem>>();
+	public static List<OnClusterClickListener<SightMarkerItem>> onClusterClickListeners = new ArrayList<OnClusterClickListener<SightMarkerItem>>();
 	public static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
 	public static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
 	public static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
