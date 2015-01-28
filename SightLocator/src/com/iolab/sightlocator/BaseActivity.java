@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +53,10 @@ public class BaseActivity extends Activity{
 	}
 	
 	private void showHelp(){
-		Toast.makeText(getApplicationContext(), "clicked Help menu", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(getApplicationContext(), "clicked Help menu", Toast.LENGTH_SHORT).show();
+		Intent intent =  new Intent(this, DisplayHelpTextActivity.class);
+		startActivity(intent);
+		
 	}
 	
 	public void onPause(){

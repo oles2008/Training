@@ -32,14 +32,23 @@
         </activity>
         <activity
             android:name="com.iolab.sightlocator.DisplayFullScreenTextActivity"
-            android:label="@string/display_full_screen_text"
+            android:label="@string/full_screen_activity_title"
             android:parentActivityName="com.iolab.sightlocator.MainActivity">
             <meta-data 
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.iolab.sightlocator.MainActivity"/>
-            
         </activity>
 
+        <activity
+            android:name="com.iolab.sightlocator.DisplayHelpTextActivity"
+            android:label="@string/help_activity_title"
+            android:parentActivityName="com.iolab.sightlocator.MainActivity"
+            android:launchMode="singleTop">
+            <meta-data 
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.iolab.sightlocator.MainActivity"/>
+        </activity>
+        
         <service
             android:name="com.iolab.sightlocator.SightsIntentService"
             android:enabled="true" >
@@ -50,7 +59,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBePJrzj5pisel_BYqzvBlBAmKcqXkOF8o" />
+            android:value="AIzaSyBYIkZcHZs8YfeWOP5SnzfGkMd8GqK64ms" />
     </application>
 
 </manifest>
