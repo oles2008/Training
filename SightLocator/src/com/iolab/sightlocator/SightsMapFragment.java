@@ -1,7 +1,9 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -25,23 +27,35 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.MarkerManager.Collection;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
+import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
 public class SightsMapFragment extends Fragment implements 
 											NewLocationUser, 
-											ViewUpdateListener{
+											ViewUpdateListener, 
+											ClusterManager.OnClusterClickListener<SightMarkerItem>,
+											ClusterManager.OnClusterItemClickListener<SightMarkerItem> {
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
+	private ClusterManager<SightMarkerItem> clusterManager;
+	private SightsRenderer sightsRenderer;
 
 	private List<Marker> markerList = new ArrayList<Marker>();
+	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
+	public Marker currentSelectedMarker;
 	
 	private long updateViewCallIndex=0;
 
@@ -51,6 +65,33 @@ public class SightsMapFragment extends Fragment implements
 		if(savedInstanceState!=null){
 			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
 			updateViewCallIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
+		}
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		gMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+				.getMap();
+
+		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
+				gMap);
+		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager, this);
+		clusterManager.setRenderer(sightsRenderer);
+
+		if (savedInstanceState != null) {
+			SightMarkerItem selectedItem = savedInstanceState
+					.getParcelable("currentSelectedItem");
+			if (selectedItem != null) {
+				itemSet.add(selectedItem);
+				clusterManager.addItem(selectedItem);
+				clusterManager.cluster();
+				currentSelectedMarker = gMap
+						.addMarker(selectedItem
+								.getMarkerOptions()
+								.icon(BitmapDescriptorFactory
+										.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+			}
 		}
 	}
 
@@ -123,6 +164,10 @@ public class SightsMapFragment extends Fragment implements
 				for(OnMapClickListener listener: Appl.onMapClickListeners){
 					listener.onMapClick(arg0);
 				}
+				if(currentSelectedMarker!=null){
+					currentSelectedMarker.remove();
+					currentSelectedMarker=null;
+				}
 			}
 		});
 	}
@@ -136,6 +181,10 @@ public class SightsMapFragment extends Fragment implements
 				
 				for(OnMapLongClickListener listener: Appl.onMapLongClickListeners){
 					listener.onMapLongClick(arg0);
+				}
+				if(currentSelectedMarker!=null){
+					currentSelectedMarker.remove();
+					currentSelectedMarker=null;
 				}
 			}
 		});
@@ -168,6 +217,7 @@ public class SightsMapFragment extends Fragment implements
 		});
 	}
 
+	@Deprecated
 	private void registerMarkerClickListener() {
 		gMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 			
@@ -186,8 +236,54 @@ public class SightsMapFragment extends Fragment implements
 			}
 		});
 	}
+	
+	@Override
+    public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
+		moveMapOnLocationUpdate = false;
+		for(OnClusterClickListener<SightMarkerItem> listener: Appl.onClusterClickListeners){
+			listener.onClusterClick(cluster);
+		}
+        
+        return true;
+    }
+	
+	@Override
+    public boolean onClusterItemClick(SightMarkerItem clickedItem) {
+		moveMapOnLocationUpdate = false;
+		Log.d("MyLogs", "onClusterItemCLick()");
+		for(OnClusterItemClickListener<SightMarkerItem> listener: Appl.onClusterItemClickListeners){
+			listener.onClusterItemClick(clickedItem);
+		}
+		if(currentSelectedMarker!=null){
+			if(clickedItem.equals(new SightMarkerItem(currentSelectedMarker))){
+				return true;
+			}
+			//currentSelectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+			currentSelectedMarker.remove();
+		}
+		currentSelectedMarker = gMap.addMarker(clickedItem.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+//		for(Marker marker: clusterManager.getMarkerCollection().getMarkers()){
+//			Log.d("MyLogs", "    "+marker.getId()+"  "+marker.getTitle());
+//		}
+//		for(Marker marker: clusterManager.getMarkerCollection().getMarkers()){
+//			SightMarkerItem item = new SightMarkerItem(marker);
+//			if(item.equals(clickedItem)){
+//				if(currentSelectedMarker!=null){
+//					if(item.equals(new SightMarkerItem(currentSelectedMarker))){
+//						return true;
+//					}
+//					//currentSelectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+//					currentSelectedMarker.remove();
+//				}
+//				currentSelectedMarker = marker;
+//				currentSelectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+//				break;
+//			}
+//		}
+        return true;
+    }
 
-	//this will disable automatic zooming to the user's location if the map was touched
+	//this will disable automatic zooming to the user's location if the map has been touched
 	private void registerOnMapTouchedListener() {
 		((TouchEventListenerFrameLayout) getActivity().findViewById(R.id.map_fragment)).registerOnMapTouchListener(new OnMapTouchedListener() {
 			
@@ -222,10 +318,6 @@ public class SightsMapFragment extends Fragment implements
 		super.onResume();
 		
 		Appl.subscribeForViewUpdates(this);
-		
-		gMap = ((MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map))
-				.getMap();
 
 		//here, we do not set sightLocationSource as the location source, because that instance of SightLocationSource  
 		//is used for the marking the user's location and for zooming in to the user's location,
@@ -235,11 +327,17 @@ public class SightsMapFragment extends Fragment implements
 		//this will show the user's location on the map; in this way we won't need to mark it ourselves
 		gMap.setMyLocationEnabled(true);
 		
+		gMap.setOnCameraChangeListener(clusterManager);
+		gMap.setOnMarkerClickListener(clusterManager);
+		
+		clusterManager.setOnClusterItemClickListener(this);
+		clusterManager.setOnClusterClickListener(this);
+		
 		// Define a map listener that responds on map clicks and register it
 		//registerMapClickListener();
 
 		// Register a marker listener to receive marker clicks updates
-		registerMarkerClickListener();
+		//registerMarkerClickListener();
 		
 		//zooming in to the user's location so that the user doesn't have to press the Google-provided "Locate me" button
 		//zoomInToUsersLastLocation();
@@ -249,7 +347,6 @@ public class SightsMapFragment extends Fragment implements
 		
 		// define a listener that responds to clicks on markers Info Window
 		registerInfoWindowClickListener();
-		registerCameraChangeListener();
 		registerMapClickListener();
 		registerMapLongClickListener();
 		registerOnMapTouchedListener();
@@ -264,6 +361,9 @@ public class SightsMapFragment extends Fragment implements
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
 		args.putLong("updateViewCallIndex", updateViewCallIndex);
+		if(currentSelectedMarker!=null){
+			args.putParcelable("currentSelectedItem", new SightMarkerItem(currentSelectedMarker));
+		}
 	}
 	
 	@Override
@@ -273,19 +373,44 @@ public class SightsMapFragment extends Fragment implements
 		Appl.subscribeForViewUpdates(this);
 	}
 
+//	@Override
+//	public void onUpdateView(Bundle bundle) {
+//		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
+//		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
+//		
+//		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
+//			for(Marker marker: markerList){
+//				marker.remove();
+//			}
+//			markerList.clear();
+//			for(MarkerOptions markerOptions: markerOptionsList){
+//				markerList.add(gMap.addMarker(markerOptions));
+//			}
+//		}
+//	}
+	
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
 		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
 		
-		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
-			for(Marker marker: markerList){
-				marker.remove();
-			}
-			markerList.clear();
+		if(markerOptionsList!=null){
 			for(MarkerOptions markerOptions: markerOptionsList){
-				markerList.add(gMap.addMarker(markerOptions));
+				SightMarkerItem item = new SightMarkerItem(markerOptions);
+				if(itemSet.add(item)){
+					clusterManager.addItem(item);
+				}
 			}
+			clusterManager.cluster();
+		}
+		if(currentSelectedMarker!=null){
+			SightMarkerItem selectedItem = new SightMarkerItem(currentSelectedMarker);
+			currentSelectedMarker.remove();
+			currentSelectedMarker = gMap
+					.addMarker(selectedItem
+							.getMarkerOptions()
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 		}
 	}
 
