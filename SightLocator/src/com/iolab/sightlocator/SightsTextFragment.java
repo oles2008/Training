@@ -304,9 +304,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
 		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 		getActivity().startService(intent);
+		selectedItem = item;
 
 		return true;
-//		return false;
 	}
 
 	@Override
