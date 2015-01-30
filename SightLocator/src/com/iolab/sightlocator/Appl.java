@@ -70,10 +70,12 @@ public class Appl extends Application{
 		onClusterClickListeners.remove(onClusterClickListener);
 	}
 	
+	@Deprecated
 	public static void subscribeForMarkerClickUpdates(OnMarkerClickListener onMarkerClickListener){
 		onMarkerClickListeners.add(onMarkerClickListener);
 	}
 	
+	@Deprecated
 	public static void unsubscribeFromMarkerClickUpdates(OnMarkerClickListener onMarkerClickListener){
 		onMarkerClickListeners.remove(onMarkerClickListener);
 	}

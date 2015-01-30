@@ -24,13 +24,19 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
+import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
-		OnMapLongClickListener, OnMarkerClickListener, ViewUpdateListener {
+		OnMapLongClickListener, OnMarkerClickListener,
+		OnClusterClickListener<SightMarkerItem>,
+		OnClusterItemClickListener<SightMarkerItem>, ViewUpdateListener {
 
 	private final int ICON_SIZE = 200;
 	private Marker selectedMarker = null;
+	private SightMarkerItem selectedItem = null;
 	public static long markerClickCounter = 0;
 
 	@Override
@@ -85,7 +91,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onResume() {
 		super.onResume();
-		Appl.subscribeForMarkerClickUpdates(this);
+		//Appl.subscribeForMarkerClickUpdates(this);
+		Appl.subscribeForClusterItemClickUpdates(this);
+		Appl.subscribeForClusterClickUpdates(this);
 		Appl.subscribeForMapClickUpdates(this);
 		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
@@ -156,6 +164,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 //		return imageView;
 //	}
 
+	@Deprecated
 	public boolean onMarkerClick(final Marker marker) {
 		if (selectedMarker!=null && marker.getPosition().equals(selectedMarker.getPosition())
 				&& marker.getTitle().equals(selectedMarker.getTitle())) {
@@ -251,7 +260,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onPause() {
 		super.onPause();
-		Appl.unsubscribeFromMarkerClickUpdates(this);
+		//Appl.unsubscribeFromMarkerClickUpdates(this);
+		Appl.unsubscribeFromClusterItemClickUpdates(this);
+		Appl.unsubscribeFromClusterClickUpdates(this);
 		Appl.unsubscribeFromMapClickUpdates(this);
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
@@ -279,6 +290,29 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
 		}
+	}
+
+	@Override
+	public boolean onClusterItemClick(SightMarkerItem item) {
+		if (selectedItem!=null && item.getPosition().equals(selectedItem.getPosition())
+				&& item.getTitle().equals(selectedItem.getTitle())) {
+			return true;
+		}
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		LatLng position = item.getPosition();
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
+		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+		getActivity().startService(intent);
+
+		return true;
+//		return false;
+	}
+
+	@Override
+	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
