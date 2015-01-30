@@ -191,6 +191,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
+		selectedItem = null;
 
 	}
 
@@ -205,6 +206,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
+		selectedItem = null;
 	}
 
 	private void registerImageViewClickListener() {

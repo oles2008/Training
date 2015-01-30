@@ -261,7 +261,7 @@ public class SightsMapFragment extends Fragment implements
 			//currentSelectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
 			currentSelectedMarker.remove();
 		}
-		currentSelectedMarker = gMap.addMarker(clickedItem.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+		currentSelectedMarker = gMap.addMarker(clickedItem.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 //		for(Marker marker: clusterManager.getMarkerCollection().getMarkers()){
 //			Log.d("MyLogs", "    "+marker.getId()+"  "+marker.getTitle());
 //		}
