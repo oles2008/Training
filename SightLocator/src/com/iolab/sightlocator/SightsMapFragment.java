@@ -76,8 +76,9 @@ public class SightsMapFragment extends Fragment implements
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
-		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager, this);
+		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
 		clusterManager.setRenderer(sightsRenderer);
+		clusterManager.setAlgorithm(new SightsHierarchichalAlgorithm());
 
 		if (savedInstanceState != null) {
 			SightMarkerItem selectedItem = savedInstanceState
