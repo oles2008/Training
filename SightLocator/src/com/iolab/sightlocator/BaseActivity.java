@@ -1,13 +1,14 @@
 package com.iolab.sightlocator;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class BaseActivity extends Activity{
+public class BaseActivity extends Activity implements FilterDialogFragment.FilterDialogListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,21 +30,28 @@ public class BaseActivity extends Activity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
+		
 		case R.id.action_settings:
 			showSettings();
 			return true;
+		
 		case R.id.action_help:
 			showHelp();
 			return true;
+		
 		case R.id.action_about:
 			showAbout();
 			return true;
-			
+		
+		case R.id.action_filter:
+			showFilterDialog();
+			return true;
+		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	private void showAbout() {
 		Toast.makeText(getApplicationContext(), "clicked About menu", Toast.LENGTH_SHORT).show();
 	}
@@ -53,15 +61,31 @@ public class BaseActivity extends Activity{
 	}
 	
 	private void showHelp(){
-//		Toast.makeText(getApplicationContext(), "clicked Help menu", Toast.LENGTH_SHORT).show();
 		Intent intent =  new Intent(this, DisplayHelpTextActivity.class);
 		startActivity(intent);
-		
+	}
+
+	public void showFilterDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialog = new FilterDialogFragment();
+		dialog.show(getFragmentManager(), "FilterDialogFragment");
+	}
+
+	// The dialog fragment receives a reference to this Activity through the
+	// Fragment.onAttach() callback, which it uses to call the following methods
+	// defined by the NoticeDialogFragment.NoticeDialogListener interface
+	@Override
+	public void onFilterDialogPositiveClick(DialogFragment dialog) {
+//		Toast.makeText(this, "clicked OK", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onFilterDialogNegativeClick(DialogFragment dialog) {
+//		Toast.makeText(this, "clicked CANCEL", Toast.LENGTH_SHORT).show();
 	}
 	
 	public void onPause(){
 		super.onPause();
 	}
-
 
 }
