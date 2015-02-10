@@ -1,11 +1,14 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
@@ -20,6 +23,7 @@ import android.util.Log;
 public class Appl extends Application{
 	
 	static Context appContext;
+	public static boolean[] checkedItems;
 	
 	//all the following listeners should perform their callback methods
 	//in the UI thread
@@ -30,12 +34,18 @@ public class Appl extends Application{
 	public static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
 	public static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
 	public static SightsDatabaseOpenHelper sightsDatabaseOpenHelper;
+	public static List<OnMarkerCategoryUpdateListener> onMarkerCategoryUpdateListeners = new ArrayList<OnMarkerCategoryUpdateListener>();
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		appContext = getApplicationContext();
 		sightsDatabaseOpenHelper = new SightsDatabaseOpenHelper(appContext, 1);
+		
+		checkedItems = new boolean[getResources().getInteger(R.integer.marker_category_length)];
+		Arrays.fill(checkedItems, false);
+		checkedItems[0] = true;
+
 	}
 	
 	/**
@@ -61,6 +71,13 @@ public class Appl extends Application{
 	public static void unsubscribeFromClusterItemClickUpdates(OnClusterItemClickListener<SightMarkerItem> onClusterItemClickListener){
 		onClusterItemClickListeners.remove(onClusterItemClickListener);
 	}
+
+	public static void notifyClusterItemClickUpdates(SightMarkerItem item){
+		for(OnClusterItemClickListener<SightMarkerItem> listener: onClusterItemClickListeners){
+			listener.onClusterItemClick(item);
+		}
+	}
+
 	
 	public static void subscribeForClusterClickUpdates(OnClusterClickListener<SightMarkerItem> onClusterClickListener){
 		onClusterClickListeners.add(onClusterClickListener);
@@ -69,6 +86,13 @@ public class Appl extends Application{
 	public static void unsubscribeFromClusterClickUpdates(OnClusterClickListener<SightMarkerItem> onClusterClickListener){
 		onClusterClickListeners.remove(onClusterClickListener);
 	}
+	
+	public static void notifyClusterClickUpdates(Cluster<SightMarkerItem> cluster){
+		for(OnClusterClickListener<SightMarkerItem> listener: onClusterClickListeners){
+			listener.onClusterClick(cluster);
+		}
+	}
+	
 	
 	@Deprecated
 	public static void subscribeForMarkerClickUpdates(OnMarkerClickListener onMarkerClickListener){
@@ -79,6 +103,7 @@ public class Appl extends Application{
 	public static void unsubscribeFromMarkerClickUpdates(OnMarkerClickListener onMarkerClickListener){
 		onMarkerClickListeners.remove(onMarkerClickListener);
 	}
+
 	
 	public static void subscribeForMapClickUpdates(OnMapClickListener onMapClickListener){
 		onMapClickListeners.add(onMapClickListener);
@@ -88,6 +113,13 @@ public class Appl extends Application{
 		onMapClickListeners.remove(onMapClickListener);
 	}
 	
+	public static void notifyMapClickUpdates(LatLng arg0){
+		for(OnMapClickListener listener: onMapClickListeners){
+			listener.onMapClick(arg0);
+		}
+	}
+	
+	
 	public static void subscribeForMapLongClickUpdates(OnMapLongClickListener onMapLongClickListener){
 		onMapLongClickListeners.add(onMapLongClickListener);
 	}
@@ -96,6 +128,13 @@ public class Appl extends Application{
 		onMapLongClickListeners.remove(onMapLongClickListener);
 	}
 
+	public static void notifyLongMapClickUpdates(LatLng arg0){
+		for(OnMapLongClickListener listener: onMapLongClickListeners){
+			listener.onMapLongClick(arg0);
+		}
+	}
+	
+	
 	public static void subscribeForViewUpdates(ViewUpdateListener viewUpdateListener){
 		viewUpdateListeners.add(viewUpdateListener);
 	}
@@ -104,6 +143,26 @@ public class Appl extends Application{
 		viewUpdateListeners.remove(viewUpdateListener);
 	}
 
+	public static void notifyViewUpdates(Bundle bundle){
+		for(ViewUpdateListener listener: viewUpdateListeners){
+			listener.onUpdateView(bundle);
+		}
+	}
+
+	
+	public static void subscribeForMarkerCategoryUpdates(OnMarkerCategoryUpdateListener onMarkerCategoryUpdateListener){
+		onMarkerCategoryUpdateListeners.add(onMarkerCategoryUpdateListener);
+	}
+	
+	public static void unsubscribeFromMarkerCategoryUpdates(OnMarkerCategoryUpdateListener onMarkerCategoryUpdateListener){
+		onMarkerCategoryUpdateListeners.remove(onMarkerCategoryUpdateListener);
+	}
+
+	public static void notifyMarkerCategoryUpdates(){
+		for(OnMarkerCategoryUpdateListener listener: onMarkerCategoryUpdateListeners){
+			listener.onMarkerCategoryChosen();
+		}
+	}
 	
 	interface ViewUpdateListener {
 		void onUpdateView(Bundle bundle);
