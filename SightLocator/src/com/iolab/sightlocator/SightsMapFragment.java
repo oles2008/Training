@@ -162,9 +162,7 @@ public class SightsMapFragment extends Fragment implements
 			public void onMapClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
-				for(OnMapClickListener listener: Appl.onMapClickListeners){
-					listener.onMapClick(arg0);
-				}
+				Appl.notifyMapClickUpdates(arg0);
 				if(currentSelectedMarker!=null){
 					currentSelectedMarker.remove();
 					currentSelectedMarker=null;
@@ -180,9 +178,7 @@ public class SightsMapFragment extends Fragment implements
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				
-				for(OnMapLongClickListener listener: Appl.onMapLongClickListeners){
-					listener.onMapLongClick(arg0);
-				}
+				Appl.notifyLongMapClickUpdates(arg0);
 				if(currentSelectedMarker!=null){
 					currentSelectedMarker.remove();
 					currentSelectedMarker=null;
@@ -241,9 +237,7 @@ public class SightsMapFragment extends Fragment implements
 	@Override
     public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		moveMapOnLocationUpdate = false;
-		for(OnClusterClickListener<SightMarkerItem> listener: Appl.onClusterClickListeners){
-			listener.onClusterClick(cluster);
-		}
+		Appl.notifyClusterClickUpdates(cluster);
         
         return true;
     }
@@ -251,10 +245,7 @@ public class SightsMapFragment extends Fragment implements
 	@Override
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
 		moveMapOnLocationUpdate = false;
-		Log.d("MyLogs", "onClusterItemCLick()");
-		for(OnClusterItemClickListener<SightMarkerItem> listener: Appl.onClusterItemClickListeners){
-			listener.onClusterItemClick(clickedItem);
-		}
+		Appl.notifyClusterItemClickUpdates(clickedItem);
 		if(currentSelectedMarker!=null){
 			if(clickedItem.equals(new SightMarkerItem(currentSelectedMarker))){
 				return true;
