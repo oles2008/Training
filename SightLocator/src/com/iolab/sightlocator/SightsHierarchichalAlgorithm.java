@@ -17,11 +17,12 @@ public class SightsHierarchichalAlgorithm extends
 		Set<Cluster<SightMarkerItem>> clusterSet = new HashSet<Cluster<SightMarkerItem>>();
 		for(Cluster<SightMarkerItem> cluster: (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom)){
 			for(SightMarkerItem item: cluster.getItems()){
-				Log.d("MyLogs", "class cast successful: "+item.getTitle());
+				//Log.d("MyLogs", "class cast successful: "+item.getTitle());
 				
 			}
 		}
-		return clusterSet;
+		//return clusterSet;
+		return (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom);
 	}
 	
 	private int findCommonParent(Collection<SightMarkerItem> items){
