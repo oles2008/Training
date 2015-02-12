@@ -1,8 +1,13 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import android.app.Application;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
@@ -13,17 +18,11 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 
-import android.app.Application;
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
-import android.util.Log;
-
 public class Appl extends Application{
 	
 	static Context appContext;
-	public static boolean[] checkedItems;
+	// list to store checked checkboxes from option-Filter menu
+	public static List<String> checkedItems;
 	
 	//all the following listeners should perform their callback methods
 	//in the UI thread
@@ -42,9 +41,10 @@ public class Appl extends Application{
 		appContext = getApplicationContext();
 		sightsDatabaseOpenHelper = new SightsDatabaseOpenHelper(appContext, 1);
 		
-		checkedItems = new boolean[getResources().getInteger(R.integer.marker_category_length)];
-		Arrays.fill(checkedItems, false);
-		checkedItems[0] = true;
+		// Initialise the list where checkboxes from Option-Filter menu are stored
+		checkedItems = new ArrayList<String>();
+		// set first checkbox "All" pre-checked
+		checkedItems.add(getResources().getString(R.string.action_filter_all));
 
 	}
 	

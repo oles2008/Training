@@ -76,12 +76,10 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 	// defined by the NoticeDialogFragment.NoticeDialogListener interface
 	@Override
 	public void onFilterDialogPositiveClick(DialogFragment dialog) {
-//		Toast.makeText(this, "clicked OK", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void onFilterDialogNegativeClick(DialogFragment dialog) {
-//		Toast.makeText(this, "clicked CANCEL", Toast.LENGTH_SHORT).show();
 	}
 	
 	public void onPause(){
