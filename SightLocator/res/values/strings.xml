@@ -6,19 +6,18 @@
     <string name="action_help">Help</string>
     <string name="action_about">About</string>
     <string name="action_filter">Filter</string>
-    <string name="dialog_title">Choose category</string>
-    <string-array name="marker_category">
-        <item>All</item>
-        <item>Religion</item>
-        <item>History</item>
-        <item>Literture</item>
-        <item>Industry</item>
-        <item>Cafe</item>
-        <item>Entertaiment</item>
-        <item>Monument</item>
-    </string-array>
-    <string name="marker_category_length">8</string>
-    <item type="integer" name="marker_category_length">8</item>
+    <string name="dialog_title">Display markers</string>
+    <string name="dialog_message">Do we need a  message?</string>
+    <string name="action_filter_all">ALL</string>
+    <string name="action_filter_religion">Religion</string>
+    <string name="action_filter_history">History</string>
+    <string name="action_filter_literature">Litereture</string>
+    <string name="action_filter_industry">Industry</string>
+    <string name="action_filter_cafe">Cafe</string>
+    <string name="action_filter_entertaiment">Entertaiment</string>
+    <string name="action_filter_monument">Monument</string>
+    <!-- value of "action_filter_list_length" should be less by 1 from all action_filter_xxx items-->
+    <item type="integer" name="action_filter_list_length">7</item>
     <string name="dialog_ok_button">OK</string>
     <string name="dialog_cancel_button">Cancel</string>
     <string name="welcome_screen_text">The mobile development community is at a tipping point. Mobile users demand more choice, more opportunities to customize their phones, and more functionality. Mobile operators want to provide value-added content to their subscribers in a manageable and lucrative way. Mobile developers want the freedom to develop the powerful mobile applications users demand with minimal roadblocks to success. Finally, handset manufacturers want a stable, secure, and affordable platform to power their devices. Upuntil now single mobile platform has adequately addressed the needs of all the parties. Enter Android, which is a potential game-changer for the mobile development community. An innovative and open platform, Android is well positioned to address the growing needs of the mobile marketplace.</string>
