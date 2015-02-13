@@ -1,16 +1,165 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import android.util.Log;
 
 public class ItemGroupAnalyzer {
-
 	
-	public static int findCommonParent(List<int[]> list, int percentage){
+	public static int findCommonParent(List<int[]> list, int percentageToIgnore){
+		return findCommonParent(list, percentageToIgnore, null);
+	}
+	
+	public static List<ClusterGroup> split(List<int[]> list, int maxNumberToSplitInto){
+		List<ClusterGroup> result = new ArrayList<ItemGroupAnalyzer.ClusterGroup>();
+		
+		List<Integer> listOfAll = new ArrayList<Integer>();
+		for(int i=0;i<list.size();i++){
+			listOfAll.add(i);
+		}
+		
+		//the objects that do not have any closer parents than the "common parent"
+		List<Integer> listOfEmpty = new ArrayList<Integer>();
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).length==0){
+				List<Integer> oneElementList = new ArrayList<Integer>();
+				oneElementList.add(i);
+				result.add(new ClusterGroup(-1, oneElementList));
+			}
+		}
+		
+		//if there are too many separate markers, return
+		if(result.size()>maxNumberToSplitInto){
+			result.clear();
+			result.add(new ClusterGroup(-1, listOfAll));
+			return result;
+		}
+
+		List<int[]> copyOfList = new ArrayList<int[]>();
+		copyOfList.addAll(list);
+		List<Integer> finalListOfPositionsInArrays = new ArrayList<Integer>();
+		int commonParent = findCommonParent(copyOfList, 0, finalListOfPositionsInArrays);
+		
+		//resetting the copyOfList
+		copyOfList.clear();
+		copyOfList.addAll(list);
+		
+//		//adding positions of the objects which do not have a more precise 
+//		//location than the found commonParent. We are inserting their previous positions in the 
+//		//initial list, i.e. before the removal of elements with empty location
+//		//Therefore, we are temporarily putting the removed empty arrays back
+//		for(int i: listOfEmpty){
+//			copyOfList.add(i, new int[]{});
+//		}
+		for(int i=0;i<copyOfList.size();i++){
+			int[] array = copyOfList.get(i);
+			if(array[array.length-1]==commonParent){
+				List<Integer> oneElementList = new ArrayList<Integer>();
+				oneElementList.add(i);
+				result.add(new ClusterGroup(commonParent, oneElementList));
+			}
+		}
+		
+		//if there are too many separate markers, return
+		if(result.size()>maxNumberToSplitInto){
+			result.clear();
+			result.add(new ClusterGroup(-1, listOfAll));
+			return result;
+		}
+		
+		ignoreParentsAboveCommon(copyOfList, finalListOfPositionsInArrays, commonParent);
+
+		//this list will become smaller after every findCommonParent(), which removes all empty arrays
+		List<int[]> anotherCopyOfList = new ArrayList<int[]>();
+		
+		while(result.size()<maxNumberToSplitInto && anotherCopyOfList.size()>0){
+			//anotherCopyOfList.addAll(copyOfList);
+			
+			//apart from finding common parent, this will remove all empty arrays from anotherCopyOfList
+			commonParent = findCommonParent(anotherCopyOfList, 100*(1-1/(maxNumberToSplitInto-result.size())), finalListOfPositionsInArrays);
+			if(commonParent==-1 && anotherCopyOfList.size()>0){
+				result.clear();
+				result.add(new ClusterGroup(-1, listOfAll));
+				return result;
+			}else{
+				//adds the positions of items from the indicated parent, and replaces
+				//the corresponding arrays in the copyOfList with empty arrays
+				result.add(new ClusterGroup(commonParent, separateArraysFromIndicatedParent(copyOfList, commonParent)));
+			}
+		}
+		
+		
+		if(anotherCopyOfList.size()>0){
+			//the items could not be split into a less or equal to maxNumberToSplitInto
+			result.clear();
+			result.add(new ClusterGroup(-1, listOfAll));
+		}
+		//returning either the result with "listOfAll", or all the split groups
+		return result;
+	}
+	
+	/**
+	 * Finds arrays from indicated parent in the list, replaces them with empty arrays, and adds
+	 * their positions in the initial list to the Integer list to be returned.
+	 * 
+	 * @param list
+	 *            the list
+	 * @param parent
+	 *            the parent
+	 * @return the Integer list of positions of arrays from the indicated parent in the initial list
+	 */
+	private static List<Integer> separateArraysFromIndicatedParent(List<int[]> list, int parent){
+		List<Integer> arraysFromIndicatedParentIndices = new ArrayList<Integer>();
+		for(int i=0;i<list.size();i++){
+			int[] array = list.get(i);
+			if(array.length==0){
+				continue;
+			}
+			if(isParent(list, parent, array[0])==1){
+				arraysFromIndicatedParentIndices.add(i);
+			}
+		}
+		List<int[]> arraysFromIndicatedParent = new ArrayList<int[]>();
+		for(int i=0;i<list.size();i++){
+			if(arraysFromIndicatedParentIndices.contains(i)){
+				arraysFromIndicatedParent.add(list.remove(i));
+				list.add(i, new int[]{});
+			}
+		}
+		return arraysFromIndicatedParentIndices;
+	}
+
+	/**
+	 * "Cuts off" all the parents above the known common parent.
+	 *
+	 * @param list the list
+	 * @param finalListOfPositionsInArrays the final list of positions in arrays
+	 * @param commonParent the common parent
+	 */
+	private static void ignoreParentsAboveCommon(List<int[]> list, List<Integer> finalListOfPositionsInArrays, int commonParent){
+		if(commonParent==-1){
+			return;
+		}
+		for(int i=0;i<list.size();i++){
+			int[] initialArray = list.get(i);
+			int positionInInitialArray = finalListOfPositionsInArrays.get(i);
+			int[] trimmedArray=null;
+			if(initialArray[positionInInitialArray]!=commonParent){
+				trimmedArray = Arrays.copyOfRange(initialArray, positionInInitialArray, initialArray.length);
+			}else{
+				trimmedArray = Arrays.copyOfRange(initialArray, positionInInitialArray, initialArray.length);
+			}
+			list.set(i, trimmedArray);
+		}
+	}
+	
+	private static int findCommonParent(List<int[]> list, int percentageToIgnore, List<Integer> finalListOfPositionsInArrays){
 		List<Integer> listOfBiggest = new ArrayList<Integer>(list.size());
 		for(int i=0;i<list.size();i++){
 			if(list.get(i).length==0){
@@ -20,15 +169,15 @@ public class ItemGroupAnalyzer {
 			}
 			listOfBiggest.add(list.get(i)[0]);
 		}
-		Log.d("MyLogs", "initial listOfBiggest:");
-		for(int i: listOfBiggest){
-			Log.d("MyLogs", "    "+i);
-		}
+//		Log.d("MyLogs", "initial listOfBiggest:");
+//		for(int i: listOfBiggest){
+//			Log.d("MyLogs", "    "+i);
+//		}
 		List<Integer> listOfPositionsInArrays = new ArrayList<Integer>(listOfBiggest.size());
 		for(int i=0;i<listOfBiggest.size();i++){
 			listOfPositionsInArrays.add(i, 0);
 		}
-		int maxPosition = getMaximalElementPosition(list, listOfBiggest, percentage);
+		int maxPosition = getMaximalElementPosition(list, listOfBiggest, percentageToIgnore);
 		if(maxPosition==-1){
 			return -1;
 		}
@@ -38,7 +187,11 @@ public class ItemGroupAnalyzer {
 			Log.d("MyLogs", "maxPosition: "+maxPosition+", in array: "+listOfPositionsInArrays.get(maxPosition));
 			listOfPositionsInArrays.set(maxPosition,listOfPositionsInArrays.get(maxPosition)+1);
 			listOfBiggest.set(maxPosition,list.get(maxPosition)[listOfPositionsInArrays.get(maxPosition)]);
-			maxPosition = getMaximalElementPosition(list, listOfBiggest, percentage);
+			maxPosition = getMaximalElementPosition(list, listOfBiggest, percentageToIgnore);
+		}
+		if(finalListOfPositionsInArrays!=null){
+			finalListOfPositionsInArrays.clear();
+			finalListOfPositionsInArrays.addAll(listOfPositionsInArrays);
 		}
 		return currentCommonParent;
 	}
@@ -220,6 +373,24 @@ public class ItemGroupAnalyzer {
 			}
 			IntPair other = (IntPair) o;
 			return (this.x==other.x && this.y==other.y)||(this.x==other.y && this.y==other.x);
+		}
+	}
+	
+	public static class ClusterGroup {
+		private int parent;
+		private List<Integer> listOfElements;
+		
+		public ClusterGroup(int parent, List<Integer> listOfElements){
+			this.parent=parent;
+			this.listOfElements=listOfElements;
+		}
+		
+		public int getParent(){
+			return parent;
+		}
+		
+		public List<Integer> getListOfElements(){
+			return listOfElements;
 		}
 	}
 }
