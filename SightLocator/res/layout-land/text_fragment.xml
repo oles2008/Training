@@ -16,9 +16,11 @@
             android:clickable="true"
             android:freezesText="true"
             android:text="Tilko_vi_lvovi"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:typeface="serif" />
+            android:typeface="normal" />
+         
+                 
 
         <ImageView
             android:id="@+id/imageView"
@@ -30,6 +32,9 @@
             android:src="@drawable/one_pixel" 
             android:layout_marginBottom="5dp"
     		android:layout_marginLeft="5dp"/>
+        
+        
+       
 
         <TextView
             android:id="@+id/textView"
