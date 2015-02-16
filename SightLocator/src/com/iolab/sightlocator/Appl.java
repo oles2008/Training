@@ -58,9 +58,7 @@ public class Appl extends Application{
 
 		@Override
 		protected void onReceiveResult(final int resultCode, final Bundle resultData) {
-			for (ViewUpdateListener viewUpdateListener : viewUpdateListeners) {
-				viewUpdateListener.onUpdateView(resultData);
-			}
+			notifyViewUpdates(resultData);
 		}
 	};
 	

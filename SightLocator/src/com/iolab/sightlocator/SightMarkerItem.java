@@ -15,6 +15,15 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	public String title;
 	public String snippet;
 	public String color;
+	public int[] parentIDs;
+	
+	public SightMarkerItem(LatLng position, String title, String snippet, String color, int[] parentIDs) {
+		this.position = position;
+		this.title = title;
+		this.snippet = snippet;
+		this.color = color;
+		this.parentIDs = parentIDs;
+	}
 	
 	public SightMarkerItem(LatLng position, String title, String snippet, String color) {
 		this.position = position;
@@ -41,7 +50,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.title=array[0];
 		this.snippet=array[1];
 		this.color=array[2];
-		
+		parcel.readIntArray(this.parentIDs);
 	}
 	
 	public static final Parcelable.Creator<SightMarkerItem> CREATOR = new Creator<SightMarkerItem>() {
@@ -88,6 +97,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		String[] array = {this.title, this.snippet, this.color};
 		parcel.writeStringArray(array);
 		parcel.writeParcelable(position, flags);
+		parcel.writeIntArray(parentIDs);
 	}
 
 	@Override

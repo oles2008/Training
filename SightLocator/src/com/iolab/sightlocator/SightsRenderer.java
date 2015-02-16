@@ -25,14 +25,12 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
 	private int updateViewCallIndex=0;
 	private Context context;
 	private GoogleMap gMap;
-	private final SightsMapFragment sightsMapFragment;
 
 	public SightsRenderer(Context context, GoogleMap map,
-			ClusterManager<SightMarkerItem> clusterManager, SightsMapFragment sightsMapFragment) {
+			ClusterManager<SightMarkerItem> clusterManager) {
 		super(context, map, clusterManager);
 		this.context = context;
 		this.gMap = map;
-		this.sightsMapFragment = sightsMapFragment;
 	}
 
 	@Override
