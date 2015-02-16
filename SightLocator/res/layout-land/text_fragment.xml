@@ -9,13 +9,14 @@
         android:orientation="vertical" >
         
          <TextView
-            android:id="@+id/tilko_vi_lvovi"
+            android:id="@+id/text_view_object_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginRight="10dp"
             android:clickable="true"
             android:freezesText="true"
-            android:text="Tilko_vi_lvovi"
+            android:text="@string/object_title"
             android:textSize="14sp"
             android:textStyle="bold"
             android:typeface="normal" />

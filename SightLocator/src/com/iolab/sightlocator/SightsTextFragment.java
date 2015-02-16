@@ -310,14 +310,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		selectedItem = item;
 
 		
-		
-		
-				Fragment textFragmet = getActivity().getFragmentManager()
+		Fragment textFragmet = getActivity().getFragmentManager()
 						.findFragmentById(R.id.text_fragment);
-				TextView tilkoViLvovi = (TextView) textFragmet.getView().findViewById(R.id.tilko_vi_lvovi);
-						tilkoViLvovi.setText(item.getTitle());
+				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
+				object_title.setText(item.getTitle());
 				
-			
 		
 
 		return true;
