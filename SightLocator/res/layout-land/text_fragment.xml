@@ -7,6 +7,21 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
+        
+         <TextView
+            android:id="@+id/text_view_object_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:clickable="true"
+            android:freezesText="true"
+            android:text="@string/object_title"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:typeface="normal" />
+         
+                 
 
         <ImageView
             android:id="@+id/imageView"
@@ -18,15 +33,20 @@
             android:src="@drawable/one_pixel" 
             android:layout_marginBottom="5dp"
     		android:layout_marginLeft="5dp"/>
+        
+        
+       
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:freezesText="true"
-            android:text="@string/welcome_screen_text"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="10dp" />
+            android:layout_marginRight="10dp"
+            android:layout_weight="1.11"
+            android:freezesText="true"
+            android:text="@string/welcome_screen_text" />
+
     </LinearLayout>
 
 </ScrollView>

@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -308,8 +309,18 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		getActivity().startService(intent);
 		selectedItem = item;
 
+		
+		Fragment textFragmet = getActivity().getFragmentManager()
+						.findFragmentById(R.id.text_fragment);
+				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
+				object_title.setText(item.getTitle());
+				
+		
+
 		return true;
-	}
+		}
+		
+		
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
