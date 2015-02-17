@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.app.Application;
@@ -22,7 +23,8 @@ public class Appl extends Application{
 	
 	static Context appContext;
 	// list to store checked checkboxes from option-Filter menu
-	public static List<String> checkedItems;
+//	public static List<String> checkedItems;
+	public static boolean[] checkedItems;
 	
 	//all the following listeners should perform their callback methods
 	//in the UI thread
@@ -42,9 +44,14 @@ public class Appl extends Application{
 		sightsDatabaseOpenHelper = new SightsDatabaseOpenHelper(appContext, 1);
 		
 		// Initialise the list where checkboxes from Option-Filter menu are stored
-		checkedItems = new ArrayList<String>();
+//		checkedItems = new ArrayList<String>();
 		// set first checkbox "All" pre-checked
-		checkedItems.add(getResources().getString(R.string.action_filter_all));
+//		checkedItems.add(getResources().getString(R.string.action_filter_all));
+		
+		//boolean array
+		checkedItems = new boolean[(getResources().getStringArray(R.array.marker_category)).length]; 
+		Arrays.fill(checkedItems, Boolean.FALSE);
+		checkedItems[0] = true;
 
 	}
 	

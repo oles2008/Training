@@ -39,17 +39,17 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 			showHelp();
 			return true;
 
-		case R.id.action_quick_help:
-			showHelp();
-			return true;
+//		case R.id.action_quick_help:
+//			showHelp();
+//			return true;
 
 		case R.id.action_about:
 			showAbout();
 			return true;
 
-		case R.id.action_quick_about:
-			showAbout();
-			return true;
+//		case R.id.action_quick_about:
+//			showAbout();
+//			return true;
 
 		case R.id.action_filter:
 			showFilterDialog();
