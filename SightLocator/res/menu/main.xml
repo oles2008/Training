@@ -6,7 +6,7 @@
         android:showAsAction="ifRoom"
         android:title="@string/action_button_filter"/>
     
-    <item
+    <!--item
         android:id="@+id/action_quick_about"
         android:icon="@drawable/ic_action_about"
         android:showAsAction="ifRoom"
@@ -16,7 +16,7 @@
         android:id="@+id/action_quick_help"
         android:icon="@drawable/ic_action_help"
         android:showAsAction="ifRoom"
-        android:title="@string/action_button_help"/>
+        android:title="@string/action_button_help"/-->
     
     <item
         android:id="@+id/action_settings"
