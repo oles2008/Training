@@ -2,6 +2,7 @@ package com.iolab.sightlocator;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -16,6 +17,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -314,6 +317,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		// TODO Auto-generated method stub
+		SightsAdapter adapter = new SightsAdapter(getActivity(), R.id.list_view_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
+		ListView sights = new ListView(getActivity());
+		//sights.setLayoutParams(new LinearLayout.LayoutParams(getActivity(), attrs));
+		LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
+		lin.addView(sights);
 		return false;
 	}
 
