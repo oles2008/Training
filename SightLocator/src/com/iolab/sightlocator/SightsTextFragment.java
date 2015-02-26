@@ -40,6 +40,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private final int ICON_SIZE = 200;
 	private Marker selectedMarker = null;
 	private SightMarkerItem selectedItem = null;
+	private ListView sights = null;
 	public static long markerClickCounter = 0;
 
 	@Override
@@ -317,7 +318,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
 				object_title.setText(item.getTitle());
 
-		
+		if(sights!=null){
+			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
+			lin.removeView(sights);
+			sights=null;
+		}
 		
 		return true;
 	}
@@ -325,11 +330,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		// TODO Auto-generated method stub
-		SightsAdapter adapter = new SightsAdapter(getActivity(), R.id.list_view_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
-		ListView sights = new ListView(getActivity());
-		//sights.setLayoutParams(new LinearLayout.LayoutParams(getActivity(), attrs));
-		LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
-		lin.addView(sights);
+		SightsAdapter adapter = new SightsAdapter(getActivity(), R.layout.sights_list_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
+		if(sights==null){
+			sights = new ListView(getActivity());
+			//sights.setLayoutParams(new LinearLayout.LayoutParams(getActivity(), attrs));
+			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
+			lin.addView(sights);
+		}
+		sights.setAdapter(adapter);
 		return false;
 	}
 
