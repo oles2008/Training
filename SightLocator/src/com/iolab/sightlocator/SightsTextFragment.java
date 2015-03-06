@@ -16,8 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -331,12 +333,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		// TODO Auto-generated method stub
 		SightsAdapter adapter = new SightsAdapter(getActivity(), R.layout.sights_list_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
-		if(sights==null){
-			sights = new ListView(getActivity());
+		
+			sights = (ListView) getView().findViewById(R.id.listView);
 			//sights.setLayoutParams(new LinearLayout.LayoutParams(getActivity(), attrs));
-			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
-			lin.addView(sights);
-		}
+//			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
+//			LinearLayout.LayoutParams layoutParams = new LayoutParams(lin.getWidth(), 300);
+//			lin.addView(sights, layoutParams);
+		
 		sights.setAdapter(adapter);
 		return false;
 	}
