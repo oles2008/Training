@@ -81,9 +81,8 @@ public class FilterDialogFragment extends DialogFragment{
 								listView.setItemChecked(j, false);
 							}
 							
-							// shitty workaround: list view scroll  
-							listView.scrollListBy(-1000);
-							listView.scrollListBy(-100);
+							listView.smoothScrollToPosition(0);;
+
 						}
 					}
 				}
