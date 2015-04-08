@@ -43,6 +43,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private Marker selectedMarker = null;
 	private SightMarkerItem selectedItem = null;
 	private ListView sights = null;
+	private TextView mAddress = null;
 	public static long markerClickCounter = 0;
 
 	@Override
@@ -57,7 +58,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.text_fragment, container, false);
+		View inflatedView = inflater.inflate(R.layout.text_fragment, container, false);
+		sights = (ListView) inflatedView.findViewById(R.id.listView);
+		sights.setVisibility(View.GONE);
+		mAddress = (TextView) inflatedView.findViewById(R.id.address);
+		mAddress.setVisibility(View.GONE);
+		return inflatedView;
 	}
 
 	@Override
@@ -198,6 +204,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
 		selectedItem = null;
+		mAddress.setVisibility(View.GONE);
 
 	}
 
@@ -213,6 +220,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
 		selectedItem = null;
+		mAddress.setVisibility(View.GONE);
 	}
 
 	private void registerImageViewClickListener() {
@@ -319,12 +327,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 						.findFragmentById(R.id.text_fragment);
 				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
 				object_title.setText(item.getTitle());
-
-		if(sights!=null){
-			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
-			lin.removeView(sights);
-			sights=null;
-		}
+		sights.setVisibility(View.GONE);
+		mAddress.setVisibility(View.VISIBLE);
 		
 		return true;
 	}
@@ -334,13 +338,17 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		// TODO Auto-generated method stub
 		SightsAdapter adapter = new SightsAdapter(getActivity(), R.layout.sights_list_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
 		
-			sights = (ListView) getView().findViewById(R.id.listView);
-			//sights.setLayoutParams(new LinearLayout.LayoutParams(getActivity(), attrs));
-//			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.linear_layout);
-//			LinearLayout.LayoutParams layoutParams = new LayoutParams(lin.getWidth(), 300);
+			
+			
+//			LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
+//			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.text_fragment);
 //			lin.addView(sights, layoutParams);
+			
+			Log.d("MyLogs", "sights == null: "+(sights==null));
 		
 		sights.setAdapter(adapter);
+		sights.setVisibility(View.VISIBLE);
+		mAddress.setVisibility(View.GONE);
 		return false;
 	}
 
