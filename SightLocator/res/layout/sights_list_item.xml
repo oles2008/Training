@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_view_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <ImageView
+        android:id="@+id/image_view_in_list"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:src="@drawable/bubble_shadow" />
+    
+    <TextView
+        android:id="@+id/text_view_name_in_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/image_view_in_list"
+        android:freezesText="true"
+        android:text="text" />
+
+    <TextView
+        android:id="@+id/text_view_address_in_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_view_name_in_list"
+        android:layout_alignLeft="@id/text_view_name_in_list"
+        android:freezesText="true"
+        android:textStyle="italic"
+        android:text="text2" />
+
+	<TextView
+        android:id="@+id/text_view_description_snippet_in_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_view_address_in_list"
+        android:layout_alignLeft="@id/text_view_address_in_list"
+        android:freezesText="true"
+        android:textStyle="italic"
+        android:text="text3" />"
+
+</RelativeLayout>

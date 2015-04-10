@@ -83,6 +83,18 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		return color;
 	}
 	
+	public int[] getParentIDs() {
+		return parentIDs;
+	}
+	
+	public double getLatitude() {
+		return position.latitude;
+	}
+	
+	public double getLongitude() {
+		return position.longitude;
+	}
+	
 	/**
 	 * Creates {@link MarkerOptions} for this item's position, title and snippet.
 	 *

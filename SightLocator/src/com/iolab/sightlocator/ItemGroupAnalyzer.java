@@ -26,7 +26,7 @@ public class ItemGroupAnalyzer {
 		
 		//the objects that do not have any closer parents than the "common parent"
 		for(int i=0;i<list.size();i++){
-			if(list.get(i).length==0){
+			if(list.get(i)==null || list.get(i).length==0){
 				List<Integer> oneElementList = new ArrayList<Integer>();
 				oneElementList.add(i);
 				result.add(new ClusterGroup(-1, oneElementList));
@@ -61,7 +61,7 @@ public class ItemGroupAnalyzer {
 //		}
 		for(int i=0;i<copyOfList.size();i++){
 			int[] array = copyOfList.get(i);
-			if(array.length>0 && array[array.length-1]==commonParent){
+			if(array!=null && array.length>0 && array[array.length-1]==commonParent){
 				List<Integer> oneElementList = new ArrayList<Integer>();
 				oneElementList.add(i);
 				result.add(new ClusterGroup(commonParent, oneElementList));
@@ -132,7 +132,7 @@ public class ItemGroupAnalyzer {
 			anotherCopyOfList.clear();
 			anotherCopyOfList.addAll(copyOfList);
 			for(int i=0;i<anotherCopyOfList.size();i++){
-				if(anotherCopyOfList.get(i).length==0){
+				if(anotherCopyOfList.get(i)== null || anotherCopyOfList.get(i).length==0){
 					anotherCopyOfList.remove(anotherCopyOfList.get(i));
 //					Log.d("MyLogs", "removing empty array "+i+", size: "+anotherCopyOfList.size());
 					i--;
@@ -165,7 +165,7 @@ public class ItemGroupAnalyzer {
 		List<Integer> arraysFromIndicatedParentIndices = new ArrayList<Integer>();
 		for(int i=0;i<list.size();i++){
 			int[] array = list.get(i);
-			if(array.length==0){
+			if(array== null || array.length==0){
 				continue;
 			}
 			if(isParent(list, parent, array[0])==1){
@@ -194,7 +194,7 @@ public class ItemGroupAnalyzer {
 		}
 		for(int i=0;i<list.size();i++){
 			int[] initialArray = list.get(i);
-			if(initialArray.length==0){
+			if(initialArray == null || initialArray.length==0){
 				continue;
 			}
 			int positionInInitialArray = finalListOfPositionsInArrays.get(i);
@@ -213,7 +213,7 @@ public class ItemGroupAnalyzer {
 		List<Integer> listOfBiggest = new ArrayList<Integer>(list.size());
 		List<Integer> positionsOfEmpty = new ArrayList<Integer>();
 		for(int i=0;i<list.size();i++){
-			if(list.get(i).length==0){
+			if(list.get(i)==null || list.get(i).length==0){
 				positionsOfEmpty.add(i);
 				list.remove(list.get(i));
 				i--;

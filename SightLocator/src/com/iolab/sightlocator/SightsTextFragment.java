@@ -2,6 +2,7 @@ package com.iolab.sightlocator;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,7 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -37,6 +42,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private final int ICON_SIZE = 200;
 	private Marker selectedMarker = null;
 	private SightMarkerItem selectedItem = null;
+	private ListView sights = null;
+	private TextView mAddress = null;
 	public static long markerClickCounter = 0;
 
 	@Override
@@ -51,7 +58,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.text_fragment, container, false);
+		View inflatedView = inflater.inflate(R.layout.text_fragment, container, false);
+		sights = (ListView) inflatedView.findViewById(R.id.listView);
+		sights.setVisibility(View.GONE);
+		mAddress = (TextView) inflatedView.findViewById(R.id.address);
+		mAddress.setVisibility(View.GONE);
+		return inflatedView;
 	}
 
 	@Override
@@ -192,6 +204,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
 		selectedItem = null;
+		mAddress.setVisibility(View.GONE);
 
 	}
 
@@ -207,6 +220,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
 		selectedItem = null;
+		mAddress.setVisibility(View.GONE);
 	}
 
 	private void registerImageViewClickListener() {
@@ -313,8 +327,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 						.findFragmentById(R.id.text_fragment);
 				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
 				object_title.setText(item.getTitle());
-
-		
+		sights.setVisibility(View.GONE);
+		mAddress.setVisibility(View.VISIBLE);
 		
 		return true;
 	}
@@ -322,6 +336,19 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		// TODO Auto-generated method stub
+		SightsAdapter adapter = new SightsAdapter(getActivity(), R.layout.sights_list_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
+		
+			
+			
+//			LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
+//			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.text_fragment);
+//			lin.addView(sights, layoutParams);
+			
+			Log.d("MyLogs", "sights == null: "+(sights==null));
+		
+		sights.setAdapter(adapter);
+		sights.setVisibility(View.VISIBLE);
+		mAddress.setVisibility(View.GONE);
 		return false;
 	}
 
