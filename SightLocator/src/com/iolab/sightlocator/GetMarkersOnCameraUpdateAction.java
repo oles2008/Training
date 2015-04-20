@@ -89,41 +89,43 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 //								+ latLngBounds.northeast.longitude + ")");
 //		Log.d("MyLogs", "cursor size: "+cursor.getCount());
 //		ArrayList<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
-		ArrayList<SightMarkerItem> SightMarkerItemList = new ArrayList<SightMarkerItem>();
+		ArrayList<SightMarkerItem> sightMarkerItemList = new ArrayList<SightMarkerItem>();
 		if (cursor.moveToFirst()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-			int[] parentIDs = {cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for SightMarkerItemList
+			int[] parentIDs = {cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
 			//markerOptionsList.add(new MarkerOptions()
-			SightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
+			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));
 //			
 //										.position(position)
 //										.title(cursor.getString(2))
 //										.snippet(cursor.getString(3)));
 		}
-		List<int[]> ListOfArrays = new ArrayList<int[]>(); //done on 19/04/15
+		List<int[]> listOfArrays = new ArrayList<int[]>(); //done on 19/04/15
+		int[] parentIDs = {cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
+		listOfArrays.add(parentIDs);
+		
 		while (cursor.moveToNext()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-			
-			int[] parentIDs = {cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for SightMarkerItemList
-			SightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
+					
+			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));
-			ListOfArrays.add(parentIDs); ////done on 19/04/15
+			listOfArrays.add(parentIDs); ////done on 19/04/15
 		}
 		
 		//TODO define List of arrays for findCommonParent(List<int[]> list, int percentageToIgnore)
-		//      input parameter as in SightMarkerItemList
+		//      input parameter as in sightMarkerItemList
 		
 		//TODO define common parent
 		
 		Bundle resultData = new Bundle();
-		resultData.putParcelableArrayList(Tags.MARKERS, SightMarkerItemList);
+		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		
 		//TODO resultData.putInt() put common parent into bundle
-		resultData.putInt("CommonParentId",ItemGroupAnalyzer.findCommonParent(ListOfArrays,80));////done on 19/04/15
+		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,80));////done on 19/04/15
 		Appl.receiver.send(0, resultData);
 	}
 
