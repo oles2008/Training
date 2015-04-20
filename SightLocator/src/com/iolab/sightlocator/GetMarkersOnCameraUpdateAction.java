@@ -15,6 +15,7 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_STATU
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
+import com.iolab.sightlocator.ItemGroupAnalyzer;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -80,33 +81,38 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 								+ latLngBounds.southwest.longitude + " AND "
 								+ latLngBounds.northeast.longitude + ")",
 								null, null, null, null);
-//		Log.d("MyLogs", "Where statement: "+"(" + COLUMN_LATITUDE + " BETWEEN "
-//								+ latLngBounds.northeast.latitude + " AND "
-//								+ latLngBounds.southwest.latitude + ") AND ("
-//								+ COLUMN_LONGITUDE + " BETWEEN "
-//								+ latLngBounds.southwest.longitude + " AND "
-//								+ latLngBounds.northeast.longitude + ")");
-//		Log.d("MyLogs", "cursor size: "+cursor.getCount());
-		ArrayList<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
+
+		int[] parentIDs;
+		List<int[]> listOfArrays = new ArrayList<int[]>();
+		
+		ArrayList<SightMarkerItem> sightMarkerItemList = new ArrayList<SightMarkerItem>();
 		if (cursor.moveToFirst()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-			markerOptionsList.add(new MarkerOptions()
-										.position(position)
-										.title(cursor.getString(2))
-										.snippet(cursor.getString(3)));
+			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
+		
+			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
+														cursor.getString(3),null,parentIDs));
+			listOfArrays.add(parentIDs);			
+
 		}
+		
 		while (cursor.moveToNext()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-			markerOptionsList.add(new MarkerOptions()
-										.position(position)
-										.title(cursor.getString(2))
-										.snippet(cursor.getString(3)));
+			
+			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)};
+			
+			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
+														cursor.getString(3),null,parentIDs));			
+			listOfArrays.add(parentIDs); 
 		}
+				
 		Bundle resultData = new Bundle();
-		resultData.putParcelableArrayList(Tags.MARKERS, markerOptionsList);
+		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
+		
+		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,80));////done on 19/04/15
 		Appl.receiver.send(0, resultData);
 	}
 

@@ -383,12 +383,12 @@ public class SightsMapFragment extends Fragment implements
 	
 	@Override
 	public void onUpdateView(Bundle bundle) {
-		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
+		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
 		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
 		
-		if(markerOptionsList!=null){
-			for(MarkerOptions markerOptions: markerOptionsList){
-				SightMarkerItem item = new SightMarkerItem(markerOptions);
+		if(sightMarkerItemList!=null){
+			for(SightMarkerItem item: sightMarkerItemList){
+				
 				if(itemSet.add(item)){
 					clusterManager.addItem(item);
 				}
