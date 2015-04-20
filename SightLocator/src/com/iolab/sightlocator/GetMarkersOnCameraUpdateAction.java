@@ -89,29 +89,32 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 //								+ latLngBounds.northeast.longitude + ")");
 //		Log.d("MyLogs", "cursor size: "+cursor.getCount());
 //		ArrayList<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
+		int[] parentIDs;
+		List<int[]> listOfArrays = new ArrayList<int[]>();
+		
 		ArrayList<SightMarkerItem> sightMarkerItemList = new ArrayList<SightMarkerItem>();
 		if (cursor.moveToFirst()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-			int[] parentIDs = {cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
+			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
 			//markerOptionsList.add(new MarkerOptions()
 			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));
-//			
+			listOfArrays.add(parentIDs);			
 //										.position(position)
 //										.title(cursor.getString(2))
 //										.snippet(cursor.getString(3)));
 		}
-		List<int[]> listOfArrays = new ArrayList<int[]>(); //done on 19/04/15
-		int[] parentIDs = {cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
-		listOfArrays.add(parentIDs);
+		 //done on 19/04/15
 		
 		while (cursor.moveToNext()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-					
+			
+			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)};
+			
 			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
-														cursor.getString(3),null,parentIDs));
+														cursor.getString(3),null,parentIDs));			
 			listOfArrays.add(parentIDs); ////done on 19/04/15
 		}
 		
