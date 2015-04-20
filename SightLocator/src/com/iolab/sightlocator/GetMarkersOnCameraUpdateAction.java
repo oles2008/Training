@@ -81,14 +81,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 								+ latLngBounds.southwest.longitude + " AND "
 								+ latLngBounds.northeast.longitude + ")",
 								null, null, null, null);
-//		Log.d("MyLogs", "Where statement: "+"(" + COLUMN_LATITUDE + " BETWEEN "
-//								+ latLngBounds.northeast.latitude + " AND "
-//								+ latLngBounds.southwest.latitude + ") AND ("
-//								+ COLUMN_LONGITUDE + " BETWEEN "
-//								+ latLngBounds.southwest.longitude + " AND "
-//								+ latLngBounds.northeast.longitude + ")");
-//		Log.d("MyLogs", "cursor size: "+cursor.getCount());
-//		ArrayList<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
+
 		int[] parentIDs;
 		List<int[]> listOfArrays = new ArrayList<int[]>();
 		
@@ -97,15 +90,12 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
 			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
-			//markerOptionsList.add(new MarkerOptions()
+		
 			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));
 			listOfArrays.add(parentIDs);			
-//										.position(position)
-//										.title(cursor.getString(2))
-//										.snippet(cursor.getString(3)));
+
 		}
-		 //done on 19/04/15
 		
 		while (cursor.moveToNext()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
@@ -115,19 +105,13 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			
 			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));			
-			listOfArrays.add(parentIDs); ////done on 19/04/15
+			listOfArrays.add(parentIDs); 
 		}
-		
-		//TODO define List of arrays for findCommonParent(List<int[]> list, int percentageToIgnore)
-		//      input parameter as in sightMarkerItemList
-		
-		//TODO define common parent
-		
+				
 		Bundle resultData = new Bundle();
 		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		
-		//TODO resultData.putInt() put common parent into bundle
 		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,80));////done on 19/04/15
 		Appl.receiver.send(0, resultData);
 	}
