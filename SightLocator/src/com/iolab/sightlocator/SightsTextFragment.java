@@ -3,6 +3,7 @@ package com.iolab.sightlocator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -306,6 +307,17 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
 		}
+		
+		if (bundle.getParcelableArrayList(Tags.LOCALIZED_SIGHT_ITEM_LIST) != null) {
+			SightsAdapter adapter = new SightsAdapter(
+					getActivity(),
+					R.layout.sights_list_item,
+					new ArrayList<SightMarkerItem>(
+							(Collection<? extends SightMarkerItem>) bundle
+									.getParcelableArrayList(Tags.LOCALIZED_SIGHT_ITEM_LIST)));
+			sights.setAdapter(adapter);
+			sights.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -335,19 +347,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
-		// TODO Auto-generated method stub
-		SightsAdapter adapter = new SightsAdapter(getActivity(), R.layout.sights_list_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
 		
-			
-			
-//			LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
-//			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.text_fragment);
-//			lin.addView(sights, layoutParams);
-			
-			Log.d("MyLogs", "sights == null: "+(sights==null));
-		
-		sights.setAdapter(adapter);
-		sights.setVisibility(View.VISIBLE);
 		mAddress.setVisibility(View.GONE);
 		return false;
 	}
