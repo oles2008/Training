@@ -13,4 +13,8 @@ public class Tags {/**/
 	public final static String URI = "uri";
 	public static final String SCROLL_Y = "scrollY";
 	public static final String COMMON_PARENT_ID = "CommonParentId";
+	public final static String ON_CLUSTER_CLICK_COUNTER = "clusterClickCounter";
+	public final static String ON_MAP_CLICK_COUNTER = "mapClickCounter";
+	public final static String POSITION = "position";
+	public final static String ID = "id";
 }

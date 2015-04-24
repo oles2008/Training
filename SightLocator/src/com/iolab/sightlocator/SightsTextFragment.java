@@ -45,6 +45,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private ListView sights = null;
 	private TextView mAddress = null;
 	public static long markerClickCounter = 0;
+	private int mCommonParentID = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -184,8 +185,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
+		Bundle bundle = new Bundle();
+		bundle.putParcelable(Tags.POSITION, position);
+		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER,++markerClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
+				new GetTextOnMarkerClickAction(bundle));
 		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 		getActivity().startService(intent);
 
@@ -221,6 +225,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				.toString(), res, fragmentManager);
 		selectedItem = null;
 		mAddress.setVisibility(View.GONE);
+		//added on 22/4/15
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(Tags.COMMON_PARENT_ID,mCommonParentID);
+		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER,++markerClickCounter);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(bundle));
+		getActivity().startService(intent);
+		//selectedItem = item;
 	}
 
 	private void registerImageViewClickListener() {
@@ -306,6 +319,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
 		}
+		
+		//check if bundle has COMMON_PARENT_ID
+		if (bundle.getInt(Tags.COMMON_PARENT_ID,-1) != -1) {
+			mCommonParentID = bundle.getInt(Tags.COMMON_PARENT_ID);
+		}
 	}
 
 	@Override
@@ -316,9 +334,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = item.getPosition();
+		Bundle bundle = new Bundle();
+		bundle.putParcelable(Tags.POSITION,position);
+		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, ++markerClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
-		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
 		selectedItem = item;
 
