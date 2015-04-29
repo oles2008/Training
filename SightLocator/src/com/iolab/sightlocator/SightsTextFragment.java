@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -45,6 +46,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private SightMarkerItem selectedItem = null;
 	private ListView sights = null;
 	private TextView mAddress = null;
+	private static long mClusterClickCounter = 0;
 	public static long markerClickCounter = 0;
 
 	@Override
@@ -308,13 +310,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					.getString(Tags.PATH_TO_IMAGE));
 		}
 		
-		if (bundle.getParcelableArrayList(Tags.LOCALIZED_SIGHT_ITEM_LIST) != null) {
+		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
 			SightsAdapter adapter = new SightsAdapter(
 					getActivity(),
 					R.layout.sights_list_item,
 					new ArrayList<SightMarkerItem>(
 							(Collection<? extends SightMarkerItem>) bundle
-									.getParcelableArrayList(Tags.LOCALIZED_SIGHT_ITEM_LIST)));
+									.getParcelableArrayList(Tags.SIGHT_ITEM_LIST)));
 			sights.setAdapter(adapter);
 			sights.setVisibility(View.VISIBLE);
 		}
@@ -347,6 +349,18 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		List<int[]>parentIDs = new ArrayList<int[]>();
+		for(SightMarkerItem item: cluster.getItems()){
+			parentIDs.add(item.getParentIDs());
+		}
+		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
+		Bundle args = new Bundle();
+		args.putInt(Tags.COMMON_PARENT_ID, clusterCommonParentId);
+		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++markerClickCounter);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(args));
+		getActivity().startService(intent);
 		
 		mAddress.setVisibility(View.GONE);
 		return false;

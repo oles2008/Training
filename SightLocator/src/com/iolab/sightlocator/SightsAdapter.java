@@ -3,13 +3,17 @@ package com.iolab.sightlocator;
 import java.util.List;
 
 
+
+
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SightsAdapter extends BaseAdapter {
@@ -42,10 +46,12 @@ public class SightsAdapter extends BaseAdapter {
 	        TextView title = (TextView) convertView.findViewById(R.id.text_view_name_in_list);
 	        TextView address = (TextView) convertView.findViewById(R.id.text_view_address_in_list);
 	        TextView snippet = (TextView) convertView.findViewById(R.id.text_view_description_snippet_in_list);
+	        ImageView image = (ImageView) convertView.findViewById(R.id.image_view_in_list);
 	        
 	        title.setText(mData.get(position).getTitle());
-	        //address.setText(data.get(position).get);
+	        address.setText(mData.get(position).getAddress());
 	        snippet.setText(mData.get(position).getSnippet());
+	        image.setImageURI(Uri.parse(mData.get(position).getImageURI()));
 	         
 	        // object item based on the position
 	        SightMarkerItem item = mData.get(position);
