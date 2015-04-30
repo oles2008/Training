@@ -48,7 +48,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		Bundle bundle = new Bundle();
+		Log.d("IgorLog","Fall probably here");
 		bundle.putParcelable(Tags.POSITION, mPosition);
+		Log.d("IgorLog","Falls not here");
 		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
@@ -151,7 +153,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				Log.d("Mytag","Destination:"+ destinationPath);
 			}
 		}
-
+		Log.d("IgorLog","pathToImage="+pathToImage);
 //		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
