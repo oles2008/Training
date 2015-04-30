@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -123,7 +121,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	}
 
 	private TextView getTextView() {
-		Fragment textFragment = getActivity().getFragmentManager()
+		Fragment textFragment = getFragmentManager()
 				.findFragmentById(R.id.text_fragment);
 		return (TextView) textFragment.getView().findViewById(R.id.textView);
 	}
@@ -227,14 +225,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
             @Override
             public boolean onLongClick(View v) {
                 /*** changing text to full screen using Fragment transaction ***/
-                Fragment mMapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
+                Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
 
-//            if (MainActivity.mapFragmentVisible) {
-                if (mMapFragment.isVisible()) {
-                    getFragmentManager().beginTransaction().hide(mMapFragment).addToBackStack(null).commit();
+                if (mapFragment.isVisible()) {
+                    getTextView().setTextSize(24);
+                    getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
                     MainActivity.mapFragmentVisible = false;
                 } else {
-                    getFragmentManager().beginTransaction().show(mMapFragment).addToBackStack(null).commit();
+                    getTextView().setTextSize(14);
+                    getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
                     MainActivity.mapFragmentVisible = true;
                 }
                 return true;
