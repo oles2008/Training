@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -16,10 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -55,7 +54,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 	}
 
-	@Override
+    @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View inflatedView = inflater.inflate(R.layout.text_fragment, container, false);
@@ -66,7 +65,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		return inflatedView;
 	}
 
-	@Override
+    @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -97,7 +96,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			});
 		}
 		registerImageViewClickListener();
-		registerTexViewClickListener();
+		registerLinearLayoutClickListener();
+        registerBackButtonListener();
 	}
 
 	@Override
@@ -123,15 +123,18 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	}
 
 	private TextView getTextView() {
-		Fragment textFragmet = getActivity().getFragmentManager()
+		Fragment textFragment = getActivity().getFragmentManager()
 				.findFragmentById(R.id.text_fragment);
-		TextView textView = (TextView) textFragmet.getView().findViewById(
-				R.id.textView);
-
-		return textView;
+		return (TextView) textFragment.getView().findViewById(R.id.textView);
 	}
 
-	/**
+    private LinearLayout getLinearLayout() {
+        Fragment textFragment = getActivity().getFragmentManager()
+                .findFragmentById(R.id.text_fragment);
+        return (LinearLayout) textFragment.getView().findViewById(R.id.linear_layout_child_of_scroll);
+    }
+
+    /**
 	 * On markers click change image fragment from default (one pixel image) to
 	 * an icon, using image uri. The uri is stored in ImageView tag and then
 	 * used in onSaveInstanceState() and onActivityCreated methods
@@ -157,24 +160,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 		imageView.setTag(R.string.imageview_tag_uri, uri);
 	}
-
-//	private void changeImageFragmentToOnePixel(String uri) {
-//		ImageView imageView = getImageView();
-//
-//		Resources res = getResources();
-//		Drawable drawable = res.getDrawable(R.drawable.one_pixel);
-//		imageView.setImageDrawable(drawable);
-//		imageView.setTag(R.string.imageview_tag_uri, uri);
-//	}
-
-//	protected ImageView getImageView() {
-//		Fragment fragment = getFragmentManager().findFragmentById(
-//				R.id.text_fragment);
-//		ImageView imageView = (ImageView) fragment.getView().findViewById(
-//				R.id.imageView);
-//
-//		return imageView;
-//	}
 
 	@Deprecated
 	public boolean onMarkerClick(final Marker marker) {
@@ -235,30 +220,41 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		});
 	}
 
-	private void registerTexViewClickListener() {
-		final TextView textView = getTextView();
-		FragmentManager fragmentManager = getFragmentManager();
-		final ImageView imageView = Utils.getImageView(fragmentManager);
-		
-		
-		textView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				String imageTag = null;
-				if (imageView.getTag(R.string.imageview_tag_uri) != null) {
-					imageTag = imageView.getTag(R.string.imageview_tag_uri).toString();
-				}
-				
-				String text = textView.getText().toString();
-				Intent intent =  new Intent(getActivity(), DisplayFullScreenTextActivity.class);
-				intent.putExtra(Tags.EXTRA_TEXT, text);
-				intent.putExtra(Tags.PATH_TO_IMAGE, imageTag);
-				intent.putExtra("layout", R.layout.text_fragment);
-				startActivity(intent);
-			}
-		});
-	}
+    private void registerLinearLayoutClickListener() {
+        LinearLayout linearLayout = getLinearLayout();
+        linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                /*** changing text to full screen using Fragment transaction ***/
+                Fragment mMapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
+
+//            if (MainActivity.mapFragmentVisible) {
+                if (mMapFragment.isVisible()) {
+                    getFragmentManager().beginTransaction().hide(mMapFragment).addToBackStack(null).commit();
+                    MainActivity.mapFragmentVisible = false;
+                } else {
+                    getFragmentManager().beginTransaction().show(mMapFragment).addToBackStack(null).commit();
+                    MainActivity.mapFragmentVisible = true;
+                }
+                return true;
+            }
+        });
+    }
+
+    private void registerBackButtonListener() {
+        getFragmentManager().addOnBackStackChangedListener(
+                new FragmentManager.OnBackStackChangedListener() {
+                    public void onBackStackChanged() {
+                        Fragment mMapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
+                        if (mMapFragment.isVisible()) {
+                            MainActivity.mapFragmentVisible = true;
+                        } else {
+                            MainActivity.mapFragmentVisible = false;
+                        }
+                    }
+                });
+    }
 
 	@Override
 	public void onSaveInstanceState(Bundle args) {
@@ -273,7 +269,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
 	}
 
-	@Override
+    @Override
 	public void onPause() {
 		super.onPause();
 		//Appl.unsubscribeFromMarkerClickUpdates(this);
@@ -283,9 +279,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
 	}
-	
+
 	private ScrollView getScrollView() {
-		ScrollView scr = null;
+		ScrollView scr;
 		try{
 			scr = (ScrollView) getView();
 		}catch(ClassCastException e){
@@ -302,7 +298,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-//			Log.d("MSG", "Tags.PATH_TO_IMAGE > " + bundle.getString(Tags.PATH_TO_IMAGE));
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
 		}
@@ -335,11 +330,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
-		// TODO Auto-generated method stub
 		SightsAdapter adapter = new SightsAdapter(getActivity(), R.layout.sights_list_item, new ArrayList<SightMarkerItem>(cluster.getItems()));
 		
-			
-			
 //			LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
 //			LinearLayout lin = (LinearLayout) getView().findViewById(R.id.text_fragment);
 //			lin.addView(sights, layoutParams);
