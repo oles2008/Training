@@ -13,12 +13,15 @@
         android:id="@+id/scrollView"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
+            android:id="@+id/linear_layout_child_of_scroll"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:clickable="true">
 
             <TextView
                 android:id="@+id/text_view_object_title"
