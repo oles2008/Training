@@ -311,6 +311,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public void onUpdateView(Bundle bundle) {
+		//Log.d("descrLog","description is "+bundle.getString(Tags.SIGHT_DESCRIPTION));
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
 			getScrollView().scrollTo(0, 0);
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));

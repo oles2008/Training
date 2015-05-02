@@ -112,7 +112,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		
-		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,80));////done on 19/04/15
+		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
 		Appl.receiver.send(0, resultData);
 	}
 
