@@ -5,6 +5,7 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 
 import java.io.File;
 
@@ -19,17 +20,24 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
-	private LatLng position;
-	private long markerClickCounter;
+	private long mMarkerClickCounter = -1;
+	private long mMapClickCounter = -1;
+	private long mClusterClickCounter = -1;
+	private LatLng mPosition;
+	private long mID = -1;
 	
-	public GetTextOnMarkerClickAction(LatLng position, long markerClickCounter) {
-		this.position = position;
-		this.markerClickCounter = markerClickCounter;
+	public GetTextOnMarkerClickAction(Bundle inputBundle) {
+		mPosition  = new LatLng(inputBundle.getDouble(Tags.POSITION_LAT),
+								inputBundle.getDouble(Tags.POSITION_LNG));
+		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
+		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
+		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
+		mID = inputBundle.getInt(Tags.ID);
+				
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
-		this.position = parcel.readParcelable(LatLng.class.getClassLoader());
-		this.markerClickCounter = parcel.readLong();
+		this(parcel.readBundle());
 	}
 
 	@Override
@@ -40,8 +48,15 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeParcelable(position, flags);
-		dest.writeLong(markerClickCounter);
+		Bundle bundle = new Bundle();
+		bundle.putDouble(Tags.POSITION_LAT, mPosition.latitude);
+		bundle.putDouble(Tags.POSITION_LNG, mPosition.longitude);
+		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
+		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
+		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
+		bundle.putLong(Tags.ID, mID);
+		
+		dest.writeBundle(bundle);
 		
 	}
 
@@ -54,26 +69,48 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			return new GetTextOnMarkerClickAction[size];
 		}
 	};
+	public Cursor getCursor(){
+		Cursor cursor = null;
+		if(mPosition != null){
+			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
+					.query(TABLE_NAME,
+							new String[] { COLUMN_LATITUDE,
+									COLUMN_LONGITUDE,
+									COLUMN_SIGHT_IMAGE_PATH,
+									SIGHT_DESCRIPTION + "en"},
+								"(" + COLUMN_LATITUDE + " = "
+									+ mPosition.latitude + " AND "
+									+ COLUMN_LONGITUDE + " = "
+									+ mPosition.longitude + ")",
+									null, null, null, null);
+		};
+		if(mID != -1){
+			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
+					.query(TABLE_NAME,
+							new String[] { COLUMN_LATITUDE,
+									COLUMN_LONGITUDE,
+									COLUMN_SIGHT_IMAGE_PATH,
+									SIGHT_DESCRIPTION + "en"},
+								"(" + COLUMN_ID + " = "
+									+ mID + ")",
+									null, null, null, null);
+		};
 
+		return cursor;
+	};
 	
 	@Override
 	public void runInService() {
 		
-		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
-				.query(TABLE_NAME,
-						new String[] { COLUMN_LATITUDE,
-								COLUMN_LONGITUDE,
-								COLUMN_SIGHT_IMAGE_PATH,
-								SIGHT_DESCRIPTION + "en"},
-							"(" + COLUMN_LATITUDE + " = "
-								+ position.latitude + " AND "
-								+ COLUMN_LONGITUDE + " = "
-								+ position.longitude + ")",
-								null, null, null, null);
+		Cursor cursor = getCursor();
 
 		String sightDescription = null;
 		String pathToImage = null;
 
+		if(cursor == null){
+			return;
+		}
+		
 		if (cursor.moveToFirst()) {
 			pathToImage = cursor.getString(2);
 			sightDescription = cursor.getString(3);
@@ -116,12 +153,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				Log.d("Mytag","Destination:"+ destinationPath);
 			}
 		}
-
+		Log.d("IgorLog","pathToImage="+pathToImage);
 //		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
-		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
 		resultData.putString(Tags.PATH_TO_IMAGE, pathToImage);
 		Appl.receiver.send(0, resultData);
 	}

@@ -47,13 +47,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private ListView sights = null;
 	private TextView mAddress = null;
 	private static long mClusterClickCounter = 0;
-	public static long markerClickCounter = 0;
+	private int mCommonParentID = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			markerClickCounter = savedInstanceState.getLong(
+			mClusterClickCounter = savedInstanceState.getLong(
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
 		}
 	}
@@ -187,11 +187,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
+		Bundle bundle = new Bundle();
+		bundle.putDouble(Tags.POSITION_LAT, position.latitude);
+		bundle.putDouble(Tags.POSITION_LNG, position.longitude);
+		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER,++mClusterClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
-		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+				new GetTextOnMarkerClickAction(bundle));
+		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		getActivity().startService(intent);
-
 		return true;
 	}
 
@@ -224,6 +227,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				.toString(), res, fragmentManager);
 		selectedItem = null;
 		mAddress.setVisibility(View.GONE);
+		//added on 22/4/15
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(Tags.COMMON_PARENT_ID,mCommonParentID);
+		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER,++mClusterClickCounter);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(bundle));
+		getActivity().startService(intent);
+		//selectedItem = item;
 	}
 
 	private void registerImageViewClickListener() {
@@ -272,7 +284,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (null != uri) {
 			args.putString(Tags.URI, uri);
 		}
-		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
 	}
 
@@ -310,6 +322,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					.getString(Tags.PATH_TO_IMAGE));
 		}
 		
+		//check if bundle has COMMON_PARENT_ID
+		if (bundle.getInt(Tags.COMMON_PARENT_ID,-1) != -1) {
+			mCommonParentID = bundle.getInt(Tags.COMMON_PARENT_ID);
+		}
+		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
 			SightsAdapter adapter = new SightsAdapter(
 					getActivity(),
@@ -330,9 +347,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = item.getPosition();
+		Bundle bundle = new Bundle();
+		bundle.putDouble(Tags.POSITION_LAT,position.latitude);
+		bundle.putDouble(Tags.POSITION_LNG,position.longitude);
+		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, ++mClusterClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(position, ++markerClickCounter));
-		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
+				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
 		selectedItem = item;
 
@@ -357,7 +377,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
 		Bundle args = new Bundle();
 		args.putInt(Tags.COMMON_PARENT_ID, clusterCommonParentId);
-		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++markerClickCounter);
+		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(args));
 		getActivity().startService(intent);
