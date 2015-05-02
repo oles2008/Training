@@ -15,6 +15,7 @@ public class Tags {/**/
 	public static final String COMMON_PARENT_ID = "CommonParentId";
 	public final static String ON_CLUSTER_CLICK_COUNTER = "clusterClickCounter";
 	public final static String ON_MAP_CLICK_COUNTER = "mapClickCounter";
-	public final static String POSITION = "position";
+	public final static String POSITION_LAT = "positionLat";
+	public final static String POSITION_LNG = "positionLng";
 	public final static String ID = "id";
 }

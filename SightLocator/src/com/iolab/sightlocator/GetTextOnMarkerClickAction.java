@@ -27,7 +27,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private long mID = -1;
 	
 	public GetTextOnMarkerClickAction(Bundle inputBundle) {
-		mPosition = inputBundle.getParcelable(Tags.POSITION);
+		mPosition  = new LatLng(inputBundle.getDouble(Tags.POSITION_LAT),
+								inputBundle.getDouble(Tags.POSITION_LNG));
 		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
@@ -48,9 +49,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		Bundle bundle = new Bundle();
-		Log.d("IgorLog","Fall probably here");
-		bundle.putParcelable(Tags.POSITION, mPosition);
-		Log.d("IgorLog","Falls not here");
+		bundle.putDouble(Tags.POSITION_LAT, mPosition.latitude);
+		bundle.putDouble(Tags.POSITION_LNG, mPosition.longitude);
 		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);

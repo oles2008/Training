@@ -186,7 +186,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = marker.getPosition();
 		Bundle bundle = new Bundle();
-		bundle.putParcelable(Tags.POSITION, position);
+		bundle.putDouble(Tags.POSITION_LAT, position.latitude);
+		bundle.putDouble(Tags.POSITION_LNG, position.longitude);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER,++markerClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
@@ -335,7 +336,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = item.getPosition();
 		Bundle bundle = new Bundle();
-		bundle.putParcelable(Tags.POSITION,position);
+		bundle.putDouble(Tags.POSITION_LAT,position.latitude);
+		bundle.putDouble(Tags.POSITION_LNG,position.longitude);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, ++markerClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
