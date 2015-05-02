@@ -32,7 +32,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
-		mID = inputBundle.getInt(Tags.ID);
+		mID = inputBundle.getInt(Tags.ID,-1);
 				
 	}
 	
@@ -153,7 +153,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				Log.d("Mytag","Destination:"+ destinationPath);
 			}
 		}
-		Log.d("IgorLog","pathToImage="+pathToImage);
 //		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
