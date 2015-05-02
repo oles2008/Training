@@ -46,7 +46,7 @@ public class ItemGroupAnalyzer {
 		List<Integer> finalListOfPositionsInArrays = new ArrayList<Integer>();
 		int commonParent = findCommonParent(copyOfList, 0, finalListOfPositionsInArrays);
 		
-		Log.d("MyLogs", "common parent: "+commonParent);
+		//Log.d("MyLogs", "common parent: "+commonParent);
 		
 		//resetting the copyOfList
 		copyOfList.clear();
@@ -209,7 +209,7 @@ public class ItemGroupAnalyzer {
 	}
 	
 	private static int findCommonParent(List<int[]> list, int percentageToIgnore, List<Integer> finalListOfPositionsInArrays){
-		Log.d("MyLogs", "looking for common parent, ignoring "+percentageToIgnore);
+		//Log.d("MyLogs", "looking for common parent, ignoring "+percentageToIgnore);
 		List<Integer> listOfBiggest = new ArrayList<Integer>(list.size());
 		List<Integer> positionsOfEmpty = new ArrayList<Integer>();
 		for(int i=0;i<list.size();i++){

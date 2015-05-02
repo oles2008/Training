@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.database.Cursor;
@@ -15,8 +16,8 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_STATU
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
-import com.iolab.sightlocator.ItemGroupAnalyzer;
 
+import com.iolab.sightlocator.ItemGroupAnalyzer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -103,6 +104,19 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			
 			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)};
 			
+			//temporary fix for cases when some parent IDs are empty and are treated as 0
+			int positionOfZero = -1;
+			for(int i=0; i<parentIDs.length;i++){
+				if(parentIDs[i]==0){
+					positionOfZero = i;
+					break;
+				}
+			}
+			if(positionOfZero!=-1){
+				parentIDs = Arrays.copyOfRange(parentIDs, 0, positionOfZero);
+			}
+			//end of temporary fix
+			
 			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));			
 			listOfArrays.add(parentIDs); 
@@ -112,6 +126,11 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		
+//		Log.d("MyLogs", "commonParent: "+ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
+//		Log.d("MyLogs", "list: ");
+//		for(int[] parents: listOfArrays){
+//			Log.d("MyLogs", Arrays.toString(parents));
+//		}
 		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
 		Appl.receiver.send(0, resultData);
 	}
