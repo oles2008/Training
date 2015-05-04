@@ -19,8 +19,12 @@ public class SightsHierarchichalAlgorithm extends
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
-		Set<Cluster<SightMarkerItem>> clusterSet = new HashSet<Cluster<SightMarkerItem>>();
-		List<Cluster<SightMarkerItem>> initialClusterList = new ArrayList<Cluster<SightMarkerItem>>(super.getClusters(zoom-2));
+		Set<Cluster<SightMarkerItem>> clusterSet = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom-2);
+		List<Cluster<SightMarkerItem>> initialClusterList = new ArrayList<Cluster<SightMarkerItem>>(clusterSet);
+		if(super.getClusters(zoom).containsAll(initialClusterList)){
+			return clusterSet;
+		}
+		clusterSet.clear();
 		for(Cluster<SightMarkerItem> cluster: initialClusterList){
 			List<int[]> parentIDsArrays = new ArrayList<int[]>();
 			List<SightMarkerItem> clusterItems = new ArrayList<SightMarkerItem>(cluster.getItems());
@@ -55,12 +59,5 @@ public class SightsHierarchichalAlgorithm extends
 		}
 		return clusterSet;
 		//return (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom);
-	}
-	
-	private int findCommonParent(Collection<SightMarkerItem> items){
-		for(SightMarkerItem item: items){
-			
-		}
-		return -1;
 	}
 }

@@ -53,7 +53,7 @@ public class ItemGroupAnalyzer {
 		copyOfList.addAll(list);
 		
 //		//adding positions of the objects which do not have a more precise 
-//		//location than the found commonParent. We are inserting their previous positions in the 
+//		//position in the hierarchy than the found commonParent. We are inserting their previous positions in the 
 //		//initial list, i.e. before the removal of elements with empty location
 //		//Therefore, we are temporarily putting the removed empty arrays back
 //		for(int i: listOfEmpty){
