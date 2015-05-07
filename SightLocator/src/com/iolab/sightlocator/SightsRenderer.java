@@ -46,6 +46,7 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
 	
 	@Override
     protected void onBeforeClusterItemRendered(SightMarkerItem item, MarkerOptions markerOptions) {
+		Log.d("MyLogs", "onBeforeClusterItemRendered, "+item.title);
         // Draw a single person.
         // Set the info window to show their name.
         markerOptions.title(item.title).snippet(item.snippet).icon(BitmapDescriptorFactory
@@ -66,6 +67,7 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
     protected void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster, MarkerOptions markerOptions) {
         // Draw multiple people.
         // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
+		Log.d("MyLogs", "onBeforeClusterItemRendered, "+cluster.getSize());
 		super.onBeforeClusterRendered(cluster, markerOptions);
 //        if(sightsMapFragment.currentSelectedMarker!=null){
 //        	SightMarkerItem selectedItem = new SightMarkerItem(sightsMapFragment.currentSelectedMarker);

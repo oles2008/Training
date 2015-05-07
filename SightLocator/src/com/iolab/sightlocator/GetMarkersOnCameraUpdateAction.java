@@ -62,7 +62,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 
 	@Override
 	public void runInService() {
-		Log.d("MyLogs", "Starting runUnService(), updateViewCallIndex: "+this.viewUpdateCallIndex);
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.query(TABLE_NAME,
 						new String[] { COLUMN_LATITUDE,

@@ -65,8 +65,11 @@ public class ItemGroupAnalyzer {
 				List<Integer> oneElementList = new ArrayList<Integer>();
 				oneElementList.add(i);
 				result.add(new ClusterGroup(commonParent, oneElementList));
+				Log.d("MyLogs", "adding oneElement");
 			}
 		}
+		
+		Log.d("MyLogs", "separate markers number: "+result.size());
 		
 		//if there are too many separate markers, return
 		if(result.size()>maxNumberToSplitInto){
