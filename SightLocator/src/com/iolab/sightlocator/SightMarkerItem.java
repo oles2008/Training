@@ -64,6 +64,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.imageURI=array[3];
 		this.color=array[4];
 		parcel.readIntArray(this.parentIDs);
+		Log.d("MyLogs", "parentIds: "+parentIDs);
 	}
 	
 	public static final Parcelable.Creator<SightMarkerItem> CREATOR = new Creator<SightMarkerItem>() {

@@ -46,8 +46,6 @@ public class ItemGroupAnalyzer {
 		List<Integer> finalListOfPositionsInArrays = new ArrayList<Integer>();
 		int commonParent = findCommonParent(copyOfList, 0, finalListOfPositionsInArrays);
 		
-		//Log.d("MyLogs", "common parent: "+commonParent);
-		
 		//resetting the copyOfList
 		copyOfList.clear();
 		copyOfList.addAll(list);
@@ -65,11 +63,9 @@ public class ItemGroupAnalyzer {
 				List<Integer> oneElementList = new ArrayList<Integer>();
 				oneElementList.add(i);
 				result.add(new ClusterGroup(commonParent, oneElementList));
-				Log.d("MyLogs", "adding oneElement");
+				copyOfList.set(i, new int[]{});
 			}
 		}
-		
-		Log.d("MyLogs", "separate markers number: "+result.size());
 		
 		//if there are too many separate markers, return
 		if(result.size()>maxNumberToSplitInto){
@@ -89,46 +85,13 @@ public class ItemGroupAnalyzer {
 			anotherCopyOfList.addAll(copyOfList);
 			//apart from finding common parent, this will remove all empty arrays from anotherCopyOfList
 			commonParent = findCommonParent(anotherCopyOfList, (int)(100*(1-(double)1/(double)(maxNumberToSplitInto-result.size()))), finalListOfPositionsInArrays);
-//			Log.d("MyLogs", "results size: "+result.size());
-//			Log.d("MyLogs", "maxNumberToSplitInto-results size: "+maxNumberToSplitInto-);
-//			Log.d("MyLogs", "common parent: "+commonParent+" for: ");
-//			for(int[] p: anotherCopyOfList){
-//				String par="["+p[0];
-//				for(int j=1;j<p.length;j++){
-//					par+=","+p[j];
-//				}
-//				par+="]";
-//				Log.d("MyLogs", ""+par);
-//			}
 			if(commonParent==-1 && anotherCopyOfList.size()>0){
 				result.clear();
 				result.add(new ClusterGroup(-1, listOfAll));
-//				Log.d("MyLogs", "returning at 2");
 				return result;
 			}else{
 				//adds the positions of items from the indicated parent, and replaces
 				//the corresponding arrays in the copyOfList with empty arrays
-//				Log.d("MyLogs", "separated array:");
-//				List<Integer> p = separateArraysFromIndicatedParent(copyOfList, commonParent);
-//					String par="["+p.get(0);
-//					for(int j=1;j<p.size();j++){
-//						par+=","+p.get(j);
-//					}
-//					par+="]";
-//					Log.d("MyLogs", ""+par);
-//					Log.d("MyLogs", "what remained: ");
-//					for(int[] pa: copyOfList){
-//						if(pa.length==0){
-//							Log.d("MyLogs","[]");
-//							continue;
-//						}
-//						par="["+pa[0];
-//						for(int j=1;j<pa.length;j++){
-//							par+=","+pa[j];
-//						}
-//						par+="]";
-//						Log.d("MyLogs", ""+par);
-//					}
 				result.add(new ClusterGroup(commonParent, separateArraysFromIndicatedParent(copyOfList, commonParent)));
 			}
 			//just to see how many non-empty arrays remain
@@ -137,7 +100,6 @@ public class ItemGroupAnalyzer {
 			for(int i=0;i<anotherCopyOfList.size();i++){
 				if(anotherCopyOfList.get(i)== null || anotherCopyOfList.get(i).length==0){
 					anotherCopyOfList.remove(anotherCopyOfList.get(i));
-//					Log.d("MyLogs", "removing empty array "+i+", size: "+anotherCopyOfList.size());
 					i--;
 				}
 			}
@@ -148,7 +110,6 @@ public class ItemGroupAnalyzer {
 			//the items could not be split into a less or equal to maxNumberToSplitInto
 			result.clear();
 			result.add(new ClusterGroup(-1, listOfAll));
-//			Log.d("MyLogs", "returning at 3, size: "+anotherCopyOfList.size());
 		}
 		//returning either the result with "listOfAll", or all the split groups
 		return result;

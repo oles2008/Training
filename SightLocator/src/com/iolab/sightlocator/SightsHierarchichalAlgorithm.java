@@ -19,11 +19,8 @@ public class SightsHierarchichalAlgorithm extends
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
-		Set<Cluster<SightMarkerItem>> clusterSet = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom-1);
+		Set<Cluster<SightMarkerItem>> clusterSet = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom+1);
 		List<Cluster<SightMarkerItem>> initialClusterList = new ArrayList<Cluster<SightMarkerItem>>(clusterSet);
-		if(super.getClusters(zoom).containsAll(initialClusterList)){
-			return clusterSet;
-		}
 		clusterSet.clear();
 		for(Cluster<SightMarkerItem> cluster: initialClusterList){
 			List<int[]> parentIDsArrays = new ArrayList<int[]>();
@@ -33,7 +30,6 @@ public class SightsHierarchichalAlgorithm extends
 				parentIDsArrays.add(item.getParentIDs());
 			}
 			List<ClusterGroup> clusterGroups = ItemGroupAnalyzer.split(parentIDsArrays, 3);
-			Log.d("MyLogs", "clusterGroups size: "+clusterGroups.size());
 			for(ClusterGroup clusterGroup: clusterGroups){
 				Set<SightMarkerItem> items = new HashSet<SightMarkerItem>();
 				double averageLat=0;
@@ -57,8 +53,6 @@ public class SightsHierarchichalAlgorithm extends
 				clusterSet.add(newCluster);
 			}
 		}
-		Log.d("MyLogs", "clusterSet size: "+clusterSet.size());
 		return clusterSet;
-		//return (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom);
 	}
 }

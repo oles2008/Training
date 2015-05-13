@@ -102,6 +102,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 										cursor.getDouble(1));
 			
 			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)};
+			Log.d("MyLogs", "parentIds from cursor: "+cursor.getInt(5)+" "+cursor.getInt(6)+" "+cursor.getInt(7)+" "+cursor.getInt(8));
+			Log.d("MyLogs", "parentIds in action: "+Arrays.toString(parentIDs));
 			
 			//temporary fix for cases when some parent IDs are empty and are treated as 0
 			int positionOfZero = -1;
@@ -115,7 +117,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 				parentIDs = Arrays.copyOfRange(parentIDs, 0, positionOfZero);
 			}
 			//end of temporary fix
-			
 			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
 														cursor.getString(3),null,parentIDs));			
 			listOfArrays.add(parentIDs); 

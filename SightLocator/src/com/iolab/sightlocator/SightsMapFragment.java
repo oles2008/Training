@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -384,11 +385,10 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
-		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
-				
+				Log.d("MyLogs", "parentIds: "+Arrays.toString(item.getParentIDs()));
 				if(itemSet.add(item)){
 					clusterManager.addItem(item);
 				}
