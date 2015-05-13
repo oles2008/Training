@@ -216,9 +216,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public void onMapClick(LatLng arg0) {
-		String loremIpsum = getString(R.string.lorem_ipsum);
-		// changes the text fragment to default (lorem ipsum text)
-		changeTextFragment(loremIpsum);
 		// changes the image fragment to default (one pixel image)
 		Resources res = getResources();
 		FragmentManager fragmentManager = getFragmentManager();
