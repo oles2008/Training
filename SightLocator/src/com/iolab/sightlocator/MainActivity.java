@@ -69,6 +69,7 @@ public class MainActivity extends BaseActivity {
         Fragment textFragment = getFragmentManager().findFragmentById(R.id.text_fragment);
         // if we are in "Home" screen ("Map" and "Text" fragments are visible) - close the app
         if (mapFragment.isVisible() && textFragment.isVisible()) {
+            MainActivity.mapFragmentVisible = true;
             finish();
         // else - go back one step
         } else if(textFragment.isVisible()) {
