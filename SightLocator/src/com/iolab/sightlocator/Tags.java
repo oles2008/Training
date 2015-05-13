@@ -12,5 +12,6 @@ public class Tags {/**/
 	public final static String EXTRA_TEXT = "extratext";
 	public final static String URI = "uri";
 	public static final String SCROLL_Y = "scrollY";
-	public static final String COMMON_PARENT_ID = "CommonParentId";
+    public final static String TEXT_FRAGMENT_VISIBLE = "fragmentTextVisible";
+    public final static String MAP_FRAGMENT_VISIBLE = "fragmentMapVisible";
 }
