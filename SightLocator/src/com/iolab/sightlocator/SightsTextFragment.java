@@ -304,8 +304,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterItemClick(SightMarkerItem item) {
-		if (selectedItem!=null && item.getPosition().equals(selectedItem.getPosition())
-				&& item.getTitle().equals(selectedItem.getTitle())) {
+		if (selectedItem != null
+				&& item.getPosition().equals(selectedItem.getPosition())
+				&& ((item.getTitle() == null) || (item.getTitle()
+						.equals(selectedItem.getTitle())))) {
 			return true;
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
