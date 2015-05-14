@@ -137,8 +137,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		
-		Log.d("MyLogs", "commonParent: "+ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
-		Log.d("MyLogs", "list: ");
+//		Log.d("MyLogs", "commonParent: "+ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
+//		Log.d("MyLogs", "list: ");
 		for(int[] parents: listOfArrays){
 			Log.d("MyLogs", Arrays.toString(parents));
 		}

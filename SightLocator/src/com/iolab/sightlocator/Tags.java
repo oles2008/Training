@@ -19,4 +19,6 @@ public class Tags {/**/
 	public final static String POSITION_LAT = "positionLat";
 	public final static String POSITION_LNG = "positionLng";
 	public final static String ID = "id";
+	public final static String TEXT_FRAGMENT_VISIBLE = "fragmentTextVisible";
+    public final static String MAP_FRAGMENT_VISIBLE = "fragmentMapVisible";
 }

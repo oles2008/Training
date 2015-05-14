@@ -55,6 +55,8 @@ public class ItemGroupAnalyzerTest extends TestCase {
 		assertEquals(-1, ItemGroupAnalyzer.isParent(list, 4, 1));
 		assertEquals(1, ItemGroupAnalyzer.isParent(list, 1, 4));
 		assertEquals(1, ItemGroupAnalyzer.findCommonParent(list, 25));
+		list.add(new int[]{7,8,9});
+		assertEquals(9, ItemGroupAnalyzer.findCommonParent(list, 100));
 	}
 
 	public void testGetMaximalElementPosition() {

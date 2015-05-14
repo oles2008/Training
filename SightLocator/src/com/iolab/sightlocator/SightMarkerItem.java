@@ -144,7 +144,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	
 	@Override
 	public int hashCode() {
-		return position.hashCode()+title.hashCode();
+		return position.hashCode()+((title != null)? title.hashCode() : 0);
 	}
 	
 	@Override
@@ -154,7 +154,8 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		}
 		SightMarkerItem item = (SightMarkerItem) obj;
 		return this.position.equals(item.getPosition())
-				&& this.title.equals(item.getTitle());
+				&& (((this.title == null) && (item.getTitle() == null)) || (this.title
+						.equals(item.getTitle())));
 	}
 
 }

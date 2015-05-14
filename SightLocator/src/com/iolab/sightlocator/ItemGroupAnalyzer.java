@@ -204,6 +204,9 @@ public class ItemGroupAnalyzer {
 			listOfPositionsInArrays.set(maxPosition,listOfPositionsInArrays.get(maxPosition)+1);
 			listOfBiggest.set(maxPosition,list.get(maxPosition)[listOfPositionsInArrays.get(maxPosition)]);
 			maxPosition = getMaximalElementPosition(list, listOfBiggest, percentageToIgnore);
+			if(maxPosition!=-1){
+				currentCommonParent = list.get(maxPosition)[listOfPositionsInArrays.get(maxPosition)];
+			}
 		}
 		if(finalListOfPositionsInArrays!=null){
 			finalListOfPositionsInArrays.clear();
