@@ -33,7 +33,6 @@ public class ItemGroupAnalyzer {
 			}
 		}
 		
-		
 		//if there are too many separate markers, return
 		if(result.size()>maxNumberToSplitInto){
 			result.clear();
@@ -85,6 +84,7 @@ public class ItemGroupAnalyzer {
 			anotherCopyOfList.addAll(copyOfList);
 			//apart from finding common parent, this will remove all empty arrays from anotherCopyOfList
 			commonParent = findCommonParent(anotherCopyOfList, (int)(100*(1-(double)1/(double)(maxNumberToSplitInto-result.size()))), finalListOfPositionsInArrays);
+			
 			if(commonParent==-1 && anotherCopyOfList.size()>0){
 				result.clear();
 				result.add(new ClusterGroup(-1, listOfAll));
