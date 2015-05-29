@@ -8,7 +8,8 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity
+        implements SightsTextFragment.OnTextFragmentClickListener{
 
     public static boolean mapFragmentVisible = true;
     public static boolean textFragmentVisible = true;
@@ -40,7 +41,8 @@ public class MainActivity extends BaseActivity {
         }
 
         Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
-
+        System.out.println(" >>> map fragment is null > " + (mapFragment == null));
+        System.out.println(" >>> map visible > " + MainActivity.mapFragmentVisible);
         if (!MainActivity.mapFragmentVisible) {
             getTextView().setTextSize(24);
             getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
@@ -53,6 +55,9 @@ public class MainActivity extends BaseActivity {
     private TextView getTextView() {
         Fragment textFragment = getFragmentManager()
                 .findFragmentById(R.id.text_fragment);
+        System.out.println(" >>> text fragment is null > " + (textFragment == null));
+        System.out.println(" >>> text visible > " + MainActivity.textFragmentVisible);
+
         return (TextView) textFragment.getView().findViewById(R.id.textView);
     }
 
@@ -80,4 +85,17 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onTextFragmentLongClick() {
+        Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
+        if (mapFragment.isVisible()) {
+            getTextView().setTextSize(24);
+            getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
+            MainActivity.mapFragmentVisible = false;
+        } else {
+            getTextView().setTextSize(14);
+            getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
+            MainActivity.mapFragmentVisible = true;
+        }
+    }
 }
