@@ -8,6 +8,8 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -24,7 +26,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private long mMapClickCounter = -1;
 	private long mClusterClickCounter = -1;
 	private LatLng mPosition;
-	private long mID = -1;
+	private int mID = -1;
+	private ArrayList<SightMarkerItem> mClusterItems = null;
 	
 	public GetTextOnMarkerClickAction(Bundle inputBundle) {
 		mPosition  = new LatLng(inputBundle.getDouble(Tags.POSITION_LAT),
@@ -32,8 +35,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
-		mID = inputBundle.getInt(Tags.ID,-1);
-				
+		mID = inputBundle.getInt(Tags.COMMON_PARENT_ID,-1);
+		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
@@ -54,7 +57,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
-		bundle.putLong(Tags.ID, mID);
+		bundle.putInt(Tags.COMMON_PARENT_ID, mID);
+		bundle.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mClusterItems);
 		
 		dest.writeBundle(bundle);
 		
@@ -95,6 +99,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 									+ mID + ")",
 									null, null, null, null);
 		};
+		if(mClusterItems != null && !mClusterItems.isEmpty()){
+			String whereClause = "(" + COLUMN_ID + " = "+mClusterItems.get(0).id;
+		}
 
 		return cursor;
 	};
