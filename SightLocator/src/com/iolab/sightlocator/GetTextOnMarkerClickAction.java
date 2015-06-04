@@ -5,8 +5,11 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
 
 import java.io.File;
+import java.util.Locale;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -22,14 +25,17 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private LatLng position;
 	private long markerClickCounter;
 	
+	
 	public GetTextOnMarkerClickAction(LatLng position, long markerClickCounter) {
 		this.position = position;
 		this.markerClickCounter = markerClickCounter;
+		
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
 		this.position = parcel.readParcelable(LatLng.class.getClassLoader());
 		this.markerClickCounter = parcel.readLong();
+		
 	}
 
 	@Override
@@ -64,19 +70,24 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 						new String[] { COLUMN_LATITUDE,
 								COLUMN_LONGITUDE,
 								COLUMN_SIGHT_IMAGE_PATH,
-								SIGHT_DESCRIPTION + "en"},
+								SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS + "en"},
 							"(" + COLUMN_LATITUDE + " = "
 								+ position.latitude + " AND "
 								+ COLUMN_LONGITUDE + " = "
 								+ position.longitude + ")",
 								null, null, null, null);
+		
 
 		String sightDescription = null;
 		String pathToImage = null;
+		String sightName = null;
+		String sightAddress = null;
 
 		if (cursor.moveToFirst()) {
 			pathToImage = cursor.getString(2);
 			sightDescription = cursor.getString(3);
+			sightName = cursor.getString(4);
+			sightAddress = cursor.getString(5);
 		}
 
 		if (pathToImage !=null && pathToImage.startsWith("/")){
@@ -123,6 +134,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
 		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, markerClickCounter);
 		resultData.putString(Tags.PATH_TO_IMAGE, pathToImage);
+		resultData.putString(Tags.SIGHT_NAME, sightName);
+		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
 		Appl.receiver.send(0, resultData);
 	}
 	

@@ -45,6 +45,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private ListView sights = null;
 	private TextView mAddress = null;
 	public static long markerClickCounter = 0;
+	private String language = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -306,6 +307,22 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
 		}
+		
+		if (bundle.getString(Tags.SIGHT_NAME) != null) {
+			Log.d("MY_log", "messageFromTitle");
+			Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
+			TextView object_title = (TextView) textFragment.getView().findViewById(R.id.text_view_object_title);
+			object_title.setText(bundle.getString(Tags.SIGHT_NAME));
+
+			}
+
+         if (bundle.getString(Tags.SIGHT_ADDRESS) != null) {
+	       
+	       Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
+			TextView object_address = (TextView) textFragment.getView().findViewById(R.id.address);
+			object_address.setText(bundle.getString(Tags.SIGHT_ADDRESS));
+}
+			
 	}
 
 	@Override
@@ -323,12 +340,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		selectedItem = item;
 
 
-        Fragment textFragmet = getActivity().getFragmentManager()
+      /*  Fragment textFragmet = getActivity().getFragmentManager()
 						.findFragmentById(R.id.text_fragment);
 				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
-				object_title.setText(item.getTitle());
+				object_title.setText(item.getTitle());   
+		*/
 		sights.setVisibility(View.GONE);
-		mAddress.setVisibility(View.VISIBLE);
+		mAddress.setVisibility(View.VISIBLE);    
 		
 		return true;
 	}

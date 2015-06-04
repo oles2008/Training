@@ -13,4 +13,6 @@ public class Tags {/**/
 	public final static String URI = "uri";
 	public static final String SCROLL_Y = "scrollY";
 	public static final String COMMON_PARENT_ID = "CommonParentId";
+	public static final String SIGHT_NAME = "name";
+	public static final String SIGHT_ADDRESS = "address";
 }
