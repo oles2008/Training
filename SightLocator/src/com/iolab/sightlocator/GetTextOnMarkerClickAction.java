@@ -99,8 +99,19 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 									+ mID + ")",
 									null, null, null, null);
 		};
-		if(mClusterItems != null && !mClusterItems.isEmpty()){
-			String whereClause = "(" + COLUMN_ID + " = "+mClusterItems.get(0).id;
+		if (mClusterItems != null && !mClusterItems.isEmpty()) {
+			String whereClause = "(" + COLUMN_ID + " = "
+					+ mClusterItems.get(0).id + ")";
+			for (int i = 1; i < mClusterItems.size(); i++) {
+				whereClause += " OR " + "(" + COLUMN_ID + " = "
+						+ mClusterItems.get(i).id + ")";
+			}
+			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
+					.query(TABLE_NAME,
+							new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
+									COLUMN_SIGHT_IMAGE_PATH,
+									SIGHT_DESCRIPTION + "en" }, whereClause,
+							null, null, null, null);
 		}
 
 		return cursor;
