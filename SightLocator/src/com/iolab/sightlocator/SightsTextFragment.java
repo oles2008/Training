@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -42,6 +43,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private ListView sights = null;
 	private TextView mAddress = null;
 	public static long markerClickCounter = 0;
+
+    OnTextFragmentClickListener mCallback;
+
+    public interface OnTextFragmentClickListener{
+        public void onTextFragmentLongClick();
+    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +104,21 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		registerLinearLayoutClickListener();
         registerBackButtonListener();
 	}
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (OnTextFragmentClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnTextFragmentClickListener");
+        }
+    }
 
 	@Override
 	public void onResume() {
@@ -224,18 +246,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
             @Override
             public boolean onLongClick(View v) {
-                /*** changing text to full screen using Fragment transaction ***/
-                Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
-
-                if (mapFragment.isVisible()) {
-                    getTextView().setTextSize(24);
-                    getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
-                    MainActivity.mapFragmentVisible = false;
-                } else {
-                    getTextView().setTextSize(14);
-                    getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
-                    MainActivity.mapFragmentVisible = true;
-                }
+                mCallback.onTextFragmentLongClick();
                 return true;
             }
         });
