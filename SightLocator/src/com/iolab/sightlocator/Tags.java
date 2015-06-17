@@ -21,4 +21,6 @@ public class Tags {/**/
 	public final static String ID = "id";
 	public final static String TEXT_FRAGMENT_VISIBLE = "fragmentTextVisible";
     public final static String MAP_FRAGMENT_VISIBLE = "fragmentMapVisible";
+	public static final String SIGHT_NAME = "name";
+	public static final String SIGHT_ADDRESS = "address";
 }

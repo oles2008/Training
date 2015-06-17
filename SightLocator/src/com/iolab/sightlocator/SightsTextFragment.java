@@ -46,12 +46,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private TextView mAddress = null;
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
+	private String language = null;
 
     OnTextFragmentClickListener mCallback;
 
     public interface OnTextFragmentClickListener{
         public void onTextFragmentLongClick();
     }
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -340,6 +342,22 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			sights.setAdapter(adapter);
 			sights.setVisibility(View.VISIBLE);
 		}
+		
+		if (bundle.getString(Tags.SIGHT_NAME) != null) {
+			Log.d("MY_log", "messageFromTitle");
+			Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
+			TextView object_title = (TextView) textFragment.getView().findViewById(R.id.text_view_object_title);
+			object_title.setText(bundle.getString(Tags.SIGHT_NAME));
+
+			}
+
+         if (bundle.getString(Tags.SIGHT_ADDRESS) != null) {
+	       
+	       Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
+			TextView object_address = (TextView) textFragment.getView().findViewById(R.id.address);
+			object_address.setText(bundle.getString(Tags.SIGHT_ADDRESS));
+}
+			
 	}
 
 	@Override
@@ -362,12 +380,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		selectedItem = item;
 
 
-        Fragment textFragmet = getActivity().getFragmentManager()
+      /*  Fragment textFragmet = getActivity().getFragmentManager()
 						.findFragmentById(R.id.text_fragment);
 				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
-				object_title.setText(item.getTitle());
+				object_title.setText(item.getTitle());   
+		*/
 		sights.setVisibility(View.GONE);
-		mAddress.setVisibility(View.VISIBLE);
+		mAddress.setVisibility(View.VISIBLE);    
 		
 		return true;
 	}

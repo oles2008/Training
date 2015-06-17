@@ -113,6 +113,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
 		String sightDescription = null;
 		String pathToImage = null;
+		String sightName = null;
+		String sightAddress = null;
 
 		if(cursor == null){
 			return;
