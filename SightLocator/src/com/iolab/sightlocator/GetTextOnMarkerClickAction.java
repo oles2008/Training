@@ -6,6 +6,9 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_STATUS;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -81,7 +84,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en"},
+									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en"},
 								"(" + COLUMN_LATITUDE + " = "
 									+ mPosition.latitude + " AND "
 									+ COLUMN_LONGITUDE + " = "
@@ -94,7 +97,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en"},
+									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en"},
 								"(" + COLUMN_ID + " = "
 									+ mID + ")",
 									null, null, null, null);
@@ -123,6 +126,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		if (cursor.moveToFirst()) {
 			pathToImage = cursor.getString(2);
 			sightDescription = cursor.getString(3);
+			sightName = cursor.getString(4);
+			sightAddress = cursor.getString(5);
 		}
 
 		if (pathToImage !=null && pathToImage.startsWith("/")){
@@ -168,6 +173,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
 		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
 		resultData.putString(Tags.PATH_TO_IMAGE, pathToImage);
+		resultData.putString(Tags.SIGHT_NAME, sightName);
+		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
 		Appl.receiver.send(0, resultData);
 	}
 	
