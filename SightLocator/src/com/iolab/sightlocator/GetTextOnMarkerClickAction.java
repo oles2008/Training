@@ -39,11 +39,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
 		mID = inputBundle.getInt(Tags.COMMON_PARENT_ID,-1);
+//		inputBundle.setClassLoader(SightMarkerItem.class.getClassLoader());
 		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
-		this(parcel.readBundle());
+		this(parcel.readBundle(SightMarkerItem.class.getClassLoader()));
 	}
 
 	@Override
@@ -102,12 +103,78 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 									+ mID + ")",
 									null, null, null, null);
 		};
-		if(mClusterItems != null && !mClusterItems.isEmpty()){
-			String whereClause = "(" + COLUMN_ID + " = "+mClusterItems.get(0).id;
-		}
 
 		return cursor;
 	};
+	
+	private Cursor getMultipleItemsCursor() {
+		Cursor cursor = null;
+		if (mClusterItems != null && !mClusterItems.isEmpty()) {
+			String whereClause = "("
+					+ ((mClusterItems.get(0).getPosition() != null) ? (COLUMN_LATITUDE
+							+ " = "
+							+ mClusterItems.get(0).getPosition().latitude
+							+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
+							.get(0).getPosition().longitude) : (COLUMN_ID
+							+ " = " + mClusterItems.get(0).id)) + ")";
+			for (int i = 1; i < mClusterItems.size(); i++) {
+				whereClause += " OR ("
+						+ ((mClusterItems.get(i).getPosition() != null) ? (COLUMN_LATITUDE
+								+ " = "
+								+ mClusterItems.get(i).getPosition().latitude
+								+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
+								.get(i).getPosition().longitude) : (COLUMN_ID
+								+ " = " + mClusterItems.get(i).id)) + ")";
+			}
+			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().query(
+					TABLE_NAME,
+					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
+							COLUMN_SIGHT_IMAGE_PATH, SIGHT_DESCRIPTION + "en",
+							SIGHT_NAME + "en", SIGHT_ADDRESS + "en" },
+					whereClause, null, null, null, null);
+		}
+		return cursor;
+	}
+	
+	private String getSavedImagePath(String pathToImageFromDatabase) {
+		if (pathToImageFromDatabase !=null && pathToImageFromDatabase.startsWith("/")){
+			pathToImageFromDatabase = pathToImageFromDatabase.substring(1, pathToImageFromDatabase.length());
+		}
+		
+		if (pathToImageFromDatabase == null || pathToImageFromDatabase.isEmpty()){
+			return Tags.ONE_PIXEL_JPEG;
+		}else{
+			if (Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED))
+			{
+				Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
+			
+			
+				String destinationPath = Environment
+						.getExternalStorageDirectory().getPath()
+						+ "/"
+						+ Appl.appContext.getPackageName()
+						+ "/"
+						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImageFromDatabase;
+				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
+						+ pathToImageFromDatabase, destinationPath);
+				return destinationPath;
+				
+			} else
+			{
+				Log.d("Mytag","Internal storage:");
+				
+				
+				String destinationPath = Appl.appContext.getCacheDir() + "/"
+						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImageFromDatabase;
+				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
+						+ pathToImageFromDatabase, destinationPath);
+				
+				Log.d("Mytag","Destination:"+ destinationPath);
+				return destinationPath;
+			}
+		}
+	}
 	
 	@Override
 	public void runInService() {
@@ -130,52 +197,42 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			sightAddress = cursor.getString(5);
 		}
 
-		if (pathToImage !=null && pathToImage.startsWith("/")){
-			pathToImage = pathToImage.substring(1, pathToImage.length());
-		}
 		
-		if (pathToImage == null || pathToImage.isEmpty()){
-			pathToImage = Tags.ONE_PIXEL_JPEG;
-		}else{
-			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED))
-			{
-				Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
-			
-			
-				String destinationPath = Environment
-						.getExternalStorageDirectory().getPath()
-						+ "/"
-						+ Appl.appContext.getPackageName()
-						+ "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImage, destinationPath);
-				pathToImage = destinationPath;
-				
-			} else
-			{
-				Log.d("Mytag","Internal storage:");
-				
-				
-				String destinationPath = Appl.appContext.getCacheDir() + "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImage, destinationPath);
-				pathToImage = destinationPath;
-				
-				Log.d("Mytag","Destination:"+ destinationPath);
-			}
-		}
-//		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
 		Bundle resultData = new Bundle();
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
 		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
-		resultData.putString(Tags.PATH_TO_IMAGE, pathToImage);
+		resultData.putString(Tags.PATH_TO_IMAGE, getSavedImagePath(pathToImage));
 		resultData.putString(Tags.SIGHT_NAME, sightName);
 		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
 		Appl.receiver.send(0, resultData);
+		
+		if(mClusterItems!=null && !mClusterItems.isEmpty()){
+			cursor = getMultipleItemsCursor();
+			ArrayList<SightMarkerItem> fullItems = new ArrayList<SightMarkerItem>();
+			if (cursor.moveToFirst()) {
+				// SightMarkerItem(LatLng position, String title, String
+				// address, String snippet, String imageURI, String color, int
+				// id, int[] parentIDs)
+				fullItems
+						.add(new SightMarkerItem(new LatLng(
+								cursor.getDouble(0), cursor.getDouble(1)),
+								cursor.getString(4), cursor.getString(5), null,
+								getSavedImagePath(cursor.getString(2)), null,
+								-1, null));
+				while(cursor.moveToNext()){
+					fullItems
+					.add(new SightMarkerItem(new LatLng(
+							cursor.getDouble(0), cursor.getDouble(1)),
+							cursor.getString(4), cursor.getString(5), null,
+							getSavedImagePath(cursor.getString(2)), null,
+							-1, null));
+				resultData = new Bundle();
+				resultData.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, fullItems);
+				Appl.receiver.send(0, resultData);
+				}
+			}
+		}
 	}
 	
 }

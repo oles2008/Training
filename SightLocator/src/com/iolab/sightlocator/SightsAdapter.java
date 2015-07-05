@@ -51,7 +51,10 @@ public class SightsAdapter extends BaseAdapter {
 	        title.setText(mData.get(position).getTitle());
 	        address.setText(mData.get(position).getAddress());
 	        snippet.setText(mData.get(position).getSnippet());
-	        image.setImageURI(Uri.parse(mData.get(position).getImageURI()));
+	        String imageUri = mData.get(position).getImageURI();
+	        if(imageUri != null){
+	        	image.setImageURI(Uri.parse(imageUri));
+	        }
 	         
 	        // object item based on the position
 	        SightMarkerItem item = mData.get(position);

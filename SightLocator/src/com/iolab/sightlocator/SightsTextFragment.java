@@ -333,6 +333,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
+			Log.d("MyLogs", "SIGHT_ITEM_LIST !=null");
 			SightsAdapter adapter = new SightsAdapter(
 					getActivity(),
 					R.layout.sights_list_item,
@@ -402,6 +403,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Bundle args = new Bundle();
 		args.putInt(Tags.COMMON_PARENT_ID, clusterCommonParentId);
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
+		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, new ArrayList<SightMarkerItem>(cluster.getItems()));
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(args));
 		getActivity().startService(intent);

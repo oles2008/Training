@@ -63,7 +63,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.snippet=array[2];
 		this.imageURI=array[3];
 		this.color=array[4];
-		parcel.readIntArray(this.parentIDs);
+		this.parentIDs = parcel.createIntArray();
 	}
 	
 	public static final Parcelable.Creator<SightMarkerItem> CREATOR = new Creator<SightMarkerItem>() {
@@ -131,9 +131,9 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeParcelable(position, flags);
 		String[] array = {this.title, this.address, this.snippet, this.imageURI, this.color};
 		parcel.writeStringArray(array);
-		parcel.writeParcelable(position, flags);
 		parcel.writeIntArray(parentIDs);
 	}
 
