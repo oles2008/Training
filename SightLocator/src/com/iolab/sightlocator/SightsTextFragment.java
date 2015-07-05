@@ -231,6 +231,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				.toString(), res, fragmentManager);
 		selectedItem = null;
 		mAddress.setVisibility(View.GONE);
+		sights.setVisibility(View.GONE);
 		//added on 22/4/15
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		Bundle bundle = new Bundle();

@@ -139,9 +139,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		
 //		Log.d("MyLogs", "commonParent: "+ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
 //		Log.d("MyLogs", "list: ");
-		for(int[] parents: listOfArrays){
-			Log.d("MyLogs", Arrays.toString(parents));
-		}
 		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
 		Appl.receiver.send(0, resultData);
 	}

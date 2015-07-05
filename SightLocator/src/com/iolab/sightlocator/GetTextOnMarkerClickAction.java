@@ -33,8 +33,11 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private ArrayList<SightMarkerItem> mClusterItems = null;
 	
 	public GetTextOnMarkerClickAction(Bundle inputBundle) {
-		mPosition  = new LatLng(inputBundle.getDouble(Tags.POSITION_LAT),
-								inputBundle.getDouble(Tags.POSITION_LNG));
+		if (inputBundle.containsKey(Tags.POSITION_LAT)
+				&& inputBundle.containsKey(Tags.POSITION_LNG)) {
+			mPosition = new LatLng(inputBundle.getDouble(Tags.POSITION_LAT),
+					inputBundle.getDouble(Tags.POSITION_LNG));
+		}
 		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
@@ -56,8 +59,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		Bundle bundle = new Bundle();
-		bundle.putDouble(Tags.POSITION_LAT, mPosition.latitude);
-		bundle.putDouble(Tags.POSITION_LNG, mPosition.longitude);
+		if (mPosition != null) {
+			bundle.putDouble(Tags.POSITION_LAT, mPosition.latitude);
+			bundle.putDouble(Tags.POSITION_LNG, mPosition.longitude);
+		}
 		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
@@ -91,8 +96,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 									+ COLUMN_LONGITUDE + " = "
 									+ mPosition.longitude + ")",
 									null, null, null, null);
-		};
-		if(mID != -1){
+		}
+		//mind that if we use ID we also look if it has children
+		else if (mID != -1){//TODO
 			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 					.query(TABLE_NAME,
 							new String[] { COLUMN_LATITUDE,
@@ -109,14 +115,16 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	
 	private Cursor getMultipleItemsCursor() {
 		Cursor cursor = null;
+		String whereClause = null;
 		if (mClusterItems != null && !mClusterItems.isEmpty()) {
-			String whereClause = "("
+			whereClause = "("
 					+ ((mClusterItems.get(0).getPosition() != null) ? (COLUMN_LATITUDE
 							+ " = "
 							+ mClusterItems.get(0).getPosition().latitude
 							+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
 							.get(0).getPosition().longitude) : (COLUMN_ID
 							+ " = " + mClusterItems.get(0).id)) + ")";
+
 			for (int i = 1; i < mClusterItems.size(); i++) {
 				whereClause += " OR ("
 						+ ((mClusterItems.get(i).getPosition() != null) ? (COLUMN_LATITUDE
@@ -126,6 +134,18 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								.get(i).getPosition().longitude) : (COLUMN_ID
 								+ " = " + mClusterItems.get(i).id)) + ")";
 			}
+		} else if (mID != -1) {
+			whereClause = "("
+					+ SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL[0]
+					+ " = " + mID + ")";
+			for (int i = 1; i < SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL.length; i++) {
+				whereClause += " OR " + "("
+						+ SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL[i]
+						+ " = " + mID + ")";
+			}
+		}
+		Log.d("MyLogs", "whereClause: "+whereClause);
+		if (whereClause != null) {
 			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().query(
 					TABLE_NAME,
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
@@ -207,7 +227,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
 		Appl.receiver.send(0, resultData);
 		
-		if(mClusterItems!=null && !mClusterItems.isEmpty()){
+		if((mClusterItems!=null && !mClusterItems.isEmpty()) || (mID!=-1)){
 			cursor = getMultipleItemsCursor();
 			ArrayList<SightMarkerItem> fullItems = new ArrayList<SightMarkerItem>();
 			if (cursor.moveToFirst()) {
