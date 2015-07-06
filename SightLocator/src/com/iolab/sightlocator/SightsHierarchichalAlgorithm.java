@@ -19,17 +19,24 @@ public class SightsHierarchichalAlgorithm extends
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
-		Set<Cluster<SightMarkerItem>> clusterSet = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom-1);
+		Set<Cluster<SightMarkerItem>> clusterSet = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom);
 		
 		//to make it impossible for clusters to be split even under a large scale
-		Set<Cluster<SightMarkerItem>> clusterSetBiggerZoom = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom);
+		Set<Cluster<SightMarkerItem>> clusterSetBiggerZoom = (Set<Cluster<SightMarkerItem>>) super.getClusters(zoom+1);
 		boolean isTheSame = true;
-		for(Cluster<SightMarkerItem> cluster: clusterSet){
-			for(Cluster<SightMarkerItem> clusterFromBiggerZoom: clusterSetBiggerZoom)
-			if(!clusterFromBiggerZoom.getItems().containsAll(cluster.getItems())){
-				isTheSame = false;
+		for (Cluster<SightMarkerItem> cluster : clusterSet) {
+			for (Cluster<SightMarkerItem> clusterFromBiggerZoom : clusterSetBiggerZoom) {
+				Set<SightMarkerItem> intersection = new HashSet<SightMarkerItem>(
+						clusterFromBiggerZoom.getItems());
+				intersection.retainAll(cluster.getItems());
+				if (!intersection.isEmpty()
+						&& !clusterFromBiggerZoom.getItems().containsAll(
+								cluster.getItems())) {
+					isTheSame = false;
+				}
 			}
-		}if(isTheSame){
+		}
+		if (isTheSame) {
 			return clusterSet;
 		}
 		//the end

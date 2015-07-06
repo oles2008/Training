@@ -162,7 +162,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		}
 		
 		if (pathToImageFromDatabase == null || pathToImageFromDatabase.isEmpty()){
-			return Tags.ONE_PIXEL_JPEG;
+			return null;
 		}else{
 			if (Environment.getExternalStorageState().equals(
 					Environment.MEDIA_MOUNTED))

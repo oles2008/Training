@@ -12,6 +12,8 @@ import android.util.Log;
 
 public class ItemGroupAnalyzer {
 	
+	private static final String TAG = ItemGroupAnalyzer.class.getCanonicalName();  
+	
 	public static int findCommonParent(List<int[]> list, int percentageToIgnore){
 		return findCommonParent(list, percentageToIgnore, null);
 	}
@@ -308,6 +310,10 @@ public class ItemGroupAnalyzer {
 		List<int[]> rowsWithI1 = new ArrayList<int[]>();
 		List<int[]> rowsWithI2 = new ArrayList<int[]>();
 		for(int[] parents: list){
+			if(parents == null){
+				Log.i(TAG, "null parent array");
+				continue;
+			}
 			boolean foundI1=false;
 			boolean foundI2=false;
 			for(int i=0;i<parents.length;i++){

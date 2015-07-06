@@ -40,13 +40,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		OnClusterItemClickListener<SightMarkerItem>, ViewUpdateListener {
 
 	private final int ICON_SIZE = 200;
-	private Marker selectedMarker = null;
-	private SightMarkerItem selectedItem = null;
-	private ListView sights = null;
+	private Marker mSelectedMarker = null;
+	private SightMarkerItem mSelectedItem = null;
+	private ListView mSights = null;
+	private int mSightListVisibility = View.GONE;
 	private TextView mAddress = null;
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
-	private String language = null;
+	private String mLanguage = null;
 
     OnTextFragmentClickListener mCallback;
 
@@ -61,6 +62,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (savedInstanceState != null) {
 			mClusterClickCounter = savedInstanceState.getLong(
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
+			mSightListVisibility = savedInstanceState.getInt(
+					Tags.SIGHT_LIST_VISIBLE, View.GONE);
 		}
 	}
 
@@ -68,8 +71,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View inflatedView = inflater.inflate(R.layout.text_fragment, container, false);
-		sights = (ListView) inflatedView.findViewById(R.id.listView);
-		sights.setVisibility(View.GONE);
+		mSights = (ListView) inflatedView.findViewById(R.id.listView);
+		mSights.setVisibility(mSightListVisibility);
+		Log.d("MyLogs", "setting listView visibility "+((mSightListVisibility == View.GONE)? "GONE":"VISIBLE"));
 		mAddress = (TextView) inflatedView.findViewById(R.id.address);
 		mAddress.setVisibility(View.GONE);
 		return inflatedView;
@@ -188,8 +192,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Deprecated
 	public boolean onMarkerClick(final Marker marker) {
-		if (selectedMarker!=null && marker.getPosition().equals(selectedMarker.getPosition())
-				&& marker.getTitle().equals(selectedMarker.getTitle())) {
+		if (mSelectedMarker!=null && marker.getPosition().equals(mSelectedMarker.getPosition())
+				&& marker.getTitle().equals(mSelectedMarker.getTitle())) {
 			return true;
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
@@ -216,7 +220,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
-		selectedItem = null;
+		mSelectedItem = null;
 		mAddress.setVisibility(View.GONE);
 
 	}
@@ -229,9 +233,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
-		selectedItem = null;
+		mSelectedItem = null;
 		mAddress.setVisibility(View.GONE);
-		sights.setVisibility(View.GONE);
+		mSights.setVisibility(View.GONE);
+		mSightListVisibility = View.GONE;
 		//added on 22/4/15
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		Bundle bundle = new Bundle();
@@ -292,6 +297,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
+		args.putInt(Tags.SIGHT_LIST_VISIBLE, mSightListVisibility);
 	}
 
     @Override
@@ -334,15 +340,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
-			Log.d("MyLogs", "SIGHT_ITEM_LIST !=null");
 			SightsAdapter adapter = new SightsAdapter(
 					getActivity(),
 					R.layout.sights_list_item,
 					new ArrayList<SightMarkerItem>(
 							(Collection<? extends SightMarkerItem>) bundle
 									.getParcelableArrayList(Tags.SIGHT_ITEM_LIST)));
-			sights.setAdapter(adapter);
-			sights.setVisibility(View.VISIBLE);
+			mSights.setAdapter(adapter);
+			mSights.setVisibility(View.VISIBLE);
+			mSightListVisibility = View.VISIBLE;
 		}
 		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
@@ -364,10 +370,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterItemClick(SightMarkerItem item) {
-		if (selectedItem != null
-				&& item.getPosition().equals(selectedItem.getPosition())
+		if (mSelectedItem != null
+				&& item.getPosition().equals(mSelectedItem.getPosition())
 				&& ((item.getTitle() == null) || (item.getTitle()
-						.equals(selectedItem.getTitle())))) {
+						.equals(mSelectedItem.getTitle())))) {
 			return true;
 		}
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
@@ -379,7 +385,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
-		selectedItem = item;
+		mSelectedItem = item;
 
 
       /*  Fragment textFragmet = getActivity().getFragmentManager()
@@ -387,7 +393,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
 				object_title.setText(item.getTitle());   
 		*/
-		sights.setVisibility(View.GONE);
+		mSights.setVisibility(View.GONE);
+		mSightListVisibility = View.GONE;
 		mAddress.setVisibility(View.VISIBLE);    
 		
 		return true;
