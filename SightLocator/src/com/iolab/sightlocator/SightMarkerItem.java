@@ -24,6 +24,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
+		this.imageURI = imageURI;
 		this.color = color;
 		this.parentIDs = parentIDs;
 	}

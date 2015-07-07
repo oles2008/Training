@@ -247,10 +247,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							cursor.getString(4), cursor.getString(5), null,
 							getSavedImagePath(cursor.getString(2)), null,
 							-1, null));
+				}
 				resultData = new Bundle();
 				resultData.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, fullItems);
 				Appl.receiver.send(0, resultData);
-				}
 			}
 		}
 	}
