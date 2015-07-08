@@ -6,8 +6,8 @@
     
     <ImageView
         android:id="@+id/image_view_in_list"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:clickable="true"
         android:src="@drawable/bubble_shadow" />
     
