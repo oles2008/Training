@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -23,14 +24,20 @@ public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 
 	@Override
 	protected Bitmap doInBackground(Void... params) {
+		cancelPreviousTaskIfNecessary();
 		return decodeBitmapFromPath(mWidth, mHeight);
 	}
 	
 	@Override
 	protected void onPostExecute(Bitmap bitmap){
 		ImageView imageView = mImageViewRef.get();
-		if(imageView!=null){
-			imageView.setImageBitmap(bitmap);
+		if(imageView!=null ){
+			Drawable currentDrawable = imageView.getDrawable();
+			if(currentDrawable instanceof AsyncDrawable){
+				if(((AsyncDrawable) currentDrawable).getAsyncTask() == this){
+					imageView.setImageBitmap(bitmap);
+				}
+			}
 		}
 	}
 	
@@ -49,5 +56,18 @@ public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 			inSampleSize *= 2;
 		}
 		return inSampleSize;
+	}
+	
+	private void cancelPreviousTaskIfNecessary() {
+		ImageView imageView = mImageViewRef.get();
+		if(imageView != null) {
+			Drawable currentDrawable = imageView.getDrawable();
+			if(currentDrawable instanceof AsyncDrawable){
+			    DecodeImageAsyncTask currentAsyncTask = ((AsyncDrawable) currentDrawable).getAsyncTask();
+			    if (currentAsyncTask != this) {
+			    	currentAsyncTask.cancel(true);
+			    }
+			}
+		}
 	}
 }
