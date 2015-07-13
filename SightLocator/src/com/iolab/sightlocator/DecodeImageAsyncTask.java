@@ -21,10 +21,13 @@ public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 		mWidth = width;
 		mHeight = height;
 	}
+	
+	public String getPath() {
+		return mImagePath;
+	}
 
 	@Override
 	protected Bitmap doInBackground(Void... params) {
-		cancelPreviousTaskIfNecessary();
 		return decodeBitmapFromPath(mWidth, mHeight);
 	}
 	
@@ -56,18 +59,5 @@ public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 			inSampleSize *= 2;
 		}
 		return inSampleSize;
-	}
-	
-	private void cancelPreviousTaskIfNecessary() {
-		ImageView imageView = mImageViewRef.get();
-		if(imageView != null) {
-			Drawable currentDrawable = imageView.getDrawable();
-			if(currentDrawable instanceof AsyncDrawable){
-			    DecodeImageAsyncTask currentAsyncTask = ((AsyncDrawable) currentDrawable).getAsyncTask();
-			    if (currentAsyncTask != this) {
-			    	currentAsyncTask.cancel(true);
-			    }
-			}
-		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,16 +65,7 @@ public class SightsAdapter extends BaseAdapter {
 		viewHolder.address.setText(mData.get(position).getAddress());
 		viewHolder.snippet.setText(mData.get(position).getSnippet());
 		String imageUri = mData.get(position).getImageURI();
-		if (imageUri != null) {
-			DecodeImageAsyncTask asyncTask = new DecodeImageAsyncTask(
-					viewHolder.image, imageUri, viewHolder.image.getWidth(),
-					viewHolder.image.getHeight());
-			viewHolder.image.setImageDrawable(new AsyncDrawable(mContext
-					.getResources(), BitmapFactory.decodeResource(
-					mContext.getResources(), R.drawable.bubble_shadow),
-					asyncTask));
-			asyncTask.execute();
-		}
+		loadBitmap(imageUri, viewHolder.image);
 
 		return convertView;
 
@@ -92,6 +84,38 @@ public class SightsAdapter extends BaseAdapter {
 	@Override
 	public long getItemId(int position) {
 		return 0;
+	}
+	
+	private void loadBitmap(String imageUri, ImageView imageView) {
+		if(isPreviousTaskCancelled(imageUri, imageView)){
+			if (imageUri != null) {
+				DecodeImageAsyncTask asyncTask = new DecodeImageAsyncTask(
+						imageView, imageUri, imageView.getWidth(),
+						imageView.getHeight());
+				imageView.setImageDrawable(new AsyncDrawable(mContext
+						.getResources(), BitmapFactory.decodeResource(
+						mContext.getResources(), R.drawable.bubble_shadow),
+						asyncTask));
+				asyncTask.execute();
+			} else {
+				imageView.setImageResource(R.drawable.bubble_shadow);
+			}
+		}
+	}
+	
+	private boolean isPreviousTaskCancelled(String imagePath, ImageView imageView) {
+		if(imageView != null) {
+			Drawable currentDrawable = imageView.getDrawable();
+			if(currentDrawable instanceof AsyncDrawable){
+			    DecodeImageAsyncTask currentAsyncTask = ((AsyncDrawable) currentDrawable).getAsyncTask();
+			    if (currentAsyncTask.getPath() != imagePath) {
+			    	currentAsyncTask.cancel(true);
+			    }else {
+			    	return false;
+			    }
+			}
+		}
+		return true;
 	}
 
 }
