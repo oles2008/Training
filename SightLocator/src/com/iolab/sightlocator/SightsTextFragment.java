@@ -43,7 +43,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private Marker mSelectedMarker = null;
 	private SightMarkerItem mSelectedItem = null;
 	private ListView mSights = null;
-	private int mSightListVisibility = View.GONE;
+	private ArrayList<SightMarkerItem> mSightListItems = null;
 	private TextView mAddress = null;
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
@@ -62,8 +62,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (savedInstanceState != null) {
 			mClusterClickCounter = savedInstanceState.getLong(
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
-			mSightListVisibility = savedInstanceState.getInt(
-					Tags.SIGHT_LIST_VISIBLE, View.GONE);
+			mSightListItems = savedInstanceState.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 		}
 	}
 
@@ -72,8 +71,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			Bundle savedInstanceState) {
 		View inflatedView = inflater.inflate(R.layout.text_fragment, container, false);
 		mSights = (ListView) inflatedView.findViewById(R.id.listView);
-		mSights.setVisibility(mSightListVisibility);
-		Log.d("MyLogs", "setting listView visibility "+((mSightListVisibility == View.GONE)? "GONE":"VISIBLE"));
+		if (mSightListItems != null && !mSightListItems.isEmpty()) {
+			mSights.setAdapter(new SightsAdapter(getActivity(),
+					R.layout.sights_list_item, mSightListItems));
+			mSights.setVisibility(View.VISIBLE);
+		} else {
+			mSights.setVisibility(View.GONE);
+		}
 		mAddress = (TextView) inflatedView.findViewById(R.id.address);
 		mAddress.setVisibility(View.GONE);
 		return inflatedView;
@@ -236,7 +240,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mSelectedItem = null;
 		mAddress.setVisibility(View.GONE);
 		mSights.setVisibility(View.GONE);
-		mSightListVisibility = View.GONE;
+		mSightListItems = null;
 		//added on 22/4/15
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		Bundle bundle = new Bundle();
@@ -297,7 +301,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
-		args.putInt(Tags.SIGHT_LIST_VISIBLE, mSightListVisibility);
+		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mSightListItems);
 	}
 
     @Override
@@ -340,15 +344,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
-			SightsAdapter adapter = new SightsAdapter(
-					getActivity(),
-					R.layout.sights_list_item,
-					new ArrayList<SightMarkerItem>(
-							(Collection<? extends SightMarkerItem>) bundle
-									.getParcelableArrayList(Tags.SIGHT_ITEM_LIST)));
+			mSightListItems = new ArrayList<SightMarkerItem>(
+					(Collection<? extends SightMarkerItem>) bundle
+							.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
+			SightsAdapter adapter = new SightsAdapter(getActivity(),
+					R.layout.sights_list_item, mSightListItems);
 			mSights.setAdapter(adapter);
 			mSights.setVisibility(View.VISIBLE);
-			mSightListVisibility = View.VISIBLE;
 		}
 		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
@@ -394,7 +396,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				object_title.setText(item.getTitle());   
 		*/
 		mSights.setVisibility(View.GONE);
-		mSightListVisibility = View.GONE;
+		mSightListItems = null;
 		mAddress.setVisibility(View.VISIBLE);    
 		
 		return true;
