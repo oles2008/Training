@@ -37,6 +37,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	    public static final double MB = 2;
+	
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
@@ -73,6 +76,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
 		String sightDescription = null;
 		String pathToImage = null;
+		long  megaByteFeeSize = 0;
+		
 
 		if (cursor.moveToFirst()) {
 			pathToImage = cursor.getString(2);
@@ -85,37 +90,70 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		if (pathToImage == null || pathToImage.isEmpty()){
 			pathToImage = Tags.ONE_PIXEL_JPEG;
-		}else{
+			
+			//Log.d("Mytag", "pathToImage:"+ pathToImage);
+
+		} else {
+			// if Media is Mounted (SD Card=External Storage) then imaged will
+			// be saved at Media (SD Card=External Storage)
+			
 			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED))
-			{
-				Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
+					Environment.MEDIA_MOUNTED)) {
+			//	Log.d("Mytag","External storage:" + Environment.getExternalStorageState());
+
 			
-			
-				String destinationPath = Environment
-						.getExternalStorageDirectory().getPath()
-						+ "/"
-						+ Appl.appContext.getPackageName()
-						+ "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImage, destinationPath);
-				pathToImage = destinationPath;
+				long freeSize = Environment.getExternalStorageDirectory()
+						.getFreeSpace();
 				
-			} else
-			{
-				Log.d("Mytag","Internal storage:");
+				// One binary megabyte equals 1048576 bytes.
 				
+				 megaByteFeeSize = freeSize / 1048576;
+
+				//Log.d("Mytag", "External Storage freeSize: " + freeSize);
+				//Log.d("Mytag", "External Storage freeSize in Mb: " + megaByteFeeSize);
+				// if size of free space at SD Card (External Storage) is at
+				// least 2Mb then imaged will be saved at SD Card (External_Storage)
+				 
+				}else {long freeSize = 0;
+				megaByteFeeSize = freeSize / 1048576;
+					
+				}
+				if (megaByteFeeSize > MB) {
+					
+				//	Log.d("Mytag", "External Storage megaByteFeeSize more than:" + megaByteFeeSize);
+					
+					String destinationPath = Environment
+							.getExternalStorageDirectory().getPath()
+							+ "/"
+							+ Appl.appContext.getPackageName()
+							+ "/"
+							+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
+					Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
+							+ pathToImage, destinationPath);
+					pathToImage = destinationPath;
+
+				
+					// else (if size of free space at SD Card (External_Storage) is
+					// less than 1Mb then imaged will be saved at Cash (Internal_Storage)
+				// if Media is not Mounted then imaged will be saved at Cash (Internal_Storage)
+			} else {
+		
+								
+			//	Log.d("Mytag", "getCacheDir:"+ Appl.appContext.getCacheDir());
+			//	Log.d("Mytag", "Internal storage:");
 				
 				String destinationPath = Appl.appContext.getCacheDir() + "/"
 						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImage;
 				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
 						+ pathToImage, destinationPath);
 				pathToImage = destinationPath;
-				
-				Log.d("Mytag","Destination:"+ destinationPath);
+
+				//Log.d("Mytag", "Destination:" + destinationPath);
+				}
+		
+		
 			}
-		}
+		
 
 //		Log.d("MSG","runInService pathToImage > " + pathToImage);
 		
