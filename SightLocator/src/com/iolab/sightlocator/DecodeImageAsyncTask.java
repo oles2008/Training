@@ -35,7 +35,7 @@ public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 	@Override
 	protected void onPostExecute(Bitmap bitmap){
 		ImageView imageView = mImageViewRef.get();
-		if(imageView!=null ){
+		if(imageView!=null && bitmap != null){
 			Drawable currentDrawable = imageView.getDrawable();
 			if(currentDrawable instanceof AsyncDrawable){
 				if(((AsyncDrawable) currentDrawable).getAsyncTask() == this){

@@ -66,7 +66,13 @@ public class SightsAdapter extends BaseAdapter {
 		viewHolder.address.setText(mData.get(position).getAddress());
 		viewHolder.snippet.setText(mData.get(position).getSnippet());
 		String imageUri = mData.get(position).getImageURI();
-		loadBitmap(imageUri, viewHolder.image);
+		loadBitmap(
+				imageUri,
+				viewHolder.image,
+				convertView.getResources().getDimensionPixelSize(
+						R.dimen.list_view_image_width),
+				convertView.getResources().getDimensionPixelSize(
+						R.dimen.list_view_image_width));
 
 		return convertView;
 
@@ -87,13 +93,11 @@ public class SightsAdapter extends BaseAdapter {
 		return 0;
 	}
 	
-	private void loadBitmap(String imageUri, ImageView imageView) {
+	private void loadBitmap(String imageUri, ImageView imageView, int reqWidth, int reqHeight) {
 		if(isPreviousTaskCancelled(imageUri, imageView)){
 			if (imageUri != null) {
-				imageView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 				DecodeImageAsyncTask asyncTask = new DecodeImageAsyncTask(
-						imageView, imageUri, imageView.getMeasuredWidth(),
-						imageView.getMeasuredHeight());
+						imageView, imageUri, reqWidth, reqHeight);
 				imageView.setImageDrawable(new AsyncDrawable(mContext
 						.getResources(), BitmapFactory.decodeResource(
 						mContext.getResources(), R.drawable.bubble_shadow),
