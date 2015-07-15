@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -89,9 +90,10 @@ public class SightsAdapter extends BaseAdapter {
 	private void loadBitmap(String imageUri, ImageView imageView) {
 		if(isPreviousTaskCancelled(imageUri, imageView)){
 			if (imageUri != null) {
+				imageView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 				DecodeImageAsyncTask asyncTask = new DecodeImageAsyncTask(
-						imageView, imageUri, imageView.getWidth(),
-						imageView.getHeight());
+						imageView, imageUri, imageView.getMeasuredWidth(),
+						imageView.getMeasuredHeight());
 				imageView.setImageDrawable(new AsyncDrawable(mContext
 						.getResources(), BitmapFactory.decodeResource(
 						mContext.getResources(), R.drawable.bubble_shadow),

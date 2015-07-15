@@ -66,7 +66,6 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
     protected void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster, MarkerOptions markerOptions) {
         // Draw multiple people.
         // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
-		Log.d("MyLogs", "onBeforeClusterItemRendered, "+cluster.getSize());
 		super.onBeforeClusterRendered(cluster, markerOptions);
 //        if(sightsMapFragment.currentSelectedMarker!=null){
 //        	SightMarkerItem selectedItem = new SightMarkerItem(sightsMapFragment.currentSelectedMarker);

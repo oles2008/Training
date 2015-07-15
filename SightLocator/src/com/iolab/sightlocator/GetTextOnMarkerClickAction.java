@@ -144,7 +144,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 						+ " = " + mID + ")";
 			}
 		}
-		Log.d("MyLogs", "whereClause: "+whereClause);
 		if (whereClause != null) {
 			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().query(
 					TABLE_NAME,
