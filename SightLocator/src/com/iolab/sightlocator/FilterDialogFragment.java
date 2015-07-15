@@ -66,25 +66,26 @@ public class FilterDialogFragment extends DialogFragment{
 					listView.setItemChecked(0, false);
 
 					// count how many categories are checked
-					int count = 0;
+					int categoriesCount = 0;
 					for (int i = 1; i < Appl.checkedItems.length; i++) {
 						if (Appl.checkedItems[i] == true) {
-							count++;
-						}
-						
-						// if all categories (except "All") are checked -
-						// then check "ALL" and uncheck all others
-						if (count == Appl.checkedItems.length - 1) {
-							Appl.checkedItems[0] = true;
-							for (int j = 1; j < Appl.checkedItems.length; j++) {
-								Appl.checkedItems[j] = false;
-								listView.setItemChecked(j, false);
-							}
-							
-							listView.smoothScrollToPosition(0);;
-
+							categoriesCount++;
 						}
 					}
+
+                    // if all categories (except "All") are checked (or unchecked)-
+                    // then check "ALL" and uncheck all others
+                    if ((categoriesCount == Appl.checkedItems.length - 1)
+                            || (categoriesCount == 0)) {
+                        Appl.checkedItems[0] = true;
+                        for (int j = 1; j < Appl.checkedItems.length; j++) {
+                            Appl.checkedItems[j] = false;
+                            listView.setItemChecked(j, false);
+                        }
+
+                        listView.smoothScrollToPosition(0);
+                    }
+
 				}
 			}
 		});
