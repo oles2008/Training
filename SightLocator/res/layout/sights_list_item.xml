@@ -6,8 +6,9 @@
     
     <ImageView
         android:id="@+id/image_view_in_list"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/list_view_image_width"
+        android:layout_height="@dimen/list_view_image_width"
+        android:layout_marginRight="7dp"
         android:clickable="true"
         android:src="@drawable/bubble_shadow" />
     
@@ -16,8 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/image_view_in_list"
+        android:layout_marginTop="10dp"
         android:freezesText="true"
-        android:text="text" />
+        android:textSize="15dp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/text_view_address_in_list"
@@ -26,8 +29,7 @@
         android:layout_below="@id/text_view_name_in_list"
         android:layout_alignLeft="@id/text_view_name_in_list"
         android:freezesText="true"
-        android:textStyle="italic"
-        android:text="text2" />
+        android:textStyle="italic" />
 
 	<TextView
         android:id="@+id/text_view_description_snippet_in_list"
@@ -36,7 +38,6 @@
         android:layout_below="@id/text_view_address_in_list"
         android:layout_alignLeft="@id/text_view_address_in_list"
         android:freezesText="true"
-        android:textStyle="italic"
-        android:text="text3" />"
+        android:textStyle="italic" />"
 
 </RelativeLayout>

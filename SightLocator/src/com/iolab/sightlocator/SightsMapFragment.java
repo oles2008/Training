@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -364,31 +365,13 @@ public class SightsMapFragment extends Fragment implements
 		sightLocationSource.deactivate();
 		Appl.subscribeForViewUpdates(this);
 	}
-
-//	@Override
-//	public void onUpdateView(Bundle bundle) {
-//		List<MarkerOptions> markerOptionsList = bundle.getParcelableArrayList(Tags.MARKERS);
-//		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
-//		
-//		if(markerOptionsList!=null && bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX)==updateViewCallIndex){
-//			for(Marker marker: markerList){
-//				marker.remove();
-//			}
-//			markerList.clear();
-//			for(MarkerOptions markerOptions: markerOptionsList){
-//				markerList.add(gMap.addMarker(markerOptions));
-//			}
-//		}
-//	}
 	
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
-		//Log.d("MyLogs", "onUpdateView: updateViewIndex: "+updateViewCallIndex+" , from Bundle: "+bundle.getLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX));
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
-				
 				if(itemSet.add(item)){
 					clusterManager.addItem(item);
 				}

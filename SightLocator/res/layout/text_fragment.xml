@@ -56,7 +56,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:freezesText="true"
-                    android:text="Address:"
                     android:textStyle="italic" />
             </LinearLayout>
 

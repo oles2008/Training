@@ -74,5 +74,10 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
 //        	}
 //        }
     }
+	
+	@Override
+	protected boolean shouldRenderAsCluster(Cluster<SightMarkerItem> cluster) {
+		return cluster.getSize() > 1;
+	}
 
 }

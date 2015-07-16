@@ -12,6 +12,8 @@ import android.util.Log;
 
 public class ItemGroupAnalyzer {
 	
+	private static final String TAG = ItemGroupAnalyzer.class.getCanonicalName();  
+	
 	public static int findCommonParent(List<int[]> list, int percentageToIgnore){
 		return findCommonParent(list, percentageToIgnore, null);
 	}
@@ -33,7 +35,6 @@ public class ItemGroupAnalyzer {
 			}
 		}
 		
-		
 		//if there are too many separate markers, return
 		if(result.size()>maxNumberToSplitInto){
 			result.clear();
@@ -46,14 +47,12 @@ public class ItemGroupAnalyzer {
 		List<Integer> finalListOfPositionsInArrays = new ArrayList<Integer>();
 		int commonParent = findCommonParent(copyOfList, 0, finalListOfPositionsInArrays);
 		
-		Log.d("MyLogs", "common parent: "+commonParent);
-		
 		//resetting the copyOfList
 		copyOfList.clear();
 		copyOfList.addAll(list);
 		
 //		//adding positions of the objects which do not have a more precise 
-//		//location than the found commonParent. We are inserting their previous positions in the 
+//		//position in the hierarchy than the found commonParent. We are inserting their previous positions in the 
 //		//initial list, i.e. before the removal of elements with empty location
 //		//Therefore, we are temporarily putting the removed empty arrays back
 //		for(int i: listOfEmpty){
@@ -65,6 +64,7 @@ public class ItemGroupAnalyzer {
 				List<Integer> oneElementList = new ArrayList<Integer>();
 				oneElementList.add(i);
 				result.add(new ClusterGroup(commonParent, oneElementList));
+				copyOfList.set(i, new int[]{});
 			}
 		}
 		
@@ -86,46 +86,14 @@ public class ItemGroupAnalyzer {
 			anotherCopyOfList.addAll(copyOfList);
 			//apart from finding common parent, this will remove all empty arrays from anotherCopyOfList
 			commonParent = findCommonParent(anotherCopyOfList, (int)(100*(1-(double)1/(double)(maxNumberToSplitInto-result.size()))), finalListOfPositionsInArrays);
-//			Log.d("MyLogs", "results size: "+result.size());
-//			Log.d("MyLogs", "maxNumberToSplitInto-results size: "+maxNumberToSplitInto-);
-//			Log.d("MyLogs", "common parent: "+commonParent+" for: ");
-//			for(int[] p: anotherCopyOfList){
-//				String par="["+p[0];
-//				for(int j=1;j<p.length;j++){
-//					par+=","+p[j];
-//				}
-//				par+="]";
-//				Log.d("MyLogs", ""+par);
-//			}
+			
 			if(commonParent==-1 && anotherCopyOfList.size()>0){
 				result.clear();
 				result.add(new ClusterGroup(-1, listOfAll));
-//				Log.d("MyLogs", "returning at 2");
 				return result;
 			}else{
 				//adds the positions of items from the indicated parent, and replaces
 				//the corresponding arrays in the copyOfList with empty arrays
-//				Log.d("MyLogs", "separated array:");
-//				List<Integer> p = separateArraysFromIndicatedParent(copyOfList, commonParent);
-//					String par="["+p.get(0);
-//					for(int j=1;j<p.size();j++){
-//						par+=","+p.get(j);
-//					}
-//					par+="]";
-//					Log.d("MyLogs", ""+par);
-//					Log.d("MyLogs", "what remained: ");
-//					for(int[] pa: copyOfList){
-//						if(pa.length==0){
-//							Log.d("MyLogs","[]");
-//							continue;
-//						}
-//						par="["+pa[0];
-//						for(int j=1;j<pa.length;j++){
-//							par+=","+pa[j];
-//						}
-//						par+="]";
-//						Log.d("MyLogs", ""+par);
-//					}
 				result.add(new ClusterGroup(commonParent, separateArraysFromIndicatedParent(copyOfList, commonParent)));
 			}
 			//just to see how many non-empty arrays remain
@@ -134,7 +102,6 @@ public class ItemGroupAnalyzer {
 			for(int i=0;i<anotherCopyOfList.size();i++){
 				if(anotherCopyOfList.get(i)== null || anotherCopyOfList.get(i).length==0){
 					anotherCopyOfList.remove(anotherCopyOfList.get(i));
-//					Log.d("MyLogs", "removing empty array "+i+", size: "+anotherCopyOfList.size());
 					i--;
 				}
 			}
@@ -145,7 +112,6 @@ public class ItemGroupAnalyzer {
 			//the items could not be split into a less or equal to maxNumberToSplitInto
 			result.clear();
 			result.add(new ClusterGroup(-1, listOfAll));
-//			Log.d("MyLogs", "returning at 3, size: "+anotherCopyOfList.size());
 		}
 		//returning either the result with "listOfAll", or all the split groups
 		return result;
@@ -209,7 +175,7 @@ public class ItemGroupAnalyzer {
 	}
 	
 	private static int findCommonParent(List<int[]> list, int percentageToIgnore, List<Integer> finalListOfPositionsInArrays){
-		Log.d("MyLogs", "looking for common parent, ignoring "+percentageToIgnore);
+		//Log.d("MyLogs", "looking for common parent, ignoring "+percentageToIgnore);
 		List<Integer> listOfBiggest = new ArrayList<Integer>(list.size());
 		List<Integer> positionsOfEmpty = new ArrayList<Integer>();
 		for(int i=0;i<list.size();i++){
@@ -240,6 +206,9 @@ public class ItemGroupAnalyzer {
 			listOfPositionsInArrays.set(maxPosition,listOfPositionsInArrays.get(maxPosition)+1);
 			listOfBiggest.set(maxPosition,list.get(maxPosition)[listOfPositionsInArrays.get(maxPosition)]);
 			maxPosition = getMaximalElementPosition(list, listOfBiggest, percentageToIgnore);
+			if(maxPosition!=-1){
+				currentCommonParent = list.get(maxPosition)[listOfPositionsInArrays.get(maxPosition)];
+			}
 		}
 		if(finalListOfPositionsInArrays!=null){
 			finalListOfPositionsInArrays.clear();
@@ -341,6 +310,10 @@ public class ItemGroupAnalyzer {
 		List<int[]> rowsWithI1 = new ArrayList<int[]>();
 		List<int[]> rowsWithI2 = new ArrayList<int[]>();
 		for(int[] parents: list){
+			if(parents == null){
+				Log.i(TAG, "null parent array");
+				continue;
+			}
 			boolean foundI1=false;
 			boolean foundI2=false;
 			for(int i=0;i<parents.length;i++){
