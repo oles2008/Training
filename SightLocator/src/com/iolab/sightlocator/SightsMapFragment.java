@@ -247,14 +247,15 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterItemClickUpdates(clickedItem);
-		if(currentSelectedMarker!=null){
-			if(clickedItem.equals(new SightMarkerItem(currentSelectedMarker))){
-				return true;
-			}
-			//currentSelectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-			currentSelectedMarker.remove();
-		}
-		currentSelectedMarker = gMap.addMarker(clickedItem.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+		markSelectedItem(clickedItem);
+//		if(currentSelectedMarker!=null){
+//			if(clickedItem.equals(new SightMarkerItem(currentSelectedMarker))){
+//				return true;
+//			}
+//			//currentSelectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+//			currentSelectedMarker.remove();
+//		}
+//		currentSelectedMarker = gMap.addMarker(clickedItem.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 //		for(Marker marker: clusterManager.getMarkerCollection().getMarkers()){
 //			Log.d("MyLogs", "    "+marker.getId()+"  "+marker.getTitle());
 //		}
@@ -378,14 +379,21 @@ public class SightsMapFragment extends Fragment implements
 			}
 			clusterManager.cluster();
 		}
-		if(currentSelectedMarker!=null){
-			SightMarkerItem selectedItem = new SightMarkerItem(currentSelectedMarker);
-			currentSelectedMarker.remove();
-			currentSelectedMarker = gMap
-					.addMarker(selectedItem
-							.getMarkerOptions()
-							.icon(BitmapDescriptorFactory
-									.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+		if (currentSelectedMarker != null) {
+			markSelectedItem(new SightMarkerItem(currentSelectedMarker));
+		}
+	}
+	
+	private void markSelectedItem(SightMarkerItem selectedItem) {
+		if (selectedItem != null) {
+			if (currentSelectedMarker != null && !selectedItem
+					.equals(new SightMarkerItem(currentSelectedMarker))) {
+				currentSelectedMarker.remove();
+			}
+			currentSelectedMarker = gMap.addMarker(selectedItem
+					.getMarkerOptions()
+					.icon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 		}
 	}
 
