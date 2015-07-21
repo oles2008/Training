@@ -1,7 +1,5 @@
 package com.iolab.sightlocator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +10,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +30,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.MarkerManager.Collection;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
-import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
@@ -48,13 +41,14 @@ public class SightsMapFragment extends Fragment implements
 											ViewUpdateListener, 
 											ClusterManager.OnClusterClickListener<SightMarkerItem>,
 											ClusterManager.OnClusterItemClickListener<SightMarkerItem> {
+	
+	private static final int CLUSTER_ANIMATION_DURATION = 100;
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
 	private ClusterManager<SightMarkerItem> clusterManager;
 	private SightsRenderer sightsRenderer;
 
-	private List<Marker> markerList = new ArrayList<Marker>();
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
 	public Marker currentSelectedMarker;
 	
@@ -380,14 +374,21 @@ public class SightsMapFragment extends Fragment implements
 			clusterManager.cluster();
 		}
 		if (currentSelectedMarker != null) {
-			markSelectedItem(new SightMarkerItem(currentSelectedMarker));
+			getView().postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					markSelectedItem(new SightMarkerItem(currentSelectedMarker));
+					
+				}
+			}, CLUSTER_ANIMATION_DURATION);
+			
 		}
 	}
 	
 	private void markSelectedItem(SightMarkerItem selectedItem) {
 		if (selectedItem != null) {
-			if (currentSelectedMarker != null && !selectedItem
-					.equals(new SightMarkerItem(currentSelectedMarker))) {
+			if (currentSelectedMarker != null ) {
 				currentSelectedMarker.remove();
 			}
 			currentSelectedMarker = gMap.addMarker(selectedItem
