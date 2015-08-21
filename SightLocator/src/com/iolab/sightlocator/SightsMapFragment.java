@@ -350,6 +350,10 @@ public class SightsMapFragment extends Fragment implements
 			}
 		}
 	}
+	
+	/* **************************************************************************** */
+    /* *********************** OnBeforeClusterRenderedListener ******************** */
+    /* **************************************************************************** */
 
 	@Override
 	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
