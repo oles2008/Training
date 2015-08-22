@@ -250,6 +250,9 @@ public class SightsMapFragment extends Fragment implements
 		});
 	}
 
+	private void registerCategoryFilterUpdate(){
+		//TODO
+	}
 
 	@Override
 	public void onResume() {
@@ -290,6 +293,8 @@ public class SightsMapFragment extends Fragment implements
 		registerMapLongClickListener();
 		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
+		
+		registerCategoryFilterUpdate();
 
 		//for debugging
 		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));

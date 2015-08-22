@@ -93,6 +93,7 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 
 	@Override
 	public void onFilterDialogNegativeClick(DialogFragment dialog) {
+		Appl.notifyMarkerCategoryUpdates();
 	}
 	
 	public void onPause(){
