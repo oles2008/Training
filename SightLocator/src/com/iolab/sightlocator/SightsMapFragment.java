@@ -44,7 +44,8 @@ public class SightsMapFragment extends Fragment implements
 											ViewUpdateListener, 
 											ClusterManager.OnClusterClickListener<SightMarkerItem>,
 											ClusterManager.OnClusterItemClickListener<SightMarkerItem>,
-											OnBeforeClusterRenderedListener {
+											OnBeforeClusterRenderedListener,
+											OnMarkerCategoryUpdateListener {
 	
 	private static final int CLUSTER_ANIMATION_DURATION = 100;
 	private GoogleMap gMap;
@@ -250,10 +251,6 @@ public class SightsMapFragment extends Fragment implements
 		});
 	}
 
-	private void registerCategoryFilterUpdate(){
-		//TODO
-	}
-
 	@Override
 	public void onResume() {
 
@@ -294,7 +291,7 @@ public class SightsMapFragment extends Fragment implements
 		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
 		
-		registerCategoryFilterUpdate();
+		Appl.subscribeForMarkerCategoryUpdates(this);
 
 		//for debugging
 		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));
@@ -315,6 +312,7 @@ public class SightsMapFragment extends Fragment implements
 		super.onPause();
 		sightLocationSource.deactivate();
 		Appl.subscribeForViewUpdates(this);
+		Appl.unsubscribeFromMarkerCategoryUpdates(this);
 	}
 	
 	@Override
@@ -383,6 +381,12 @@ public class SightsMapFragment extends Fragment implements
 							.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 			mCurrentSelectedMarkerClustered = false;
 		}
+		
+	}
+
+	@Override
+	public void onMarkerCategoryChosen() {
+		// TODO Auto-generated method stub
 		
 	}
 
