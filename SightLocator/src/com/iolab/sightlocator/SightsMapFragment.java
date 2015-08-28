@@ -218,7 +218,7 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterItemClickUpdates(clickedItem);
-		markSelectedItem(clickedItem);
+		markSelectedItem(clickedItem, true);
 		mCurrentSelectedMarkerClustered = false;
         return true;
     }
@@ -311,7 +311,7 @@ public class SightsMapFragment extends Fragment implements
 	public void onPause() {
 		super.onPause();
 		sightLocationSource.deactivate();
-		Appl.subscribeForViewUpdates(this);
+		Appl.unsubscribeFromViewUpdates(this);
 		Appl.unsubscribeFromMarkerCategoryUpdates(this);
 	}
 	
@@ -332,7 +332,7 @@ public class SightsMapFragment extends Fragment implements
 				
 				@Override
 				public void run() {
-					markSelectedItem(new SightMarkerItem(currentSelectedMarker));
+					markSelectedItem(new SightMarkerItem(currentSelectedMarker), true);
 					
 				}
 			}, CLUSTER_ANIMATION_DURATION);
@@ -340,16 +340,15 @@ public class SightsMapFragment extends Fragment implements
 		}
 	}
 	
-	private void markSelectedItem(SightMarkerItem selectedItem) {
-		if (selectedItem != null) {
+	private void markSelectedItem(SightMarkerItem selectedItem, boolean removeCurrentSelected) {
+		if (selectedItem != null && removeCurrentSelected) {
 			if (currentSelectedMarker != null ) {
 				currentSelectedMarker.remove();
 			}
 			if(!mCurrentSelectedMarkerClustered){
 				currentSelectedMarker = gMap.addMarker(selectedItem
 					.getMarkerOptions()
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+					.icon(BitmapDescriptorFactory.fromResource(CategoryUtils.getCategorySelectedMarkerResId(selectedItem.getCategory()))));
 			}
 		}
 	}
@@ -375,10 +374,7 @@ public class SightsMapFragment extends Fragment implements
 		if ((currentSelectedMarker != null)
 				&& item.equals(
 						new SightMarkerItem(currentSelectedMarker))) {
-			currentSelectedMarker = gMap.addMarker(item
-					.getMarkerOptions()
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+			markSelectedItem(item, false);
 			mCurrentSelectedMarkerClustered = false;
 		}
 		

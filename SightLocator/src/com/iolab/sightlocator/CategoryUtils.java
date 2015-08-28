@@ -9,6 +9,6 @@ public class CategoryUtils {
 	}
 	
 	public static int getCategorySelectedMarkerResId(String category) {
-		return 0;
+		return R.drawable.orange_dot_marker_selected;
 	}
 }

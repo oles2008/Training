@@ -16,16 +16,16 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	public String snippet;
 	public String address;
 	public String imageURI;
-	public String color;
+	public String category;
 	public int id;
 	public int[] parentIDs;
 	
-	public SightMarkerItem(LatLng position, String title, String address, String snippet, String imageURI, String color, int id, int[] parentIDs) {
+	public SightMarkerItem(LatLng position, String title, String address, String snippet, String imageURI, String category, int id, int[] parentIDs) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
 		this.imageURI = imageURI;
-		this.color = color;
+		this.category = category;
 		this.parentIDs = parentIDs;
 	}
 	
@@ -33,7 +33,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
-		this.color = color;
+		this.category = color;
 		this.parentIDs = parentIDs;
 	}
 	
@@ -41,7 +41,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
-		this.color = color;
+		this.category = color;
 	}
 	
 	public SightMarkerItem(Marker marker) {
@@ -63,7 +63,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.address=array[1];
 		this.snippet=array[2];
 		this.imageURI=array[3];
-		this.color=array[4];
+		this.category=array[4];
 		this.parentIDs = parcel.createIntArray();
 	}
 	
@@ -101,8 +101,8 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		return imageURI;
 	}
 	
-	public String getColor() {
-		return color;
+	public String getCategory() {
+		return category;
 	}
 	
 	public int getID() {
@@ -133,7 +133,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeParcelable(position, flags);
-		String[] array = {this.title, this.address, this.snippet, this.imageURI, this.color};
+		String[] array = {this.title, this.address, this.snippet, this.imageURI, this.category};
 		parcel.writeStringArray(array);
 		parcel.writeIntArray(parentIDs);
 	}
