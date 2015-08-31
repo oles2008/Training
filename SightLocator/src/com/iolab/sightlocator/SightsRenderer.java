@@ -25,6 +25,7 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
 	private int updateViewCallIndex=0;
 	private Context context;
 	private GoogleMap gMap;
+	private final List<OnBeforeClusterRenderedListener> mOnBeforeClusterRenderedListeners = new ArrayList<SightsRenderer.OnBeforeClusterRenderedListener>();
 
 	public SightsRenderer(Context context, GoogleMap map,
 			ClusterManager<SightMarkerItem> clusterManager) {
@@ -50,16 +51,7 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
         // Set the info window to show their name.
         markerOptions.title(item.title).snippet(item.snippet).icon(BitmapDescriptorFactory
 				.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-//        if(sightsMapFragment.currentSelectedMarker!=null){
-//        	SightMarkerItem selectedItem = new SightMarkerItem(sightsMapFragment.currentSelectedMarker);
-//        	if(item.equals(selectedItem)){
-//        		sightsMapFragment.currentSelectedMarker = gMap
-//						.addMarker(selectedItem
-//								.getMarkerOptions()
-//								.icon(BitmapDescriptorFactory
-//										.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-//        	}
-//        }
+        notifyOnBeforeClusterItemRendered(item, markerOptions);
     }
 	
 	@Override
@@ -67,17 +59,46 @@ public class SightsRenderer extends DefaultClusterRenderer<SightMarkerItem> impl
         // Draw multiple people.
         // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
 		super.onBeforeClusterRendered(cluster, markerOptions);
-//        if(sightsMapFragment.currentSelectedMarker!=null){
-//        	SightMarkerItem selectedItem = new SightMarkerItem(sightsMapFragment.currentSelectedMarker);
-//        	if(cluster.getItems().contains(selectedItem)){
-//        		sightsMapFragment.currentSelectedMarker.remove();
-//        	}
-//        }
+		notifyOnBeforeClusterRendered(cluster, markerOptions);
     }
 	
 	@Override
 	protected boolean shouldRenderAsCluster(Cluster<SightMarkerItem> cluster) {
 		return cluster.getSize() > 1;
 	}
+	
+	void registerOnBeforeClusterRenderedListener(
+			OnBeforeClusterRenderedListener onBeforeClusterRenderedListener) {
+		mOnBeforeClusterRenderedListeners.add(onBeforeClusterRenderedListener);
+	}
 
+	void unregisterOnBeforeClusterRenderedListener(
+			OnBeforeClusterRenderedListener onBeforeClusterRenderedListener) {
+		mOnBeforeClusterRenderedListeners
+				.remove(onBeforeClusterRenderedListener);
+	}
+
+	private void notifyOnBeforeClusterRendered(
+			Cluster<SightMarkerItem> cluster, MarkerOptions markerOptions) {
+		for (OnBeforeClusterRenderedListener onBeforeClusterRenderedListener : mOnBeforeClusterRenderedListeners) {
+			onBeforeClusterRenderedListener.onBeforeClusterRendered(cluster,
+					markerOptions);
+		}
+	}
+	
+	private void notifyOnBeforeClusterItemRendered(SightMarkerItem item,
+			MarkerOptions markerOptions) {
+		for (OnBeforeClusterRenderedListener onBeforeClusterRenderedListener : mOnBeforeClusterRenderedListeners) {
+			onBeforeClusterRenderedListener.onBeforeClusterItemRendered(item,
+					markerOptions);
+		}
+	}
+
+	interface OnBeforeClusterRenderedListener {
+		void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
+				MarkerOptions markerOptions);
+
+		void onBeforeClusterItemRendered(SightMarkerItem item,
+				MarkerOptions markerOptions);
+	}
 }

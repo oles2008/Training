@@ -1,9 +1,8 @@
 package com.iolab.sightlocator;
 
 
-public class OnMarkerCategoryUpdateListener {
+public interface OnMarkerCategoryUpdateListener {
 
-	public void onMarkerCategoryChosen() {
-	}
+	public void onMarkerCategoryChosen();
 
 }
