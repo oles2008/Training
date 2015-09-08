@@ -6,7 +6,6 @@ import java.util.Set;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,18 +17,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
@@ -55,7 +50,9 @@ public class SightsMapFragment extends Fragment implements
 	private SightsRenderer sightsRenderer;
 
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
-	public Marker currentSelectedMarker;
+	
+	private SelectedMarkerManager mSelectedMarkerManager;
+	private Marker currentSelectedMarker;
 	private boolean mCurrentSelectedMarkerClustered;
 	
 	private long updateViewCallIndex=0;
@@ -210,7 +207,7 @@ public class SightsMapFragment extends Fragment implements
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterClickUpdates(cluster);
 		mCurrentSelectedMarkerClustered = false;
-        
+        removeSelectedItem(true);
         return true;
     }
 	
@@ -326,8 +323,7 @@ public class SightsMapFragment extends Fragment implements
 				}
 			}
 			clusterManager.cluster();
-		}
-		if (currentSelectedMarker != null) {
+		if ((currentSelectedMarker != null) && !mCurrentSelectedMarkerClustered) {
 			getView().postDelayed(new Runnable() {
 				
 				@Override
@@ -338,12 +334,25 @@ public class SightsMapFragment extends Fragment implements
 			}, CLUSTER_ANIMATION_DURATION);
 			
 		}
+		}
+	}
+	
+	private void removeSelectedItem(boolean forgetIt){
+		if (currentSelectedMarker != null) {
+			currentSelectedMarker.remove();
+			Log.d("MyLogs", "removed marker "+currentSelectedMarker.getTitle());
+			if(forgetIt){
+				currentSelectedMarker = null;
+			}
+		}
 	}
 	
 	private void markSelectedItem(SightMarkerItem selectedItem, boolean removeCurrentSelected) {
-		if (selectedItem != null && removeCurrentSelected) {
-			if (currentSelectedMarker != null ) {
-				currentSelectedMarker.remove();
+		Log.d("MyLogs", "marking selected");
+		if (selectedItem != null ) {
+			if (removeCurrentSelected) {
+				removeSelectedItem(true);
+				mCurrentSelectedMarkerClustered = false;
 			}
 			if(!mCurrentSelectedMarkerClustered){
 				currentSelectedMarker = gMap.addMarker(selectedItem
@@ -363,7 +372,8 @@ public class SightsMapFragment extends Fragment implements
 		if ((currentSelectedMarker != null)
 				&& cluster.getItems().contains(
 						new SightMarkerItem(currentSelectedMarker))) {
-			currentSelectedMarker.remove();
+			Log.d("MyLogs", "removing selected marker");
+			removeSelectedItem(false);
 			mCurrentSelectedMarkerClustered = true;
 		}
 	}
@@ -371,7 +381,8 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onBeforeClusterItemRendered(SightMarkerItem item,
 			MarkerOptions markerOptions) {
-		if ((currentSelectedMarker != null)
+		Log.d("MyLogs", "onBeforeClusterItemRendered");
+		if (!mCurrentSelectedMarkerClustered && (currentSelectedMarker != null)
 				&& item.equals(
 						new SightMarkerItem(currentSelectedMarker))) {
 			markSelectedItem(item, false);
@@ -379,6 +390,10 @@ public class SightsMapFragment extends Fragment implements
 		}
 		
 	}
+	
+	/* **************************************************************************** */
+    /* ************************ OnMarkerCategoryUpdateListener ******************** */
+    /* **************************************************************************** */
 
 	@Override
 	public void onMarkerCategoryChosen() {
