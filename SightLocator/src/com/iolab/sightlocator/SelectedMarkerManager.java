@@ -34,7 +34,8 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 */
 	private boolean mCurrentSelectedMarkerClustered;
 
-	public SelectedMarkerManager(GoogleMap gMap, Bundle savedInstanceState) {
+	public SelectedMarkerManager(View rootView, GoogleMap gMap, Bundle savedInstanceState) {
+		mRootView = rootView;
 		mGoogleMap = gMap;
 		if (savedInstanceState != null) {
 			mCurrentSelectedItem = savedInstanceState
@@ -81,11 +82,8 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 
 	/* **************************************************************************** */
-	/*
-	 * *********************** OnBeforeClusterRenderedListener
-	 * ********************
-	 */
-	/* **************************************************************************** */
+    /* *********************** OnBeforeClusterRenderedListener ******************** */
+    /* **************************************************************************** */
 
 	@Override
 	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
@@ -99,15 +97,15 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	@Override
 	public void onBeforeClusterItemRendered(SightMarkerItem item,
 			MarkerOptions markerOptions) {
-		unclusterSelectedMarker();
+		if(item.equals(mCurrentSelectedItem)){
+			mCurrentSelectedMarkerClustered = false;
+			unclusterSelectedMarker();
+		}
 	}
 
 	/* **************************************************************************** */
-	/*
-	 * ****************************** Utility API
-	 * *********************************
-	 */
-	/* **************************************************************************** */
+    /* ************************************* Utility API ************************** */
+    /* **************************************************************************** */
 
 	private Marker addSelectedMarker(SightMarkerItem selectedItem) {
 		return mGoogleMap.addMarker(selectedItem.getMarkerOptions().icon(
@@ -129,15 +127,10 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 
 				@Override
 				public void run() {
-					if (mCurrentSelectedMarkerClustered
-							&& (mCurrentSelectedMarker != null)) {
-						mCurrentSelectedMarkerClustered = true;
-						mCurrentSelectedMarker = addSelectedMarker(mCurrentSelectedItem);
-					}
+					mCurrentSelectedMarkerClustered = true;
+					mCurrentSelectedMarker = addSelectedMarker(mCurrentSelectedItem);
 				}
 			}, CLUSTER_ANIMATION_DURATION);
-
 		}
-
 	}
 }

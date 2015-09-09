@@ -9,29 +9,22 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.OnUserLocationChangedListener.NewLocationUser;
-import com.iolab.sightlocator.SightsRenderer.OnBeforeClusterRenderedListener;
 import com.iolab.sightlocator.TouchEventListenerFrameLayout.OnMapTouchedListener;
 
 public class SightsMapFragment extends Fragment implements 
@@ -39,10 +32,8 @@ public class SightsMapFragment extends Fragment implements
 											ViewUpdateListener, 
 											ClusterManager.OnClusterClickListener<SightMarkerItem>,
 											ClusterManager.OnClusterItemClickListener<SightMarkerItem>,
-											OnBeforeClusterRenderedListener,
 											OnMarkerCategoryUpdateListener {
 	
-	private static final int CLUSTER_ANIMATION_DURATION = 100;
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
@@ -52,8 +43,6 @@ public class SightsMapFragment extends Fragment implements
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
 	
 	private SelectedMarkerManager mSelectedMarkerManager;
-	private Marker currentSelectedMarker;
-	private boolean mCurrentSelectedMarkerClustered;
 	
 	private long updateViewCallIndex=0;
 
@@ -74,25 +63,11 @@ public class SightsMapFragment extends Fragment implements
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
+		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, savedInstanceState);
 		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
-		sightsRenderer.registerOnBeforeClusterRenderedListener(this);
+		sightsRenderer.registerOnBeforeClusterRenderedListener(mSelectedMarkerManager);
 		clusterManager.setRenderer(sightsRenderer);
 		clusterManager.setAlgorithm(new SightsHierarchichalAlgorithm());
-
-		if (savedInstanceState != null) {
-			SightMarkerItem selectedItem = savedInstanceState
-					.getParcelable("currentSelectedItem");
-			if (selectedItem != null) {
-				itemSet.add(selectedItem);
-				clusterManager.addItem(selectedItem);
-				clusterManager.cluster();
-				currentSelectedMarker = gMap
-						.addMarker(selectedItem
-								.getMarkerOptions()
-								.icon(BitmapDescriptorFactory
-										.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-			}
-		}
 	}
 
 	@Override
@@ -162,11 +137,7 @@ public class SightsMapFragment extends Fragment implements
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				Appl.notifyMapClickUpdates(arg0);
-				if(currentSelectedMarker!=null){
-					currentSelectedMarker.remove();
-					currentSelectedMarker=null;
-					mCurrentSelectedMarkerClustered = false;
-				}
+				mSelectedMarkerManager.removeSelectedItem();
 			}
 		});
 	}
@@ -177,27 +148,8 @@ public class SightsMapFragment extends Fragment implements
 			public void onMapLongClick(LatLng arg0) {
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
-				
 				Appl.notifyLongMapClickUpdates(arg0);
-				if(currentSelectedMarker!=null){
-					currentSelectedMarker.remove();
-					currentSelectedMarker=null;
-					mCurrentSelectedMarkerClustered = false;
-				}
-			}
-		});
-	}
-	
-	private void registerInfoWindowClickListener(){
-		gMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-			@Override
-			public void onInfoWindowClick(Marker marker) {
-				Toast toast = Toast
-						.makeText(
-								Appl.appContext,
-								"onInfoWindowClick",
-								Toast.LENGTH_SHORT);
-				toast.show();
+				mSelectedMarkerManager.removeSelectedItem();
 			}
 		});
 	}
@@ -206,8 +158,7 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterClickUpdates(cluster);
-		mCurrentSelectedMarkerClustered = false;
-        removeSelectedItem(true);
+		mSelectedMarkerManager.removeSelectedItem();
         return true;
     }
 	
@@ -215,8 +166,7 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterItemClickUpdates(clickedItem);
-		markSelectedItem(clickedItem, true);
-		mCurrentSelectedMarkerClustered = false;
+		mSelectedMarkerManager.selectItem(clickedItem);
         return true;
     }
 
@@ -281,17 +231,12 @@ public class SightsMapFragment extends Fragment implements
 		// Define a listener that responds to location updates and register it
 		registerLocationListener();
 		
-		// define a listener that responds to clicks on markers Info Window
-		registerInfoWindowClickListener();
 		registerMapClickListener();
 		registerMapLongClickListener();
 		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
 		
 		Appl.subscribeForMarkerCategoryUpdates(this);
-
-		//for debugging
-		//Log.d("MyLogs", "DBhelper null: "+(Appl.sightsDatabaseOpenHelper == null));
 	}
 
 	@Override
@@ -299,9 +244,7 @@ public class SightsMapFragment extends Fragment implements
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
 		args.putLong("updateViewCallIndex", updateViewCallIndex);
-		if(currentSelectedMarker!=null){
-			args.putParcelable("currentSelectedItem", new SightMarkerItem(currentSelectedMarker));
-		}
+		mSelectedMarkerManager.saveSelectedItem(args);
 	}
 	
 	@Override
@@ -323,72 +266,7 @@ public class SightsMapFragment extends Fragment implements
 				}
 			}
 			clusterManager.cluster();
-		if ((currentSelectedMarker != null) && !mCurrentSelectedMarkerClustered) {
-			getView().postDelayed(new Runnable() {
-				
-				@Override
-				public void run() {
-					markSelectedItem(new SightMarkerItem(currentSelectedMarker), true);
-					
-				}
-			}, CLUSTER_ANIMATION_DURATION);
-			
 		}
-		}
-	}
-	
-	private void removeSelectedItem(boolean forgetIt){
-		if (currentSelectedMarker != null) {
-			currentSelectedMarker.remove();
-			Log.d("MyLogs", "removed marker "+currentSelectedMarker.getTitle());
-			if(forgetIt){
-				currentSelectedMarker = null;
-			}
-		}
-	}
-	
-	private void markSelectedItem(SightMarkerItem selectedItem, boolean removeCurrentSelected) {
-		Log.d("MyLogs", "marking selected");
-		if (selectedItem != null ) {
-			if (removeCurrentSelected) {
-				removeSelectedItem(true);
-				mCurrentSelectedMarkerClustered = false;
-			}
-			if(!mCurrentSelectedMarkerClustered){
-				currentSelectedMarker = gMap.addMarker(selectedItem
-					.getMarkerOptions()
-					.icon(BitmapDescriptorFactory.fromResource(CategoryUtils.getCategorySelectedMarkerResId(selectedItem.getCategory()))));
-			}
-		}
-	}
-	
-	/* **************************************************************************** */
-    /* *********************** OnBeforeClusterRenderedListener ******************** */
-    /* **************************************************************************** */
-
-	@Override
-	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
-			MarkerOptions markerOptions) {
-		if ((currentSelectedMarker != null)
-				&& cluster.getItems().contains(
-						new SightMarkerItem(currentSelectedMarker))) {
-			Log.d("MyLogs", "removing selected marker");
-			removeSelectedItem(false);
-			mCurrentSelectedMarkerClustered = true;
-		}
-	}
-
-	@Override
-	public void onBeforeClusterItemRendered(SightMarkerItem item,
-			MarkerOptions markerOptions) {
-		Log.d("MyLogs", "onBeforeClusterItemRendered");
-		if (!mCurrentSelectedMarkerClustered && (currentSelectedMarker != null)
-				&& item.equals(
-						new SightMarkerItem(currentSelectedMarker))) {
-			markSelectedItem(item, false);
-			mCurrentSelectedMarkerClustered = false;
-		}
-		
 	}
 	
 	/* **************************************************************************** */
