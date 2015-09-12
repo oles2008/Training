@@ -58,6 +58,7 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 		case R.id.action_quick_filter:
 			showFilterDialog();
 			return true;
+			
 
 		
 		default:
@@ -93,6 +94,12 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 
 	@Override
 	public void onFilterDialogNegativeClick(DialogFragment dialog) {
+	}
+	
+	public void showLanguagesDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialogLangs = new LanguagesDialogFragment();
+		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
 	}
 	
 	public void onPause(){
