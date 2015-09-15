@@ -35,7 +35,24 @@ public class LanguagesDialogFragment extends DialogFragment{
 	               // The 'which' argument contains the index position
 	               // of the selected item
 	           }
+	     
 	    });
+	    builder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// Send the positive button event back to the host activity
+				mListener.onLanguagesDialogPositiveClick(LanguagesDialogFragment.this);
+			}
+		});
+		
+	    builder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// Send the negative button event back to the host activity
+				mListener.onLanguagesDialogNegativeClick(LanguagesDialogFragment.this);
+				dialog.cancel();
+			}
+		});
 	    return builder.create();
 	}
 }
