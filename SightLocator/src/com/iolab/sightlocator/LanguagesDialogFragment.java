@@ -30,7 +30,7 @@ public class LanguagesDialogFragment extends DialogFragment{
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	    builder.setTitle(R.string.languages_dialog_title)
-	           .setItems(R.array.apps_language, new DialogInterface.OnClickListener() {
+	           .setSingleChoiceItems(R.array.apps_language,-1, new DialogInterface.OnClickListener() {
 	               public void onClick(DialogInterface dialog, int which) {
 	               // The 'which' argument contains the index position
 	               // of the selected item
