@@ -3,16 +3,16 @@ package com.iolab.sightlocator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -55,11 +55,17 @@ public class SightsMapFragment extends Fragment implements
 		}
 	}
 	
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		gMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			gMap = ((MapFragment) getChildFragmentManager().findFragmentById(
+					R.id.map)).getMap();
+		} else {
+			gMap = ((MapFragment) getFragmentManager().findFragmentById(
+					R.id.map)).getMap();
+		}
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);

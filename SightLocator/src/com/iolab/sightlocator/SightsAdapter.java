@@ -6,13 +6,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -92,9 +88,10 @@ public class SightsAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return 0;
 	}
-	
-	private void loadBitmap(String imageUri, ImageView imageView, int reqWidth, int reqHeight) {
-		if(isPreviousTaskCancelled(imageUri, imageView)){
+
+	private void loadBitmap(String imageUri, ImageView imageView, int reqWidth,
+			int reqHeight) {
+		if (isPreviousTaskCancelled(imageUri, imageView)) {
 			if (imageUri != null) {
 				DecodeImageAsyncTask asyncTask = new DecodeImageAsyncTask(
 						imageView, imageUri, reqWidth, reqHeight);
@@ -108,17 +105,24 @@ public class SightsAdapter extends BaseAdapter {
 			}
 		}
 	}
-	
-	private boolean isPreviousTaskCancelled(String imagePath, ImageView imageView) {
-		if(imageView != null) {
+
+	private boolean isPreviousTaskCancelled(String imagePath,
+			ImageView imageView) {
+
+		if (imageView != null) {
 			Drawable currentDrawable = imageView.getDrawable();
-			if(currentDrawable instanceof AsyncDrawable){
-			    DecodeImageAsyncTask currentAsyncTask = ((AsyncDrawable) currentDrawable).getAsyncTask();
-			    if (currentAsyncTask.getPath() != imagePath) {
-			    	currentAsyncTask.cancel(true);
-			    }else {
-			    	return false;
-			    }
+			if (currentDrawable != null
+					&& currentDrawable instanceof AsyncDrawable) {
+				DecodeImageAsyncTask currentAsyncTask = ((AsyncDrawable) currentDrawable)
+						.getAsyncTask();
+				if (currentAsyncTask == null) {
+					return true;
+				}
+				if (currentAsyncTask.getPath() != imagePath) {
+					currentAsyncTask.cancel(true);
+				} else {
+					return false;
+				}
 			}
 		}
 		return true;
