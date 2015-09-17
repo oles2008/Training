@@ -56,6 +56,9 @@
     <string name="languages_dialog_title">Apps languages</string>
     <string name="languages_dialog_message">Please choose apps working language.</string>
     
+    <!-- SharedPreferences -->
+    <string name="application_language">application language</string>
+    
     
     <!-- DEPRECATED - values used for checkboxes -->
     <string name="action_filter_all">ALL</string>
