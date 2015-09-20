@@ -327,7 +327,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public void onUpdateView(Bundle bundle) {
-		//Log.d("descrLog","description is "+bundle.getString(Tags.SIGHT_DESCRIPTION));
+		Log.d("MyLogs","description is "+bundle.getString(Tags.SIGHT_DESCRIPTION));
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
 			getScrollView().scrollTo(0, 0);
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
@@ -336,7 +336,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
 			changeImageFragmentUsingImageUri(bundle
 					.getString(Tags.PATH_TO_IMAGE));
-		}
+		} 
 		
 		//check if bundle has COMMON_PARENT_ID
 		if (bundle.getInt(Tags.COMMON_PARENT_ID,-1) != -1) {
@@ -350,7 +350,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			SightsAdapter adapter = new SightsAdapter(getActivity(),
 					R.layout.sights_list_item, mSightListItems);
 			mSights.setAdapter(adapter);
-			mSights.setVisibility(View.VISIBLE);
+			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
+					: View.GONE);
 		}
 		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
@@ -372,6 +373,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterItemClick(SightMarkerItem item) {
+		Log.d("MyLogs", "onClusterItemClick");
 		if (mSelectedItem != null
 				&& item.getPosition().equals(mSelectedItem.getPosition())
 				&& ((item.getTitle() == null) || (item.getTitle()
@@ -419,6 +421,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		getActivity().startService(intent);
 		
 		mAddress.setVisibility(View.GONE);
+		mSights.setVisibility(View.GONE);
 		return false;
 	}
 
