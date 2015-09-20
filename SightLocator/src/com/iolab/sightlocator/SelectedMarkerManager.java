@@ -13,6 +13,7 @@ import com.iolab.sightlocator.SightsRenderer.OnBeforeClusterRenderedListener;
 public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 
 	private static final int CLUSTER_ANIMATION_DURATION = 100;
+	private static final int ITEM_RETRIEVAL_DURATION = 1500;
 	private static final String KEY_CURRENT_SELECTED_ITEM = "currentSelectedItem";
 	private static final String KEY_IS_CURRENT_SELECTED_ITEM_CLUSTERED = "isCurrentSelectedItemClustered";
 
@@ -32,9 +33,10 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	/**
 	 * Indicates whether the currently selected item is hidden in a cluster.
 	 */
-	private boolean mCurrentSelectedMarkerClustered;
+	private boolean mCurrentSelectedMarkerClustered = false;
 
-	public SelectedMarkerManager(View rootView, GoogleMap gMap, Bundle savedInstanceState) {
+	public SelectedMarkerManager(View rootView, GoogleMap gMap,
+			Bundle savedInstanceState) {
 		mRootView = rootView;
 		mGoogleMap = gMap;
 		if (savedInstanceState != null) {
@@ -44,9 +46,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 				mCurrentSelectedMarkerClustered = savedInstanceState
 						.getBoolean(KEY_IS_CURRENT_SELECTED_ITEM_CLUSTERED,
 								false);
-				if (!mCurrentSelectedMarkerClustered) {
-					mCurrentSelectedMarker = addSelectedMarker(mCurrentSelectedItem);
-				}
+				markSavedSelectedItem();
 			}
 		}
 	}
@@ -98,7 +98,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	public void onBeforeClusterItemRendered(SightMarkerItem item,
 			MarkerOptions markerOptions) {
 		if(item.equals(mCurrentSelectedItem)){
-			mCurrentSelectedMarkerClustered = false;
 			unclusterSelectedMarker();
 		}
 	}
@@ -122,15 +121,26 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 
 	private void unclusterSelectedMarker() {
-		if ((mCurrentSelectedItem != null) && !mCurrentSelectedMarkerClustered) {
-			mRootView.postDelayed(new Runnable() {
+		if ((mCurrentSelectedItem != null) && mCurrentSelectedMarkerClustered) {
+			addSelectedMarkerDelayed(mCurrentSelectedItem, CLUSTER_ANIMATION_DURATION);
+		}
+	}
 
-				@Override
-				public void run() {
-					mCurrentSelectedMarkerClustered = true;
-					mCurrentSelectedMarker = addSelectedMarker(mCurrentSelectedItem);
-				}
-			}, CLUSTER_ANIMATION_DURATION);
+	private void addSelectedMarkerDelayed(SightMarkerItem item, int delay) {
+		mRootView.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				mCurrentSelectedMarkerClustered = false;
+				mCurrentSelectedMarker = addSelectedMarker(mCurrentSelectedItem);
+			}
+		}, delay);
+	}
+	
+	private void markSavedSelectedItem() {
+		if (!mCurrentSelectedMarkerClustered) {
+			addSelectedMarkerDelayed(mCurrentSelectedItem,
+					ITEM_RETRIEVAL_DURATION);
 		}
 	}
 }

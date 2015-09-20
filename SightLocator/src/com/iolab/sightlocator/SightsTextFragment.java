@@ -26,28 +26,27 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
-		OnMapLongClickListener, OnMarkerClickListener,
-		OnClusterClickListener<SightMarkerItem>,
+		OnMapLongClickListener, OnClusterClickListener<SightMarkerItem>,
 		OnClusterItemClickListener<SightMarkerItem>, ViewUpdateListener {
 
-	private final int ICON_SIZE = 200;
-	private Marker mSelectedMarker = null;
-	private SightMarkerItem mSelectedItem = null;
-	private ListView mSights = null;
-	private ArrayList<SightMarkerItem> mSightListItems = null;
-	private TextView mAddress = null;
+	private static final int ICON_SIZE = 200;
+	
+	private ListView mSights;
+	private ArrayList<SightMarkerItem> mSightListItems;
+	private TextView mAddress;
+	private TextView mTitle;
+	private TextView mDescription;
+	private ImageView mImage;
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
-	private String mLanguage = null;
+	private String mLanguage;
 
     OnTextFragmentClickListener mCallback;
 
@@ -69,7 +68,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View inflatedView = inflater.inflate(R.layout.text_fragment, container, false);
+		View inflatedView = inflater.inflate(R.layout.text_fragment, container,
+				false);
 		mSights = (ListView) inflatedView.findViewById(R.id.listView);
 		if (mSightListItems != null && !mSightListItems.isEmpty()) {
 			mSights.setAdapter(new SightsAdapter(getActivity(),
@@ -80,6 +80,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		mAddress = (TextView) inflatedView.findViewById(R.id.address);
 		mAddress.setVisibility(View.GONE);
+		mTitle = (TextView) inflatedView
+				.findViewById(R.id.text_view_object_title);
+		mDescription = (TextView) inflatedView.findViewById(R.id.textView);
+		mImage = (ImageView) inflatedView.findViewById(
+				R.id.imageView);
 		return inflatedView;
 	}
 
@@ -136,7 +141,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onResume() {
 		super.onResume();
-		//Appl.subscribeForMarkerClickUpdates(this);
 		Appl.subscribeForClusterItemClickUpdates(this);
 		Appl.subscribeForClusterClickUpdates(this);
 		Appl.subscribeForMapClickUpdates(this);
@@ -178,66 +182,30 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @throws FileNotFoundException
 	 */
 	private void changeImageFragmentUsingImageUri(String uri) {
-		FragmentManager fragmentManager = getFragmentManager();
-		ImageView imageView = Utils.getImageView(fragmentManager);
-		Log.d("MyLogs","image uri: "+(uri));
-
-		imageView.setImageURI(Uri.parse(uri));
-
-//		if (!uri.contains(Tags.ONE_PIXEL_JPEG)) {
-			Log.d("MyLogs","not one_pixel ");
-			Bitmap resizedBitmap = Utils.resizeBitmap(imageView, ICON_SIZE);
-			//Bitmap resizedBitmap = resizeBitmap(imageView, ICON_SIZE);
-			imageView.setImageBitmap(resizedBitmap);
-//		}
-
-		imageView.setTag(R.string.imageview_tag_uri, uri);
-	}
-
-	@Deprecated
-	public boolean onMarkerClick(final Marker marker) {
-		if (mSelectedMarker!=null && marker.getPosition().equals(mSelectedMarker.getPosition())
-				&& marker.getTitle().equals(mSelectedMarker.getTitle())) {
-			return true;
+		if (uri == null || uri.isEmpty()) {
+			mImage.setImageBitmap(null);
+			return;
 		}
-		Intent intent = new Intent(getActivity(), SightsIntentService.class);
-		LatLng position = marker.getPosition();
-		Bundle bundle = new Bundle();
-		bundle.putDouble(Tags.POSITION_LAT, position.latitude);
-		bundle.putDouble(Tags.POSITION_LNG, position.longitude);
-		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER,++mClusterClickCounter);
-		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(bundle));
-		intent.putExtra(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
-		getActivity().startService(intent);
-		return true;
+		mImage.setImageURI(Uri.parse(uri));
+		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
+		mImage.setImageBitmap(resizedBitmap);
+		mImage.setTag(R.string.imageview_tag_uri, uri);
 	}
 
 	@Override
 	public void onMapLongClick(LatLng arg0) {
-		String loremIpsum = getString(R.string.lorem_ipsum);
-		// changes the text fragment to default (lorem ipsum text)
-		changeTextFragment(loremIpsum);
-		// changes the image fragment to default (one pixel image)
-		Resources res = getResources();
-		FragmentManager fragmentManager = getFragmentManager();
-
-		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-				.toString(), res, fragmentManager);
-		mSelectedItem = null;
-		mAddress.setVisibility(View.GONE);
-
+		onMapClick(arg0);
 	}
 
 	@Override
 	public void onMapClick(LatLng arg0) {
+		cleanAllViews();
 		// changes the image fragment to default (one pixel image)
 		Resources res = getResources();
 		FragmentManager fragmentManager = getFragmentManager();
 
 		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
 				.toString(), res, fragmentManager);
-		mSelectedItem = null;
 		mAddress.setVisibility(View.GONE);
 		mSights.setVisibility(View.GONE);
 		mSightListItems = null;
@@ -327,7 +295,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public void onUpdateView(Bundle bundle) {
-		Log.d("MyLogs","description is "+bundle.getString(Tags.SIGHT_DESCRIPTION));
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
 			getScrollView().scrollTo(0, 0);
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
@@ -355,31 +322,20 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
-			Log.d("MY_log", "messageFromTitle");
-			Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
-			TextView object_title = (TextView) textFragment.getView().findViewById(R.id.text_view_object_title);
-			object_title.setText(bundle.getString(Tags.SIGHT_NAME));
+			mTitle.setText(bundle.getString(Tags.SIGHT_NAME));
+		}
 
-			}
+		if (bundle.getString(Tags.SIGHT_ADDRESS) != null) {
 
-         if (bundle.getString(Tags.SIGHT_ADDRESS) != null) {
-	       
-	       Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
-			TextView object_address = (TextView) textFragment.getView().findViewById(R.id.address);
-			object_address.setText(bundle.getString(Tags.SIGHT_ADDRESS));
-}
+			mAddress.setText(bundle.getString(Tags.SIGHT_ADDRESS));
+		}
 			
 	}
 
 	@Override
 	public boolean onClusterItemClick(SightMarkerItem item) {
-		Log.d("MyLogs", "onClusterItemClick");
-		if (mSelectedItem != null
-				&& item.getPosition().equals(mSelectedItem.getPosition())
-				&& ((item.getTitle() == null) || (item.getTitle()
-						.equals(mSelectedItem.getTitle())))) {
-			return true;
-		}
+		//TODO avoid sending the same request if the selected marker is the same
+		cleanAllViews();
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		LatLng position = item.getPosition();
 		Bundle bundle = new Bundle();
@@ -389,7 +345,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
-		mSelectedItem = item;
 
 
       /*  Fragment textFragmet = getActivity().getFragmentManager()
@@ -406,6 +361,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
+		cleanAllViews();
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		List<int[]>parentIDs = new ArrayList<int[]>();
 		for(SightMarkerItem item: cluster.getItems()){
@@ -423,6 +379,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mAddress.setVisibility(View.GONE);
 		mSights.setVisibility(View.GONE);
 		return false;
+	}
+	
+	private void cleanAllViews(){
+		 changeImageFragmentUsingImageUri(null);
+		 changeTextFragment(null);
+		 mAddress.setText(null);
+		 mTitle.setText(null);
+		 mDescription.setText(null);
+		 mSights.setVisibility(View.GONE);
 	}
 
 }
