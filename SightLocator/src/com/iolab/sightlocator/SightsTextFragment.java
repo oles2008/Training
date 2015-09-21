@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -317,6 +319,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			SightsAdapter adapter = new SightsAdapter(getActivity(),
 					R.layout.sights_list_item, mSightListItems);
 			mSights.setAdapter(adapter);
+			mSights.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
 					: View.GONE);
 		}
@@ -361,23 +372,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
-		cleanAllViews();
-		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		List<int[]>parentIDs = new ArrayList<int[]>();
 		for(SightMarkerItem item: cluster.getItems()){
 			parentIDs.add(item.getParentIDs());
 		}
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
-		Bundle args = new Bundle();
-		args.putInt(Tags.COMMON_PARENT_ID, clusterCommonParentId);
-		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
-		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, new ArrayList<SightMarkerItem>(cluster.getItems()));
-		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(args));
-		getActivity().startService(intent);
-		
-		mAddress.setVisibility(View.GONE);
-		mSights.setVisibility(View.GONE);
+		navigateTo(clusterCommonParentId);
 		return false;
 	}
 	
@@ -388,6 +388,19 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		 mTitle.setText(null);
 		 mDescription.setText(null);
 		 mSights.setVisibility(View.GONE);
+		 mSightListItems = null; 
+	}
+	
+	private void navigateTo(int id){
+		//TODO avoid sending the same request if the selected marker is the same
+				cleanAllViews();
+				Intent intent = new Intent(getActivity(), SightsIntentService.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt(Tags.COMMON_PARENT_ID, id);
+				bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
+				intent.putExtra(SightsIntentService.ACTION,
+						new GetTextOnMarkerClickAction(bundle));
+				getActivity().startService(intent);
 	}
 
 }

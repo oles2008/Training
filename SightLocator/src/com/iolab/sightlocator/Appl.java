@@ -34,6 +34,7 @@ public class Appl extends Application{
 	public static List<OnMapClickListener> onMapClickListeners = new ArrayList<OnMapClickListener>();
 	public static List<OnMapLongClickListener> onMapLongClickListeners = new ArrayList<OnMapLongClickListener>();
 	public static List<ViewUpdateListener> viewUpdateListeners = new ArrayList<ViewUpdateListener>();
+	public static List<SightNavigationListener> sightNavigationListeners = new ArrayList<SightNavigationListener>();
 	public static SightsDatabaseOpenHelper sightsDatabaseOpenHelper;
 	public static List<OnMarkerCategoryUpdateListener> onMarkerCategoryUpdateListeners = new ArrayList<OnMarkerCategoryUpdateListener>();
 	
@@ -151,6 +152,20 @@ public class Appl extends Application{
 	public static void notifyViewUpdates(Bundle bundle){
 		for(ViewUpdateListener listener: viewUpdateListeners){
 			listener.onUpdateView(bundle);
+		}
+	}
+	
+	public static void subscribeForNavigationUpdates(SightNavigationListener sightNavigationListener){
+		sightNavigationListeners.add(sightNavigationListener);
+	}
+	
+	public static void unsubscribeFromNavigationUpdates(SightNavigationListener sightNavigationListener){
+		sightNavigationListeners.remove(sightNavigationListener);
+	}
+
+	public static void notifyNavigationUpdates(SightMarkerItem item){
+		for(SightNavigationListener listener: sightNavigationListeners){
+			listener.onNavigation(item);
 		}
 	}
 

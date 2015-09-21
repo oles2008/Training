@@ -3,7 +3,9 @@ package com.iolab.sightlocator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import android.annotation.TargetApi;
+import android.app.ActionBar.OnNavigationListener;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -32,7 +35,8 @@ public class SightsMapFragment extends Fragment implements
 											ViewUpdateListener, 
 											ClusterManager.OnClusterClickListener<SightMarkerItem>,
 											ClusterManager.OnClusterItemClickListener<SightMarkerItem>,
-											OnMarkerCategoryUpdateListener {
+											OnMarkerCategoryUpdateListener,
+											SightNavigationListener {
 	
 	private GoogleMap gMap;
 	private LocationSource sightLocationSource;
@@ -242,6 +246,7 @@ public class SightsMapFragment extends Fragment implements
 		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
 		
+		Appl.subscribeForNavigationUpdates(this);		
 		Appl.subscribeForMarkerCategoryUpdates(this);
 	}
 
@@ -258,6 +263,7 @@ public class SightsMapFragment extends Fragment implements
 		super.onPause();
 		sightLocationSource.deactivate();
 		Appl.unsubscribeFromViewUpdates(this);
+		Appl.unsubscribeFromNavigationUpdates(this);
 		Appl.unsubscribeFromMarkerCategoryUpdates(this);
 	}
 	
@@ -281,6 +287,16 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onMarkerCategoryChosen() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* **************************************************************************** */
+    /* ************************ SightNavigationListener *************************** */
+    /* **************************************************************************** */
+
+	@Override
+	public void onNavigation(SightMarkerItem item) {
 		// TODO Auto-generated method stub
 		
 	}
