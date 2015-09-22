@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class BaseActivity extends Activity implements FilterDialogFragment.FilterDialogListener{
+public class BaseActivity extends Activity implements FilterDialogFragment.FilterDialogListener, LanguagesDialogFragment.LanguagesDialogListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,7 +58,10 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 		case R.id.action_quick_filter:
 			showFilterDialog();
 			return true;
-
+			
+		case R.id.action_languages_dialog:
+			showLanguagesDialog();
+			return true;
 		
 		default:
 			return super.onOptionsItemSelected(item);
@@ -96,8 +99,26 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 		Appl.notifyMarkerCategoryUpdates();
 	}
 	
+	private void showLanguagesDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialogLangs = new LanguagesDialogFragment();
+		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
+	}
+	
 	public void onPause(){
 		super.onPause();
+	}
+
+	@Override
+	public void onLanguagesDialogPositiveClick(DialogFragment dialog) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLanguagesDialogNegativeClick(DialogFragment dialog) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
