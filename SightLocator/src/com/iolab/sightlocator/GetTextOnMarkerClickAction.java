@@ -149,7 +149,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					TABLE_NAME,
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
 							COLUMN_SIGHT_IMAGE_PATH, SIGHT_DESCRIPTION + "en",
-							SIGHT_NAME + "en", SIGHT_ADDRESS + "en" },
+							SIGHT_NAME + "en", SIGHT_ADDRESS + "en",COLUMN_ID },
 					whereClause, null, null, null, null);
 		}
 		return cursor;
@@ -235,10 +235,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				// id, int[] parentIDs)
 				fullItems
 						.add(new SightMarkerItem(new LatLng(
-								cursor.getDouble(0), cursor.getDouble(1)),
+								cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)), cursor.getDouble(1)), //changed
 								cursor.getString(4), cursor.getString(5), null,
 								getSavedImagePath(cursor.getString(2)), null,
-								-1, null));
+								cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), null));
 				while(cursor.moveToNext()){
 					fullItems
 					.add(new SightMarkerItem(new LatLng(
