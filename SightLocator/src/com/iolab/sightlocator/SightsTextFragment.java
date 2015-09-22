@@ -202,24 +202,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onMapClick(LatLng arg0) {
 		cleanAllViews();
-		// changes the image fragment to default (one pixel image)
-		Resources res = getResources();
-		FragmentManager fragmentManager = getFragmentManager();
-
-		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
-				.toString(), res, fragmentManager);
-		mAddress.setVisibility(View.GONE);
-		mSights.setVisibility(View.GONE);
-		mSightListItems = null;
-		//added on 22/4/15
-		Intent intent = new Intent(getActivity(), SightsIntentService.class);
-		Bundle bundle = new Bundle();
-		bundle.putInt(Tags.COMMON_PARENT_ID,mCommonParentID);
-		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER,++mClusterClickCounter);
-		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(bundle));
-		getActivity().startService(intent);
-		//selectedItem = item;
+		navigateTo(mCommonParentID);
 	}
 
 	private void registerImageViewClickListener() {
@@ -324,8 +307,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					// TODO Auto-generated method stub
-					
+					Log.d("MyLogs", "id: "+mSightListItems.get(position).getID());
+					navigateTo(mSightListItems.get(position).getID());
 				}
 			});
 			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
@@ -377,7 +360,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			parentIDs.add(item.getParentIDs());
 		}
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
-		navigateTo(clusterCommonParentId);
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		Bundle args = new Bundle();
+		args.putInt(Tags.COMMON_PARENT_ID, clusterCommonParentId);
+		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
+		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, new ArrayList<SightMarkerItem>(cluster.getItems()));
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(args));
+		getActivity().startService(intent);
 		return false;
 	}
 	

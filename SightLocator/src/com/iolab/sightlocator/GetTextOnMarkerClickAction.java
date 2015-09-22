@@ -123,7 +123,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							+ mClusterItems.get(0).getPosition().latitude
 							+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
 							.get(0).getPosition().longitude) : (COLUMN_ID
-							+ " = " + mClusterItems.get(0).id)) + ")";
+							+ " = " + mClusterItems.get(0).getID())) + ")";
 
 			for (int i = 1; i < mClusterItems.size(); i++) {
 				whereClause += " OR ("
@@ -132,7 +132,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								+ mClusterItems.get(i).getPosition().latitude
 								+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
 								.get(i).getPosition().longitude) : (COLUMN_ID
-								+ " = " + mClusterItems.get(i).id)) + ")";
+								+ " = " + mClusterItems.get(i).getID())) + ")";
 			}
 		} else if (mID != -1) {
 			whereClause = "("
@@ -245,7 +245,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							cursor.getDouble(0), cursor.getDouble(1)),
 							cursor.getString(4), cursor.getString(5), null,
 							getSavedImagePath(cursor.getString(2)), null,
-							-1, null));
+							cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), null));
 				}
 				resultData = new Bundle();
 				resultData.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, fullItems);
