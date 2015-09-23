@@ -57,7 +57,7 @@
     <string name="content_lang_dialog_message">Please choose language for content.</string>
     
     <!-- SharedPreferences -->
-    <string name="application_language">content language</string>
+    <string name="content_language">content language</string>
     
     
     <!-- DEPRECATED - values used for checkboxes -->
