@@ -45,19 +45,19 @@
     <string name="address">Address : to do</string>
     <string name="object_title"></string>
 
-    <!-- Apps languages list -->
-    <string-array name="apps_language">
+    <!-- Content languages list -->
+    <string-array name="content_language">
         <item >Українська</item>
         <item >English</item>
         <item >Polski</item>
     </string-array>
     
-    <!-- Languages Dialog title and message -->
-    <string name="languages_dialog_title">Apps languages</string>
-    <string name="languages_dialog_message">Please choose apps working language.</string>
+    <!-- Content languages dialog title and message -->
+    <string name="content_lang_dialog_title">Content language</string>
+    <string name="content_lang_dialog_message">Please choose language for content.</string>
     
     <!-- SharedPreferences -->
-    <string name="application_language">application language</string>
+    <string name="application_language">content language</string>
     
     
     <!-- DEPRECATED - values used for checkboxes -->
