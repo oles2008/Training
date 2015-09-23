@@ -210,10 +210,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		}
 		
 		if (cursor.moveToFirst()) {
-			pathToImage = cursor.getString(2);
-			sightDescription = cursor.getString(3);
-			sightName = cursor.getString(4);
-			sightAddress = cursor.getString(5);
+			pathToImage = cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH));
+			sightDescription = cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION + "en"));
+			sightName = cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en"));
+			sightAddress = cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en"));
 		}
 
 		
@@ -235,16 +235,20 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				// id, int[] parentIDs)
 				fullItems
 						.add(new SightMarkerItem(new LatLng(
-								cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)), cursor.getDouble(1)), //changed
-								cursor.getString(4), cursor.getString(5), null,
-								getSavedImagePath(cursor.getString(2)), null,
+								cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)),
+								cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE))),
+								cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en")),
+								cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en")), null,
+								getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))), null,
 								cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), null));
 				while(cursor.moveToNext()){
 					fullItems
 					.add(new SightMarkerItem(new LatLng(
-							cursor.getDouble(0), cursor.getDouble(1)),
-							cursor.getString(4), cursor.getString(5), null,
-							getSavedImagePath(cursor.getString(2)), null,
+							cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)),
+							cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE))),
+							cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en")),
+							cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en")), null,
+							getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))), null,
 							-1, null));
 				}
 				resultData = new Bundle();
