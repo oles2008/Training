@@ -73,10 +73,14 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		}
 	}
 
-	public void selectItem(SightMarkerItem selectedItem) {
+	public void selectItem(SightMarkerItem selectedItem, boolean delayed) {
 		if (selectedItem != null) {
 			removeSelectedItem();
-			mCurrentSelectedMarker = addSelectedMarker(selectedItem);
+			if(delayed){
+				addSelectedMarkerDelayed(selectedItem, ITEM_RETRIEVAL_DURATION);
+			} else {
+				mCurrentSelectedMarker = addSelectedMarker(selectedItem);
+			}
 			mCurrentSelectedItem = selectedItem;
 		}
 	}

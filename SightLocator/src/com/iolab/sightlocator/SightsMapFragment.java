@@ -39,6 +39,7 @@ public class SightsMapFragment extends Fragment implements
 											SightNavigationListener {
 	
 	private GoogleMap gMap;
+	private AbstractMap mMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
 	private ClusterManager<SightMarkerItem> clusterManager;
@@ -70,6 +71,7 @@ public class SightsMapFragment extends Fragment implements
 			gMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 		}
+		mMap = new MapImplementationGoogle(this);
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
@@ -176,7 +178,7 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterItemClickUpdates(clickedItem);
-		mSelectedMarkerManager.selectItem(clickedItem);
+		mSelectedMarkerManager.selectItem(clickedItem, false);
         return true;
     }
 
@@ -297,8 +299,8 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onNavigation(SightMarkerItem item) {
-		// TODO Auto-generated method stub
-		
+		mMap.moveCameraTo(item);
+		mSelectedMarkerManager.selectItem(item, true);
 	}
 
 }

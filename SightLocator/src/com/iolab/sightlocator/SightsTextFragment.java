@@ -307,8 +307,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					Log.d("MyLogs", "id: "+mSightListItems.get(position).getID());
-					navigateTo(mSightListItems.get(position).getID());
+					SightMarkerItem selectedItem = mSightListItems.get(position);
+					navigateTo(selectedItem.getID());
+					Appl.notifyNavigationUpdates(selectedItem);
 				}
 			});
 			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
