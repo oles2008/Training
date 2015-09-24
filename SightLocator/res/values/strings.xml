@@ -47,9 +47,14 @@
 
     <!-- Content languages list -->
     <string-array name="content_language">
-        <item >Українська</item>
         <item >English</item>
-        <item >Polski</item>
+        <item >Українська</item>
+    </string-array>
+    
+    <!-- Content languages abbreviations list -->
+    <string-array name="content_language_abbr">
+        <item >en</item>
+        <item >uk</item>
     </string-array>
     
     <!-- Content languages dialog title and message -->

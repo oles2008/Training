@@ -18,7 +18,7 @@ import android.widget.ListView;
 
 public class LanguagesDialogFragment extends DialogFragment{
 	int mSelectedItem = -1;
-	String mStr="";
+	CharSequence[] arrayOfLanguages; //input for builder.setSingleChoiceItems
 	public interface LanguagesDialogListener {
 		public void onLanguagesDialogPositiveClick(DialogFragment dialog);
 		public void onLanguagesDialogNegativeClick(DialogFragment dialog);
@@ -36,39 +36,46 @@ public class LanguagesDialogFragment extends DialogFragment{
 	}
 
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		List<String> itemAvailableLanguages = new ArrayList<String>();//lang
-		CharSequence[] arrayOfLanguages;//lang
-		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase(). //lang
-				rawQuery( //lang
-		"SELECT CASE WHEN DESCRIPTION_EN IS NOT NULL AND DESCRIPTION_EN <> '' THEN 'en' ELSE NULL END,"+ //lang
-		" CASE WHEN DESCRIPTION_UK IS NOT NULL AND DESCRIPTION_EN <> '' THEN 'uk' ELSE NULL END"+ //lang
-				" FROM " + SightsDatabaseOpenHelper.TABLE_NAME + //lang
-				" WHERE " + SightsDatabaseOpenHelper.COLUMN_ID + " = 11", null);  //lang change hardcoded id to once from bandle
-		
-		if(cursor.getCount() == 1){  //lang
+		List<String> itemAvailableLanguages = new ArrayList<String>();
+		String sqlQueryParticle = "";
+		//here we prepare sqlQueryParticle
+		for(int i=0;i<getResources().getStringArray(R.array.content_language_abbr).length;i++){
+			sqlQueryParticle = sqlQueryParticle +
+					"CASE WHEN " + SightsDatabaseOpenHelper.SIGHT_DESCRIPTION +
+					getResources().getStringArray(R.array.content_language_abbr)[i] + " IS NOT NULL AND " + SightsDatabaseOpenHelper.SIGHT_DESCRIPTION +
+					getResources().getStringArray(R.array.content_language_abbr)[i] + " <> \"\" THEN \"" + getResources().getStringArray(R.array.content_language_abbr)[i] +
+					"\" ELSE NULL END,";
+		};
+		sqlQueryParticle = sqlQueryParticle.substring(0,sqlQueryParticle.length()-1);
+		//here we prepare input for cursors query
+		String sqlQuery = "SELECT " + sqlQueryParticle + " FROM " + SightsDatabaseOpenHelper.TABLE_NAME +
+							" WHERE " + SightsDatabaseOpenHelper.COLUMN_ID + " = 14"; //TODO
+		Log.w("ihor",sqlQuery);
+		//The cursor returns list of available languages for defined item
+		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().rawQuery(sqlQuery, null);
+		//here we transform cursors result into itemAvailableLanguages ArrayList
+		if(cursor.getCount() == 1){
 			cursor.moveToFirst();
 			for(int i=0;i<cursor.getColumnCount();i++){
 				if (!cursor.isNull(i)){itemAvailableLanguages.add(cursor.getString(i));}
-			}  //lang
-		}  //lang
-		cursor.close();//lang
-		
+			}
+		}
+		cursor.close();
+		//here we define what list of languages will be input for dialog builder
 		if(itemAvailableLanguages.isEmpty()){
-			arrayOfLanguages = getResources().getStringArray(R.array.content_language);}//lang
+			arrayOfLanguages = getResources().getStringArray(R.array.content_language);
+			}
 		else{
-			arrayOfLanguages = (CharSequence[]) itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);}//lang
-			//Log.w("ihor",itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]).getClass().getName());}//lang
-		
+			arrayOfLanguages = (CharSequence[]) itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);
+			}
+		//here we create dialog using builder
 	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	    builder.setTitle(R.string.content_lang_dialog_title)
 	    	   .setSingleChoiceItems(arrayOfLanguages,-1, new DialogInterface.OnClickListener() {
-	        	   
 	               public void onClick(DialogInterface dialog, int which) {
-	               // The 'which' argument contains the index position
-	               // of the selected item
+	               // The 'which' argument contains the index position of the selected item
 	            	   mSelectedItem = which;
-	           }
-	     
+	           } 
 	    });
 	    builder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
 			@Override
@@ -77,13 +84,14 @@ public class LanguagesDialogFragment extends DialogFragment{
 				if(mSelectedItem != -1){
 				SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 				SharedPreferences.Editor editor = sharedPref.edit();
-				editor.putInt(getString(R.string.content_language), mSelectedItem);
+				//arrayOfLanguages
+				//editor.putString(getString(R.string.content_language),"toSraka"); //?? how to get item from char seq
+				editor.putInt(getString(R.string.content_language), mSelectedItem); //TODO
 				editor.commit();				
 				}
 				mListener.onLanguagesDialogPositiveClick(LanguagesDialogFragment.this);
 			}
 		});
-		
 	    builder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -92,7 +100,6 @@ public class LanguagesDialogFragment extends DialogFragment{
 				dialog.cancel();
 			}
 		});
-	    
 	    return builder.create();
 	}
 }
