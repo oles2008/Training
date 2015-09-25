@@ -18,14 +18,14 @@ import android.widget.ListView;
 
 public class LanguagesDialogFragment extends DialogFragment{
 	int mSelectedItem = -1;
-	CharSequence[] arrayOfLanguages; //input for builder.setSingleChoiceItems
-	public interface LanguagesDialogListener {
-		public void onLanguagesDialogPositiveClick(DialogFragment dialog);
-		public void onLanguagesDialogNegativeClick(DialogFragment dialog);
-	}
-	
+	String[] arrayOfLanguages; //input for builder.setSingleChoiceItems
+	int mItemId;
 	LanguagesDialogListener mListener; //we have created listener for dialog buttons
 	
+	LanguagesDialogFragment(int itemId){
+		mItemId = itemId;
+	};
+
 	public void onAttach(Activity activity){
 		super.onAttach(activity);
 		try {
@@ -49,8 +49,7 @@ public class LanguagesDialogFragment extends DialogFragment{
 		sqlQueryParticle = sqlQueryParticle.substring(0,sqlQueryParticle.length()-1);
 		//here we prepare input for cursors query
 		String sqlQuery = "SELECT " + sqlQueryParticle + " FROM " + SightsDatabaseOpenHelper.TABLE_NAME +
-							" WHERE " + SightsDatabaseOpenHelper.COLUMN_ID + " = 14"; //TODO
-		Log.w("ihor",sqlQuery);
+							" WHERE " + SightsDatabaseOpenHelper.COLUMN_ID + " = " + mItemId;
 		//The cursor returns list of available languages for defined item
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().rawQuery(sqlQuery, null);
 		//here we transform cursors result into itemAvailableLanguages ArrayList
@@ -66,7 +65,7 @@ public class LanguagesDialogFragment extends DialogFragment{
 			arrayOfLanguages = getResources().getStringArray(R.array.content_language);
 			}
 		else{
-			arrayOfLanguages = (CharSequence[]) itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);
+			arrayOfLanguages = itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);
 			}
 		//here we create dialog using builder
 	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -84,9 +83,7 @@ public class LanguagesDialogFragment extends DialogFragment{
 				if(mSelectedItem != -1){
 				SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 				SharedPreferences.Editor editor = sharedPref.edit();
-				//arrayOfLanguages
-				//editor.putString(getString(R.string.content_language),"toSraka"); //?? how to get item from char seq
-				editor.putInt(getString(R.string.content_language), mSelectedItem); //TODO
+				editor.putString(getString(R.string.content_language),arrayOfLanguages[mSelectedItem]);
 				editor.commit();				
 				}
 				mListener.onLanguagesDialogPositiveClick(LanguagesDialogFragment.this);
@@ -101,5 +98,9 @@ public class LanguagesDialogFragment extends DialogFragment{
 			}
 		});
 	    return builder.create();
+	}
+	public interface LanguagesDialogListener {
+		public void onLanguagesDialogPositiveClick(DialogFragment dialog);
+		public void onLanguagesDialogNegativeClick(DialogFragment dialog);
 	}
 }

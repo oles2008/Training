@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -16,6 +17,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -64,6 +68,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
 			mSightListItems = savedInstanceState.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 		}
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -83,6 +88,31 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		return inflatedView;
 	}
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		inflater.inflate(R.menu.lang_dialog, menu);
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+
+		case R.id.action_languages_dialog:
+			int itemId=1;
+			showLanguagesDialog(itemId);
+			return true;
+		
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	private void showLanguagesDialog(int itemId) {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialogLangs = new LanguagesDialogFragment(itemId);
+		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
+	}
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);

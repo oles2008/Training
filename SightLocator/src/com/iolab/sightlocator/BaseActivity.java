@@ -58,10 +58,12 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 		case R.id.action_quick_filter:
 			showFilterDialog();
 			return true;
-			
+		/*	
 		case R.id.action_languages_dialog:
-			showLanguagesDialog();
+			int itemId=1;
+			showLanguagesDialog(itemId);
 			return true;
+		*/
 		
 		default:
 			return super.onOptionsItemSelected(item);
@@ -98,13 +100,13 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 	public void onFilterDialogNegativeClick(DialogFragment dialog) {
 		Appl.notifyMarkerCategoryUpdates();
 	}
-	
-	private void showLanguagesDialog() {
+	/*
+	private void showLanguagesDialog(int itemId) {
 		// Create an instance of the dialog fragment and show it
-		DialogFragment dialogLangs = new LanguagesDialogFragment();
+		DialogFragment dialogLangs = new LanguagesDialogFragment(itemId);
 		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
 	}
-	
+	*/
 	public void onPause(){
 		super.onPause();
 	}
