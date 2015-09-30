@@ -149,7 +149,7 @@ public class SightsMapFragment extends Fragment implements
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				Appl.notifyMapClickUpdates(arg0);
-				mSelectedMarkerManager.removeSelectedItem();
+				mSelectedMarkerManager.removeSelectedItems();
 			}
 		});
 	}
@@ -161,7 +161,7 @@ public class SightsMapFragment extends Fragment implements
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				Appl.notifyLongMapClickUpdates(arg0);
-				mSelectedMarkerManager.removeSelectedItem();
+				mSelectedMarkerManager.removeSelectedItems();
 			}
 		});
 	}
@@ -170,7 +170,7 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterClickUpdates(cluster);
-		mSelectedMarkerManager.removeSelectedItem();
+		mSelectedMarkerManager.removeSelectedItems();
         return true;
     }
 	
@@ -257,7 +257,7 @@ public class SightsMapFragment extends Fragment implements
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
 		args.putLong("updateViewCallIndex", updateViewCallIndex);
-		mSelectedMarkerManager.saveSelectedItem(args);
+		mSelectedMarkerManager.saveSelectedItems(args);
 	}
 	
 	@Override
