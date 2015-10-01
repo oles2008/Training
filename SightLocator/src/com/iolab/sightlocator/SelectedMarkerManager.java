@@ -3,7 +3,7 @@ package com.iolab.sightlocator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -23,9 +24,10 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	private static final int ITEM_RETRIEVAL_DURATION = 1500;
 	private static final String KEY_CURRENT_SELECTED_ITEMS = "currentSelectedItems";
 	private static final String KEY_CURRENT_SELECTED_ITEMS_CLUSTERED = "currentSelectedItemsClustered";
-	private static final String KEY_IS_CURRENT_SELECTED_ITEM_CLUSTERED = "isCurrentSelectedItemClustered";
 
 	private GoogleMap mGoogleMap;
+	
+	/** The root view that contains the {@link MapFragment} on which the markers are placed. */
 	private View mRootView;
 
 	/**
@@ -42,11 +44,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 * The list of currently selected items hidden in clusters.
 	 */
 	private ArrayList<SightMarkerItem> mCurrentSelectedItemsClustered;
-
-	/**
-	 * Indicates whether the currently selected item is hidden in a cluster.
-	 */
-	private boolean mCurrentSelectedMarkerClustered = false;
 
 	public SelectedMarkerManager(View rootView, GoogleMap gMap,
 			Bundle savedInstanceState) {
@@ -70,41 +67,54 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 
 	/**
-	 * Should be called when saving instance state in order to save selected item's position.
+	 * Should be called when saving instance state in order to save selected
+	 * item's position.
 	 * 
-	 * @param savedInstanceState the {@link Bundle} for saving the state
+	 * @param savedInstanceState
+	 *            the {@link Bundle} for saving the state
 	 */
 	public void saveSelectedItems(Bundle savedInstanceState) {
 		if (mCurrentSelectedItems != null && !mCurrentSelectedItems.isEmpty()) {
-			savedInstanceState.putParcelableArrayList(KEY_CURRENT_SELECTED_ITEMS, mCurrentSelectedItems);
-			savedInstanceState.putParcelableArrayList(KEY_CURRENT_SELECTED_ITEMS_CLUSTERED, mCurrentSelectedItemsClustered);
-			savedInstanceState.putBoolean(KEY_IS_CURRENT_SELECTED_ITEM_CLUSTERED,
-					mCurrentSelectedMarkerClustered);
+			savedInstanceState.putParcelableArrayList(
+					KEY_CURRENT_SELECTED_ITEMS, mCurrentSelectedItems);
+			savedInstanceState.putParcelableArrayList(
+					KEY_CURRENT_SELECTED_ITEMS_CLUSTERED,
+					mCurrentSelectedItemsClustered);
 		}
 	}
 
 	public void removeSelectedItems() {
-		if (!mCurrentSelectedMarkersMap.isEmpty()) {
-			for(Marker selectedMarker: mCurrentSelectedMarkersMap.values()){
-				selectedMarker.remove();
-			}
-			mCurrentSelectedMarkersMap.clear();
-			mCurrentSelectedItems.clear();
-			mCurrentSelectedItemsClustered.clear();
-			mCurrentSelectedMarkerClustered = false;
+		for (Marker selectedMarker : mCurrentSelectedMarkersMap.values()) {
+			selectedMarker.remove();
 		}
+		mCurrentSelectedMarkersMap.clear();
+		mCurrentSelectedItems.clear();
+		mCurrentSelectedItemsClustered.clear();
 	}
 
+	/**
+	 * Select item. Be sure to call {@code onItemsUpdated} when new items are
+	 * added to the map.
+	 *
+	 * @param selectedItem
+	 *            the selected item
+	 * @param delayed
+	 *            the delay
+	 */
 	public void selectItem(SightMarkerItem selectedItem, boolean delayed) {
 		if (selectedItem != null) {
 			removeSelectedItems();
-			if(delayed){
+			mCurrentSelectedItems.add(selectedItem);
+			if (delayed) {
 				addSelectedMarkerDelayed(selectedItem, ITEM_RETRIEVAL_DURATION);
 			} else {
 				addSelectedMarker(selectedItem);
 			}
-			mCurrentSelectedItems.add(selectedItem);
 		}
+	}
+	
+	public void onItemsUpdated(List<SightMarkerItem> newItems){
+		//TODO
 	}
 
 	/* **************************************************************************** */
@@ -138,6 +148,9 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
     /* **************************************************************************** */
 
 	private Marker addSelectedMarker(SightMarkerItem selectedItem) {
+		if(!mCurrentSelectedItems.contains(selectedItem)){
+			throw new IllegalStateException("Cannot add selected marker for non-selected item");
+		}
 		Marker selectedMarker = mGoogleMap.addMarker(selectedItem.getMarkerOptions().icon(
 				BitmapDescriptorFactory.fromResource(CategoryUtils
 						.getCategorySelectedMarkerResId(selectedItem
@@ -146,7 +159,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 			mCurrentSelectedMarkersMap.get(selectedItem).remove();
 		}
 		mCurrentSelectedMarkersMap.put(selectedItem, selectedMarker);
-		Log.d("MyLogs", "selectedMarker: "+mCurrentSelectedMarkersMap.get(selectedItem).getTitle());
 		return selectedMarker;
 	}
 
@@ -162,7 +174,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 
 	private void hideSelectedMarkerInCluster(SightMarkerItem selectedItem) {
 		Marker selectedMarker = mCurrentSelectedMarkersMap.get(selectedItem);
-		Log.d("MyLogs", "hiding selected marker, marker == null: "+(selectedMarker == null));
 		if (selectedMarker != null) {
 			selectedMarker.remove();
 			mCurrentSelectedMarkersMap.remove(selectedItem);
@@ -171,7 +182,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 
 	private void unclusterSelectedMarker(SightMarkerItem item) {
-		Log.d("MyLogs", "unclusterSelectedMarker: "+item.getTitle());
 		if (mCurrentSelectedItemsClustered.contains(item)) {
 			//TODO replace the delay with onUpdate() listener
 			addSelectedMarkerDelayed(item, CLUSTER_ANIMATION_DURATION);
@@ -181,7 +191,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	
 	private void markSavedSelectedItem(SightMarkerItem savedSelectedItem) {
 		if (!mCurrentSelectedItemsClustered.contains(savedSelectedItem)) {
-			Log.d("MyLogs", "not clustered");
 			addSelectedMarkerDelayed(savedSelectedItem,
 					ITEM_RETRIEVAL_DURATION);
 		}

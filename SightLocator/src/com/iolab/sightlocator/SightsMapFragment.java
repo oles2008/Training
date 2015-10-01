@@ -280,6 +280,7 @@ public class SightsMapFragment extends Fragment implements
 				}
 			}
 			clusterManager.cluster();
+			mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
 		}
 	}
 	
