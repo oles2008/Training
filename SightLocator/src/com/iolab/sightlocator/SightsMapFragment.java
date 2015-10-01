@@ -75,7 +75,7 @@ public class SightsMapFragment extends Fragment implements
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
-		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, savedInstanceState);
+		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, itemSet, savedInstanceState);
 		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
 		sightsRenderer.registerOnBeforeClusterRenderedListener(mSelectedMarkerManager);
 		clusterManager.setRenderer(sightsRenderer);
@@ -178,7 +178,7 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterItemClickUpdates(clickedItem);
-		mSelectedMarkerManager.selectItem(clickedItem, false);
+		mSelectedMarkerManager.selectItem(clickedItem);
         return true;
     }
 
@@ -301,7 +301,7 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onNavigation(SightMarkerItem item) {
 		mMap.moveCameraTo(item);
-		mSelectedMarkerManager.selectItem(item, true);
+		mSelectedMarkerManager.selectItem(item);
 	}
 
 }

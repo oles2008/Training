@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +21,7 @@ import com.iolab.sightlocator.SightsRenderer.OnBeforeClusterRenderedListener;
 public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 
 	private static final int CLUSTER_ANIMATION_DURATION = 100;
-	private static final int ITEM_RETRIEVAL_DURATION = 1500;
+	private static final int ITEM_ADDITION_DURATION = 100;
 	private static final String KEY_CURRENT_SELECTED_ITEMS = "currentSelectedItems";
 	private static final String KEY_CURRENT_SELECTED_ITEMS_CLUSTERED = "currentSelectedItemsClustered";
 
@@ -45,10 +45,33 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 */
 	private ArrayList<SightMarkerItem> mCurrentSelectedItemsClustered;
 
-	public SelectedMarkerManager(View rootView, GoogleMap gMap,
-			Bundle savedInstanceState) {
+	/**
+	 * The items currently added on the map. Refers to the same object in
+	 * {@link SightsMapFragment}.
+	 */
+	private Set<SightMarkerItem> mItemsCurrentlyOnMap;
+
+	/**
+	 * Instantiates a new {@link SelectedMarkerManager}.
+	 *
+	 * @param rootView            the root view that contains the {@link MapFragment} on which
+	 *            the markers are placed
+	 * @param gMap            the map instance
+	 * @param itemsCurrentlyOnMap            the items currently added on the map. Refers to the same
+	 *            object in {@link SightsMapFragment}. Should be non-null,
+	 *            otherwise {@link IllegalArgumentException} will be thrown
+	 * @param savedInstanceState            the saved instance state
+	 * @throws IllegalArgumentException if {@code itemsCurrentlyOnMap} is null
+	 */
+	public SelectedMarkerManager(View rootView, GoogleMap gMap, Set<SightMarkerItem> itemsCurrentlyOnMap,
+			Bundle savedInstanceState) throws IllegalArgumentException {
 		mRootView = rootView;
 		mGoogleMap = gMap;
+		if(itemsCurrentlyOnMap != null){
+			mItemsCurrentlyOnMap = itemsCurrentlyOnMap;
+		} else {
+			throw new IllegalArgumentException("The set of itemsCurrentlyOnMap cannot be null!");
+		}
 		if (savedInstanceState != null) {
 			mCurrentSelectedItems = savedInstanceState
 					.getParcelableArrayList(KEY_CURRENT_SELECTED_ITEMS);
@@ -99,22 +122,46 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 * @param selectedItem
 	 *            the selected item
 	 * @param delayed
-	 *            the delay
+	 *            the delay in ms
 	 */
-	public void selectItem(SightMarkerItem selectedItem, boolean delayed) {
+	public void selectItem(SightMarkerItem selectedItem, int delay) {
 		if (selectedItem != null) {
 			removeSelectedItems();
 			mCurrentSelectedItems.add(selectedItem);
-			if (delayed) {
-				addSelectedMarkerDelayed(selectedItem, ITEM_RETRIEVAL_DURATION);
+			if (delay > 0) {
+				addSelectedMarkerDelayed(selectedItem, delay);
 			} else {
 				addSelectedMarker(selectedItem);
 			}
 		}
 	}
 	
-	public void onItemsUpdated(List<SightMarkerItem> newItems){
-		//TODO
+	/**
+	 * Select item. Be sure to call {@code onItemsUpdated} when new items are
+	 * added to the map.
+	 *
+	 * @param selectedItem
+	 *            the selected item
+	 */
+	public void selectItem(SightMarkerItem selectedItem){
+		selectItem(selectedItem, 0);
+	}
+	
+	/**
+	 * Should be called when new items are added to the map. If not called,
+	 * items that should be selected but were added to the map later, may not be
+	 * marker as selected.
+	 *
+	 * @param newItems
+	 *            the new items
+	 */
+	public void onItemsUpdated(List<SightMarkerItem> newItems) {
+		for (final SightMarkerItem selectedItem : mCurrentSelectedItems) {
+			if (!mCurrentSelectedMarkersMap.containsKey(selectedItem) && newItems.contains(selectedItem)
+					&& !mCurrentSelectedItemsClustered.contains(selectedItem)) {
+				addSelectedMarkerDelayed(selectedItem, ITEM_ADDITION_DURATION);
+			}
+		}
 	}
 
 	/* **************************************************************************** */
@@ -131,7 +178,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 					hideSelectedMarkerInCluster(selectedItem);
 				}
 			}
-		
 		}
 	}
 
@@ -147,19 +193,38 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
     /* ************************************* Utility API ************************** */
     /* **************************************************************************** */
 
-	private Marker addSelectedMarker(SightMarkerItem selectedItem) {
-		if(!mCurrentSelectedItems.contains(selectedItem)){
-			throw new IllegalStateException("Cannot add selected marker for non-selected item");
+	/**
+	 * Adds a selected marker for an item which is considered selected. The
+	 * selected marker is added immediately is the item is already on the map.
+	 * Otherwise, it is added as soon as the item is added.
+	 *
+	 * @param selectedItem
+	 *            the selected item
+	 * @return the marker on the map, if it was added immediately, otherwise
+	 *         returns {@code null}
+	 * @throws IllegalStateException
+	 *             if the item is not found among the selected items
+	 */
+	private Marker addSelectedMarker(SightMarkerItem selectedItem)
+			throws IllegalStateException {
+		if (!mCurrentSelectedItems.contains(selectedItem)) {
+			throw new IllegalStateException(
+					"Cannot add selected marker for non-selected item");
 		}
-		Marker selectedMarker = mGoogleMap.addMarker(selectedItem.getMarkerOptions().icon(
-				BitmapDescriptorFactory.fromResource(CategoryUtils
-						.getCategorySelectedMarkerResId(selectedItem
-								.getCategory()))));
-		if(mCurrentSelectedMarkersMap.get(selectedItem)!=null){
+		if (mCurrentSelectedMarkersMap.get(selectedItem) != null) {
 			mCurrentSelectedMarkersMap.get(selectedItem).remove();
 		}
-		mCurrentSelectedMarkersMap.put(selectedItem, selectedMarker);
-		return selectedMarker;
+		if (mItemsCurrentlyOnMap.contains(selectedItem)) {
+			Marker selectedMarker = mGoogleMap.addMarker(selectedItem
+					.getMarkerOptions()
+					.icon(BitmapDescriptorFactory.fromResource(CategoryUtils
+							.getCategorySelectedMarkerResId(selectedItem
+									.getCategory()))));
+			mCurrentSelectedMarkersMap.put(selectedItem, selectedMarker);
+			return selectedMarker;
+		} else {
+			return null;
+		}
 	}
 
 	private void addSelectedMarkerDelayed(final SightMarkerItem item, int delay) {
@@ -183,7 +248,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 
 	private void unclusterSelectedMarker(SightMarkerItem item) {
 		if (mCurrentSelectedItemsClustered.contains(item)) {
-			//TODO replace the delay with onUpdate() listener
 			addSelectedMarkerDelayed(item, CLUSTER_ANIMATION_DURATION);
 			mCurrentSelectedItemsClustered.remove(item);
 		}
@@ -191,8 +255,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	
 	private void markSavedSelectedItem(SightMarkerItem savedSelectedItem) {
 		if (!mCurrentSelectedItemsClustered.contains(savedSelectedItem)) {
-			addSelectedMarkerDelayed(savedSelectedItem,
-					ITEM_RETRIEVAL_DURATION);
+			addSelectedMarker(savedSelectedItem);
 		}
 	}
 }
