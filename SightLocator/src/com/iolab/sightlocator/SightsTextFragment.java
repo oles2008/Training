@@ -42,6 +42,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	private ListView mSights;
 	private ArrayList<SightMarkerItem> mSightListItems;
+	private String mImagePath;
 	private TextView mAddress;
 	private TextView mTitle;
 	private TextView mDescription;
@@ -64,6 +65,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mClusterClickCounter = savedInstanceState.getLong(
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
 			mSightListItems = savedInstanceState.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
+			mImagePath = savedInstanceState.getString(Tags.PATH_TO_IMAGE);
 		}
 	}
 
@@ -87,6 +89,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mDescription = (TextView) inflatedView.findViewById(R.id.textView);
 		mImage = (ImageView) inflatedView.findViewById(
 				R.id.imageView);
+		changeImageFragmentUsingImageUri(mImagePath);
 		return inflatedView;
 	}
 
@@ -184,6 +187,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @throws FileNotFoundException
 	 */
 	private void changeImageFragmentUsingImageUri(String uri) {
+		mImagePath = uri;
 		if (uri == null || uri.isEmpty()) {
 			mImage.setImageBitmap(null);
 			return;
@@ -191,7 +195,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mImage.setImageURI(Uri.parse(uri));
 		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
 		mImage.setImageBitmap(resizedBitmap);
-		mImage.setTag(R.string.imageview_tag_uri, uri);
+		//mImage.setTag(R.string.imageview_tag_uri, uri);
 	}
 
 	@Override
@@ -255,6 +259,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
 		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mSightListItems);
+		args.putString(Tags.PATH_TO_IMAGE, mImagePath);
 	}
 
     @Override

@@ -7,18 +7,22 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.algo.StaticCluster;
 
 public class SightMarkerItem implements ClusterItem, Parcelable {
 	
-	private LatLng position;
-	public String title;
-	public String snippet;
-	public String address;
-	public String imageURI;
-	public String category;
+	private final LatLng position;
+	private final String title;
+	private final String snippet;
+	private String address;
+	private String imageURI;
+	private String category;
 	private int id;
-	public int[] parentIDs;
+	private int[] parentIDs;
+	//not to be saved in Parcel
+	private Cluster<SightMarkerItem> mCluster;
 	
 	public SightMarkerItem(LatLng position, String title, String address, String snippet, String imageURI, String category, int id, int[] parentIDs) {
 		this.position = position;
@@ -121,6 +125,34 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	
 	public double getLongitude() {
 		return position.longitude;
+	}
+	
+	/**
+	 * Sets the cluster containing this item.
+	 *
+	 * @param cluster the new cluster
+	 */
+	public void setCluster(Cluster<SightMarkerItem> cluster){
+		mCluster = cluster;
+	}
+	
+	/**
+	 * Gets the cluster which contains this item if the latter is clustered.
+	 *
+	 * @return the cluster which contains this item if the latter is clustered,
+	 *         {@code <code>null</code>} otherwise
+	 */
+	public Cluster<SightMarkerItem> getCluster() {
+		return mCluster;
+	}
+	
+	/**
+	 * Checks if this marker clustered.
+	 *
+	 * @return true, if is clustered
+	 */
+	public boolean isClustered() {
+		return (mCluster != null);
 	}
 	
 	/**

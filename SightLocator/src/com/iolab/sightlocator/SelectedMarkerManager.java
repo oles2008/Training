@@ -1,7 +1,6 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	private static final int CLUSTER_ANIMATION_DURATION = 100;
 	private static final int ITEM_ADDITION_DURATION = 100;
 	private static final String KEY_CURRENT_SELECTED_ITEMS = "currentSelectedItems";
-	private static final String KEY_CURRENT_SELECTED_ITEMS_CLUSTERED = "currentSelectedItemsClustered";
 
 	private GoogleMap mGoogleMap;
 	
@@ -39,11 +37,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 * Keeps the link to the markers representing the selected items.
 	 */
 	private Map<SightMarkerItem, Marker> mCurrentSelectedMarkersMap = new HashMap<SightMarkerItem, Marker>();
-
-	/**
-	 * The list of currently selected items hidden in clusters.
-	 */
-	private ArrayList<SightMarkerItem> mCurrentSelectedItemsClustered;
 
 	/**
 	 * The items currently added on the map. Refers to the same object in
@@ -75,14 +68,9 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		if (savedInstanceState != null) {
 			mCurrentSelectedItems = savedInstanceState
 					.getParcelableArrayList(KEY_CURRENT_SELECTED_ITEMS);
-			mCurrentSelectedItemsClustered = savedInstanceState
-					.getParcelableArrayList(KEY_CURRENT_SELECTED_ITEMS_CLUSTERED);
 		}
 		if(mCurrentSelectedItems == null){
 			mCurrentSelectedItems = new ArrayList<SightMarkerItem>();
-		}
-		if(mCurrentSelectedItemsClustered == null){
-			mCurrentSelectedItemsClustered = new ArrayList<SightMarkerItem>();
 		}
 		for(SightMarkerItem savedSelectedItem: mCurrentSelectedItems){
 			markSavedSelectedItem(savedSelectedItem);
@@ -100,9 +88,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		if (mCurrentSelectedItems != null && !mCurrentSelectedItems.isEmpty()) {
 			savedInstanceState.putParcelableArrayList(
 					KEY_CURRENT_SELECTED_ITEMS, mCurrentSelectedItems);
-			savedInstanceState.putParcelableArrayList(
-					KEY_CURRENT_SELECTED_ITEMS_CLUSTERED,
-					mCurrentSelectedItemsClustered);
 		}
 	}
 
@@ -112,7 +97,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		}
 		mCurrentSelectedMarkersMap.clear();
 		mCurrentSelectedItems.clear();
-		mCurrentSelectedItemsClustered.clear();
 	}
 
 	/**
@@ -158,7 +142,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	public void onItemsUpdated(List<SightMarkerItem> newItems) {
 		for (final SightMarkerItem selectedItem : mCurrentSelectedItems) {
 			if (!mCurrentSelectedMarkersMap.containsKey(selectedItem) && newItems.contains(selectedItem)
-					&& !mCurrentSelectedItemsClustered.contains(selectedItem)) {
+					&& !selectedItem.isClustered()) {
 				addSelectedMarkerDelayed(selectedItem, ITEM_ADDITION_DURATION);
 			}
 		}
@@ -172,9 +156,8 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
 			MarkerOptions markerOptions) {
 		if (!mCurrentSelectedItems.isEmpty()){
-			Collection<SightMarkerItem> clusterItems = cluster.getItems();
 			for(SightMarkerItem selectedItem: mCurrentSelectedItems){
-				if(clusterItems.contains(selectedItem)){
+				if(selectedItem.isClustered()){
 					hideSelectedMarkerInCluster(selectedItem);
 				}
 			}
@@ -243,18 +226,16 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 			selectedMarker.remove();
 			mCurrentSelectedMarkersMap.remove(selectedItem);
 		}
-		mCurrentSelectedItemsClustered.add(selectedItem);
 	}
 
 	private void unclusterSelectedMarker(SightMarkerItem item) {
-		if (mCurrentSelectedItemsClustered.contains(item)) {
+		if (!item.isClustered()) {
 			addSelectedMarkerDelayed(item, CLUSTER_ANIMATION_DURATION);
-			mCurrentSelectedItemsClustered.remove(item);
 		}
 	}
 	
 	private void markSavedSelectedItem(SightMarkerItem savedSelectedItem) {
-		if (!mCurrentSelectedItemsClustered.contains(savedSelectedItem)) {
+		if (!savedSelectedItem.isClustered()) {
 			addSelectedMarker(savedSelectedItem);
 		}
 	}
