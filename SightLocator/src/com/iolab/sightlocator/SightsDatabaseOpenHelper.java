@@ -99,14 +99,19 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 		// Log.d("MyLogs", "database exists before: "+database.exists());
 		// Log.d("MyLogs", "database size before: "+database.length());
 		copyDatabaseFromAssets();
-		// Log.d("MyLogs", "database size after: "+database.length());
+		Log.d("MikeLogs", "entered constructor.");
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-
+		// Should be empty when copying DB from assets
 	}
 
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		// TODO Auto-generated method stub
+	}
+	
 	/**
 	 * Creates the hardcoded sights table.
 	 * 
@@ -183,11 +188,4 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 				+ DATABASE_NAME);
 
 	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

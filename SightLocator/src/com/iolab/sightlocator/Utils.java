@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class Utils {
@@ -25,90 +26,102 @@ public class Utils {
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-
-		File f = new File(destinationPath);
+		
+		File file = new File(destinationPath);
 		byte[] buffer = null;
-		InputStream is = null;
-		FileOutputStream fos = null;
+		InputStream assetStream = null;
+		FileOutputStream outputStream = null;
 		
-		if (f.length() == 0) {
-			try {
-				is = Appl.appContext.getAssets().open(pathInAssets);
-				int size = is.available();
-				buffer = new byte[size];
-				is.read(buffer);
-			} catch (Exception e) {
+		if (file.length() == 0) {
+			Log.d("asset", "database does not exists");
+		}
+		else {
+			Log.d("asset", "database exists");
+		}
+			
+		// read asset into input buffer
+		try {
+			assetStream = Appl.appContext.getAssets().open(pathInAssets);
+			buffer = new byte[assetStream.available()];
+			assetStream.read(buffer);
+		} catch (Exception e) {
 				e.printStackTrace();
 				return false;
-			} finally {
+		} finally {
+			if (assetStream != null) {
 				try {
-					if (is != null) {
-						is.close();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					return false;
-				}
-			}
-
-			try {
-				fos = new FileOutputStream(f);
-				fos.write(buffer);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			} finally {
-				try {
-					if (fos != null) {
-						fos.close();
-					}
+					assetStream.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 					return false;
 				}
 			}
 		}
-		
+
+		// save asset into destination file
+		try {
+			outputStream = new FileOutputStream(file);
+			outputStream.write(buffer);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+		}
+
+
 		// have to do this check twice as sometimes empty files are copied (length == 0) 
-		if (f.length() == 0) {
-			try {
-				is = Appl.appContext.getAssets().open(pathInAssets);
-				int size = is.available();
-				buffer = new byte[size];
-				is.read(buffer);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			} finally {
-				try {
-					if (is != null) {
-						is.close();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					return false;
-				}
-			}
-
-			try {
-				fos = new FileOutputStream(f);
-				fos.write(buffer);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			} finally {
-				try {
-					if (fos != null) {
-						fos.close();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					return false;
-				}
-			}
-		}
+//		if (f.length() == 0) {
+//			try {
+//				is = Appl.appContext.getAssets().open(pathInAssets);
+//				int size = is.available();
+//				buffer = new byte[size];
+//				is.read(buffer);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				return false;
+//			} finally {
+//				try {
+//					if (is != null) {
+//						is.close();
+//					}
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//					return false;
+//				}
+//			}
+//
+//			try {
+//				fos = new FileOutputStream(f);
+//				fos.write(buffer);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				return false;
+//			} finally {
+//				try {
+//					if (fos != null) {
+//						fos.close();
+//					}
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//					return false;
+//				}
+//			}
+//		}
 
 		return true;
+	}
+
+	public static boolean resourceExist(String destinationPath) {
+		File f = new File(destinationPath);
+		return f.exists();
 	}
 
 	/**
