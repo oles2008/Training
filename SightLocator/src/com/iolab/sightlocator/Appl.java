@@ -2,6 +2,7 @@ package com.iolab.sightlocator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import android.app.Application;
@@ -163,9 +164,9 @@ public class Appl extends Application{
 		sightNavigationListeners.remove(sightNavigationListener);
 	}
 
-	public static void notifyNavigationUpdates(SightMarkerItem item){
+	public static void notifyNavigationUpdates(Collection<SightMarkerItem> items){
 		for(SightNavigationListener listener: sightNavigationListeners){
-			listener.onNavigation(item);
+			listener.onNavigation(items);
 		}
 	}
 

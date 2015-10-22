@@ -1,14 +1,16 @@
 package com.iolab.sightlocator;
 
+import java.util.Collection;
+
 /**
  * A listener interface for navigation between items.
  */
 public interface SightNavigationListener { 
 	
 	/**
-	 * Called when navigation to the indicated item is performed.
+	 * Called when navigation to the indicated items is performed.
 	 * 
-	 * @param item the item to which navigation is performed
+	 * @param items the items to which navigation is performed
 	 */
-	void onNavigation(SightMarkerItem item);
+	void onNavigation(Collection<SightMarkerItem> items);
 }

@@ -13,9 +13,9 @@ import com.google.maps.android.clustering.algo.StaticCluster;
 
 public class SightMarkerItem implements ClusterItem, Parcelable {
 	
-	private final LatLng position;
-	private final String title;
-	private final String snippet;
+	private LatLng position;
+	private String title;
+	private String snippet;
 	private String address;
 	private String imageURI;
 	private String category;
@@ -23,6 +23,10 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	private int[] parentIDs;
 	//not to be saved in Parcel
 	private Cluster<SightMarkerItem> mCluster;
+	
+	public SightMarkerItem(int id) {
+		this.id = id;
+	}
 	
 	public SightMarkerItem(LatLng position, String title, String address, String snippet, String imageURI, String category, int id, int[] parentIDs) {
 		this.position = position;
@@ -95,8 +99,16 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		return title;
 	}
 	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
 	public String getAddress(){
 		return address;
+	}
+	
+	public void setAddress(String address){
+		this.address = address;
 	}
 	
 	public String getSnippet() {

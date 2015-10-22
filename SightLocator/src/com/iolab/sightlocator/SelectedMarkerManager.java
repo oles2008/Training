@@ -1,12 +1,15 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -72,9 +75,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		if(mCurrentSelectedItems == null){
 			mCurrentSelectedItems = new ArrayList<SightMarkerItem>();
 		}
-		for(SightMarkerItem savedSelectedItem: mCurrentSelectedItems){
-			markSavedSelectedItem(savedSelectedItem);
-		}
 	}
 
 	/**
@@ -110,6 +110,10 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 */
 	public void selectItem(SightMarkerItem selectedItem, int delay) {
 		if (selectedItem != null) {
+			SightMarkerItem real = getItemFromMapForSelectedItem(selectedItem, mItemsCurrentlyOnMap);
+			if(real != null){
+				selectedItem = real;
+			}
 			removeSelectedItems();
 			mCurrentSelectedItems.add(selectedItem);
 			if (delay > 0) {
@@ -140,12 +144,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 *            the new items
 	 */
 	public void onItemsUpdated(List<SightMarkerItem> newItems) {
-		for (final SightMarkerItem selectedItem : mCurrentSelectedItems) {
-			if (!mCurrentSelectedMarkersMap.containsKey(selectedItem) && newItems.contains(selectedItem)
-					&& !selectedItem.isClustered()) {
-				addSelectedMarkerDelayed(selectedItem, ITEM_ADDITION_DURATION);
-			}
-		}
+		substituteSelectedItemsWithItemsFromMap(mCurrentSelectedItems, mItemsCurrentlyOnMap);
 	}
 
 	/* **************************************************************************** */
@@ -168,6 +167,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	public void onBeforeClusterItemRendered(SightMarkerItem item,
 			MarkerOptions markerOptions) {
 		if(mCurrentSelectedItems.contains(item)){
+			Log.d("MyLogs", "onBeforeClusterItemUpdated");
 			unclusterSelectedMarker(item);
 		}
 	}
@@ -229,14 +229,56 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 
 	private void unclusterSelectedMarker(SightMarkerItem item) {
+		getItemFromMapForSelectedItem(item, mItemsCurrentlyOnMap);
 		if (!item.isClustered()) {
 			addSelectedMarkerDelayed(item, CLUSTER_ANIMATION_DURATION);
 		}
 	}
 	
 	private void markSavedSelectedItem(SightMarkerItem savedSelectedItem) {
-		if (!savedSelectedItem.isClustered()) {
+		savedSelectedItem = getItemFromMapForSelectedItem(savedSelectedItem, mItemsCurrentlyOnMap);
+		if (mItemsCurrentlyOnMap.contains(savedSelectedItem) && !savedSelectedItem.isClustered()) {
 			addSelectedMarker(savedSelectedItem);
+		}
+	}
+	
+	/**
+	 * For the given item, finds its equal instance used on the map.
+	 *
+	 * @param selectedItem
+	 *            the selected item
+	 * @param realItems
+	 *            the real items
+	 * @return the item from map for selected item if its present among the
+	 *         {@code realItems}, {@code null} otherwise
+	 */
+	private SightMarkerItem getItemFromMapForSelectedItem(
+			SightMarkerItem selectedItem, Collection<SightMarkerItem> realItems) {
+		for (SightMarkerItem real : realItems) {
+			if (selectedItem.equals(real)) {
+				return real;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Substitute selected items with the equal instances used on the map.
+	 *
+	 * @param selectedItems
+	 *            the selected items
+	 * @param realItems
+	 *            the real items
+	 */
+	private void substituteSelectedItemsWithItemsFromMap(
+			Collection<SightMarkerItem> selectedItems,
+			Collection<SightMarkerItem> realItems) {
+		for (SightMarkerItem selected : selectedItems) {
+			SightMarkerItem real = getItemFromMapForSelectedItem(selected, realItems);
+			if(real != null){
+				selectedItems.removeAll(Collections.singleton(selected));
+				selectedItems.add(real);
+			}
 		}
 	}
 }

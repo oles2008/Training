@@ -31,6 +31,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private LatLng mPosition;
 	private int mID = -1;
 	private ArrayList<SightMarkerItem> mClusterItems = null;
+	private boolean mShowOnMap = false;
 	
 	public GetTextOnMarkerClickAction(Bundle inputBundle) {
 		if (inputBundle.containsKey(Tags.POSITION_LAT)
@@ -41,9 +42,11 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
-		mID = inputBundle.getInt(Tags.COMMON_PARENT_ID,-1);
+		mID = inputBundle.getInt(Tags.ID,-1);
+		Log.d("MyLogs", "id: "+mID);
 //		inputBundle.setClassLoader(SightMarkerItem.class.getClassLoader());
 		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
+		mShowOnMap = inputBundle.getBoolean(Tags.SHOW_ON_MAP, false);
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
@@ -66,8 +69,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
-		bundle.putInt(Tags.COMMON_PARENT_ID, mID);
+		bundle.putInt(Tags.ID, mID);
 		bundle.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mClusterItems);
+		bundle.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
 		
 		dest.writeBundle(bundle);
 		
@@ -219,6 +223,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		
 		Bundle resultData = new Bundle();
+		resultData.putInt(Tags.ID, mID);
 		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
 		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
 		resultData.putString(Tags.PATH_TO_IMAGE, getSavedImagePath(pathToImage));
@@ -251,6 +256,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				resultData.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, fullItems);
 				Appl.receiver.send(0, resultData);
 			}
+		}
+		if(mShowOnMap){
+			resultData.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
+			Appl.receiver.send(0, resultData);
 		}
 	}
 	

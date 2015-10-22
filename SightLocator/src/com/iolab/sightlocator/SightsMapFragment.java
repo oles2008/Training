@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -299,9 +300,21 @@ public class SightsMapFragment extends Fragment implements
     /* **************************************************************************** */
 
 	@Override
-	public void onNavigation(SightMarkerItem item) {
-		mMap.moveCameraTo(item);
-		mSelectedMarkerManager.selectItem(item);
+	public void onNavigation(Collection<SightMarkerItem> items) {
+		moveToItemsAndSelectThem(items);
 	}
 
+	private void moveToItemsAndSelectThem(Collection<SightMarkerItem> items){
+		if(items != null && !items.isEmpty()){
+			if(items.size()==1){
+				SightMarkerItem item = items.iterator().next();
+				if(item.getPosition()!=null){
+				mMap.moveCameraTo(item);
+				mSelectedMarkerManager.selectItem(item);
+				}
+			} else {
+				//TODO
+			}
+		}
+	}
 }

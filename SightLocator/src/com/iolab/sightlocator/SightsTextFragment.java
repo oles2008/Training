@@ -4,7 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -41,6 +43,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private static final int ICON_SIZE = 200;
 	
 	private ListView mSights;
+	private SightMarkerItem mSelectedItem;
 	private ArrayList<SightMarkerItem> mSightListItems;
 	private String mImagePath;
 	private TextView mAddress;
@@ -65,6 +68,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mClusterClickCounter = savedInstanceState.getLong(
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
 			mSightListItems = savedInstanceState.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
+			mSelectedItem = savedInstanceState.getParcelable(Tags.SELECTED_ITEM);
 			mImagePath = savedInstanceState.getString(Tags.PATH_TO_IMAGE);
 		}
 	}
@@ -259,6 +263,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
 		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mSightListItems);
+		args.putParcelable(Tags.SELECTED_ITEM, mSelectedItem);
 		args.putString(Tags.PATH_TO_IMAGE, mImagePath);
 	}
 
@@ -314,20 +319,35 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 						int position, long id) {
 					SightMarkerItem selectedItem = mSightListItems.get(position);
 					navigateTo(selectedItem.getID());
-					Appl.notifyNavigationUpdates(selectedItem);
 				}
 			});
 			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
 					: View.GONE);
 		}
 		
+		if (bundle.getInt(Tags.ID, -1) != -1) {
+			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
+		}
+		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
-			mTitle.setText(bundle.getString(Tags.SIGHT_NAME));
+			String title = bundle.getString(Tags.SIGHT_NAME);
+			mTitle.setText(title);
+			mSelectedItem.setTitle(title);
 		}
 
 		if (bundle.getString(Tags.SIGHT_ADDRESS) != null) {
-
-			mAddress.setText(bundle.getString(Tags.SIGHT_ADDRESS));
+			String address = bundle.getString(Tags.SIGHT_ADDRESS);
+			mAddress.setText(address);
+			mSelectedItem.setAddress(address);
+		}
+		
+		if(bundle.getBoolean(Tags.SHOW_ON_MAP)){
+			Set<SightMarkerItem> itemsToBeShownOnMap = new HashSet<SightMarkerItem>();
+			itemsToBeShownOnMap.add(mSelectedItem);
+			if(mSightListItems != null){
+				itemsToBeShownOnMap.addAll(mSightListItems);
+			}
+			Appl.notifyNavigationUpdates(mSightListItems);
 		}
 			
 	}
@@ -337,10 +357,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		//TODO avoid sending the same request if the selected marker is the same
 		cleanAllViews();
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
-		LatLng position = item.getPosition();
+		int id = item.getID();
 		Bundle bundle = new Bundle();
-		bundle.putDouble(Tags.POSITION_LAT,position.latitude);
-		bundle.putDouble(Tags.POSITION_LNG,position.longitude);
+		bundle.putInt(Tags.ID, id);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, ++mClusterClickCounter);
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
@@ -368,7 +387,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		Bundle args = new Bundle();
-		args.putInt(Tags.COMMON_PARENT_ID, clusterCommonParentId);
+		args.putInt(Tags.ID, clusterCommonParentId);
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
 		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, new ArrayList<SightMarkerItem>(cluster.getItems()));
 		intent.putExtra(SightsIntentService.ACTION,
@@ -392,7 +411,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				cleanAllViews();
 				Intent intent = new Intent(getActivity(), SightsIntentService.class);
 				Bundle bundle = new Bundle();
-				bundle.putInt(Tags.COMMON_PARENT_ID, id);
+				bundle.putInt(Tags.ID, id);
 				bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
 				intent.putExtra(SightsIntentService.ACTION,
 						new GetTextOnMarkerClickAction(bundle));

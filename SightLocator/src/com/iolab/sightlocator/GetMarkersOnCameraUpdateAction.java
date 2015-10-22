@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
@@ -16,11 +15,11 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_STATU
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 
 import com.iolab.sightlocator.ItemGroupAnalyzer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		Parcelable {
@@ -73,7 +72,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 								COLUMNS_LOCATION_LEVEL[1],
 								COLUMNS_LOCATION_LEVEL[2],
 								COLUMNS_LOCATION_LEVEL[3],
-								COLUMNS_LOCATION_LEVEL[4] },
+								COLUMNS_LOCATION_LEVEL[4],
+								COLUMN_ID},
 							"(" + COLUMN_LATITUDE + " BETWEEN "
 								+ latLngBounds.southwest.latitude + " AND "
 								+ latLngBounds.northeast.latitude + ") AND ("
@@ -103,9 +103,12 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 				parentIDs = Arrays.copyOfRange(parentIDs, 0, positionOfZero);
 			}
 			//end of temporary fix
-		
-			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
-														cursor.getString(3),null,parentIDs));
+			sightMarkerItemList
+					.add(new SightMarkerItem(position, cursor.getString(cursor
+							.getColumnIndex(SIGHT_NAME+"en")), cursor
+							.getString(cursor.getColumnIndex(SIGHT_ADDRESS+"en")),
+							null, null, null, cursor.getInt(cursor
+									.getColumnIndex(COLUMN_ID)), parentIDs));
 			listOfArrays.add(parentIDs);			
 
 		}
@@ -128,8 +131,12 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 				parentIDs = Arrays.copyOfRange(parentIDs, 0, positionOfZero);
 			}
 			//end of temporary fix
-			sightMarkerItemList.add(new SightMarkerItem(position,cursor.getString(2),
-														cursor.getString(3),null,parentIDs));			
+			sightMarkerItemList
+			.add(new SightMarkerItem(position, cursor.getString(cursor
+					.getColumnIndex(SIGHT_NAME+"en")), cursor
+					.getString(cursor.getColumnIndex(SIGHT_ADDRESS+"en")),
+					null, null, null, cursor.getInt(cursor
+							.getColumnIndex(COLUMN_ID)), parentIDs));			
 			listOfArrays.add(parentIDs); 
 		}
 				
@@ -137,8 +144,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, viewUpdateCallIndex);
 		
-//		Log.d("MyLogs", "commonParent: "+ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
-//		Log.d("MyLogs", "list: ");
 		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
 		Appl.receiver.send(0, resultData);
 	}

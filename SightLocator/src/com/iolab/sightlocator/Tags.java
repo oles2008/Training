@@ -14,6 +14,7 @@ public class Tags {/**/
 	public static final String SCROLL_Y = "scrollY";
 	public static final String COMMON_PARENT_ID = "CommonParentId";
 	public static final String SIGHT_ITEM_LIST = "SightItemList";
+	public static final String SELECTED_ITEM = "SelectedItem";
 	public final static String ON_CLUSTER_CLICK_COUNTER = "clusterClickCounter";
 	public final static String ON_MAP_CLICK_COUNTER = "mapClickCounter";
 	public final static String POSITION_LAT = "positionLat";
@@ -24,4 +25,5 @@ public class Tags {/**/
     public final static String SIGHT_LIST_VISIBLE = "sightListVisible";
 	public static final String SIGHT_NAME = "name";
 	public static final String SIGHT_ADDRESS = "address";
+	public static final String SHOW_ON_MAP = "show_on_map";
 }
