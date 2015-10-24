@@ -79,13 +79,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		View inflatedView = inflater.inflate(R.layout.text_fragment, container,
 				false);
 		mSights = (ListView) inflatedView.findViewById(R.id.listView);
-		if (mSightListItems != null && !mSightListItems.isEmpty()) {
-			mSights.setAdapter(new SightsAdapter(getActivity(),
-					R.layout.sights_list_item, mSightListItems));
-			mSights.setVisibility(View.VISIBLE);
-		} else {
-			mSights.setVisibility(View.GONE);
-		}
+		initializeListView();
 		mAddress = (TextView) inflatedView.findViewById(R.id.address);
 		mAddress.setVisibility(View.GONE);
 		mTitle = (TextView) inflatedView
@@ -210,7 +204,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onMapClick(LatLng arg0) {
 		cleanAllViews();
-		navigateTo(mCommonParentID);
+		navigateTo(mCommonParentID, false);
 	}
 
 	private void registerImageViewClickListener() {
@@ -300,7 +294,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					.getString(Tags.PATH_TO_IMAGE));
 		} 
 		
-		//check if bundle has COMMON_PARENT_ID
 		if (bundle.getInt(Tags.COMMON_PARENT_ID,-1) != -1) {
 			mCommonParentID = bundle.getInt(Tags.COMMON_PARENT_ID);
 		}
@@ -309,23 +302,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSightListItems = new ArrayList<SightMarkerItem>(
 					(Collection<? extends SightMarkerItem>) bundle
 							.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
-			SightsAdapter adapter = new SightsAdapter(getActivity(),
-					R.layout.sights_list_item, mSightListItems);
-			mSights.setAdapter(adapter);
-			mSights.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					SightMarkerItem selectedItem = mSightListItems.get(position);
-					navigateTo(selectedItem.getID());
-				}
-			});
-			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
-					: View.GONE);
+			initializeListView();
 		}
 		
 		if (bundle.getInt(Tags.ID, -1) != -1) {
+			Log.d("MyLogs", "id: "+bundle.getInt(Tags.ID));
 			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
 		}
 		
@@ -341,58 +322,45 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSelectedItem.setAddress(address);
 		}
 		
+		if (bundle.getParcelable(Tags.SIGHT_POSITION) != null) {
+			LatLng position = bundle.getParcelable(Tags.SIGHT_POSITION);
+			mSelectedItem.setPosition(position);
+		}
+		
 		if(bundle.getBoolean(Tags.SHOW_ON_MAP)){
 			Set<SightMarkerItem> itemsToBeShownOnMap = new HashSet<SightMarkerItem>();
 			itemsToBeShownOnMap.add(mSelectedItem);
 			if(mSightListItems != null){
 				itemsToBeShownOnMap.addAll(mSightListItems);
 			}
-			Appl.notifyNavigationUpdates(mSightListItems);
+			Appl.notifyNavigationUpdates(itemsToBeShownOnMap);
 		}
 			
 	}
 
 	@Override
 	public boolean onClusterItemClick(SightMarkerItem item) {
-		//TODO avoid sending the same request if the selected marker is the same
-		cleanAllViews();
-		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		int id = item.getID();
-		Bundle bundle = new Bundle();
-		bundle.putInt(Tags.ID, id);
-		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, ++mClusterClickCounter);
-		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(bundle));
-		getActivity().startService(intent);
-
-
-      /*  Fragment textFragmet = getActivity().getFragmentManager()
-						.findFragmentById(R.id.text_fragment);
-				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
-				object_title.setText(item.getTitle());   
-		*/
-		mSights.setVisibility(View.GONE);
-		mSightListItems = null;
-		mAddress.setVisibility(View.VISIBLE);    
-		
+		if ((mSelectedItem == null) || (mSelectedItem.getID() != id)) {
+			cleanAllViews();
+			navigateTo(id, false);
+			mSights.setVisibility(View.GONE);
+			mSightListItems = null;
+			mAddress.setVisibility(View.VISIBLE);
+		}
 		return true;
 	}
 
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
+		//TODO avoid sending the same request if the selected marker is the same
+		cleanAllViews();
 		List<int[]>parentIDs = new ArrayList<int[]>();
 		for(SightMarkerItem item: cluster.getItems()){
 			parentIDs.add(item.getParentIDs());
 		}
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
-		Intent intent = new Intent(getActivity(), SightsIntentService.class);
-		Bundle args = new Bundle();
-		args.putInt(Tags.ID, clusterCommonParentId);
-		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
-		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, new ArrayList<SightMarkerItem>(cluster.getItems()));
-		intent.putExtra(SightsIntentService.ACTION,
-				new GetTextOnMarkerClickAction(args));
-		getActivity().startService(intent);
+		navigateTo(clusterCommonParentId, false, cluster.getItems());
 		return false;
 	}
 	
@@ -405,17 +373,60 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		 mSights.setVisibility(View.GONE);
 		 mSightListItems = null; 
 	}
+
+	/**
+	 * Navigates to the given item.
+	 *
+	 * @param id the id of the item
+	 * @param showOnMap whether the item (or items) should be show and selected on map
+	 */
+	private void navigateTo(int id, boolean showOnMap) {
+		navigateTo(id, showOnMap, null);
+	}
+
+	/**
+	 * Navigates to the given item.
+	 *
+	 * @param id the id of the item
+	 * @param showOnMap whether the item (or items) should be show and selected on map
+	 * @param items the multiple items to be shown, if any 
+	 */
+	private void navigateTo(int id, boolean showOnMap,
+			Collection<SightMarkerItem> items) {
+		// TODO avoid sending the same request if the selected marker is the
+		// same
+		cleanAllViews();
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(Tags.ID, id);
+		if ((items != null) && !items.isEmpty()) {
+			bundle.putParcelableArrayList(Tags.SIGHT_ITEM_LIST,
+					new ArrayList<SightMarkerItem>(items));
+		}
+		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
+		bundle.putBoolean(Tags.SHOW_ON_MAP, showOnMap);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(bundle));
+		getActivity().startService(intent);
+	}
 	
-	private void navigateTo(int id){
-		//TODO avoid sending the same request if the selected marker is the same
-				cleanAllViews();
-				Intent intent = new Intent(getActivity(), SightsIntentService.class);
-				Bundle bundle = new Bundle();
-				bundle.putInt(Tags.ID, id);
-				bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
-				intent.putExtra(SightsIntentService.ACTION,
-						new GetTextOnMarkerClickAction(bundle));
-				getActivity().startService(intent);
+	private void initializeListView() {
+		if (mSightListItems != null && !mSightListItems.isEmpty()) {
+			mSights.setAdapter(new SightsAdapter(getActivity(),
+					R.layout.sights_list_item, mSightListItems));
+			mSights.setVisibility(View.VISIBLE);
+			mSights.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					SightMarkerItem selectedItem = mSightListItems.get(position);
+					navigateTo(selectedItem.getID(), true);
+				}
+			});
+		} else {
+			mSights.setVisibility(View.GONE);
+		}
 	}
 
 }

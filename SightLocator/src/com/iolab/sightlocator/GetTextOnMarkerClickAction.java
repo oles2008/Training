@@ -43,7 +43,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
 		mID = inputBundle.getInt(Tags.ID,-1);
-		Log.d("MyLogs", "id: "+mID);
 //		inputBundle.setClassLoader(SightMarkerItem.class.getClassLoader());
 		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 		mShowOnMap = inputBundle.getBoolean(Tags.SHOW_ON_MAP, false);
@@ -208,6 +207,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		String pathToImage = null;
 		String sightName = null;
 		String sightAddress = null;
+		LatLng sightPosition = null;
 
 		if(cursor == null){
 			return;
@@ -218,6 +218,13 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			sightDescription = cursor.getString(3);
 			sightName = cursor.getString(4);
 			sightAddress = cursor.getString(5);
+			if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
+					&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
+				sightPosition = new LatLng(cursor.getDouble(cursor
+						.getColumnIndex(COLUMN_LATITUDE)),
+						cursor.getDouble(cursor
+								.getColumnIndex(COLUMN_LONGITUDE)));
+			}
 		}
 
 		
@@ -229,6 +236,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		resultData.putString(Tags.PATH_TO_IMAGE, getSavedImagePath(pathToImage));
 		resultData.putString(Tags.SIGHT_NAME, sightName);
 		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
+		if(sightPosition != null) {
+			resultData.putParcelable(Tags.SIGHT_POSITION, sightPosition);
+		}
 		Appl.receiver.send(0, resultData);
 		
 		if((mClusterItems!=null && !mClusterItems.isEmpty()) || (mID!=-1)){
@@ -258,6 +268,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			}
 		}
 		if(mShowOnMap){
+			resultData = new Bundle();
 			resultData.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
 			Appl.receiver.send(0, resultData);
 		}

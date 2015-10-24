@@ -25,5 +25,6 @@ public class Tags {/**/
     public final static String SIGHT_LIST_VISIBLE = "sightListVisible";
 	public static final String SIGHT_NAME = "name";
 	public static final String SIGHT_ADDRESS = "address";
+	public static final String SIGHT_POSITION = "sight_position";
 	public static final String SHOW_ON_MAP = "show_on_map";
 }
