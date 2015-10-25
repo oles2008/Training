@@ -306,7 +306,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getInt(Tags.ID, -1) != -1) {
-			Log.d("MyLogs", "id: "+bundle.getInt(Tags.ID));
 			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
 		}
 		

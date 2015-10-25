@@ -103,18 +103,19 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 * Select item. Be sure to call {@code onItemsUpdated} when new items are
 	 * added to the map.
 	 *
-	 * @param selectedItem
-	 *            the selected item
-	 * @param delayed
-	 *            the delay in ms
+	 * @param selectedItem            the selected item
+	 * @param delay the delay
+	 * @param removeSelected whether currently selected ite,s should be removed
 	 */
-	public void selectItem(SightMarkerItem selectedItem, int delay) {
+	public void selectItem(SightMarkerItem selectedItem, int delay, boolean removeSelected) {
 		if (selectedItem != null) {
 			SightMarkerItem real = getItemFromMapForSelectedItem(selectedItem, mItemsCurrentlyOnMap);
 			if(real != null){
 				selectedItem = real;
 			}
-			removeSelectedItems();
+			if(removeSelected){
+				removeSelectedItems();
+			}
 			mCurrentSelectedItems.add(selectedItem);
 			if (delay > 0) {
 				addSelectedMarkerDelayed(selectedItem, delay);
@@ -125,14 +126,30 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 	
 	/**
-	 * Select item. Be sure to call {@code onItemsUpdated} when new items are
+	 * Select item, de-select currently selected. Be sure to call {@code onItemsUpdated} when new items are
+	 * added to the map.
+	 *
+	 * @param items
+	 *            the items to be selected
+	 */
+	public void selectItems(Collection<SightMarkerItem> items){
+		removeSelectedItems();
+		if(items != null){
+			for(SightMarkerItem item: items){
+				selectItem(item, 0, false);
+			}
+		}
+	}
+	
+	/**
+	 * Select item, de-select currently selected. Be sure to call {@code onItemsUpdated} when new items are
 	 * added to the map.
 	 *
 	 * @param selectedItem
-	 *            the selected item
+	 *            the item to be selected
 	 */
 	public void selectItem(SightMarkerItem selectedItem){
-		selectItem(selectedItem, 0);
+		selectItem(selectedItem, 0, false);
 	}
 	
 	/**
@@ -273,12 +290,15 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	private void substituteSelectedItemsWithItemsFromMap(
 			Collection<SightMarkerItem> selectedItems,
 			Collection<SightMarkerItem> realItems) {
+		Map<SightMarkerItem, SightMarkerItem> selectedToReal = new HashMap<SightMarkerItem, SightMarkerItem>();
 		for (SightMarkerItem selected : selectedItems) {
-			SightMarkerItem real = getItemFromMapForSelectedItem(selected, realItems);
-			if(real != null){
-				selectedItems.removeAll(Collections.singleton(selected));
-				selectedItems.add(real);
+			SightMarkerItem real = getItemFromMapForSelectedItem(selected,
+					realItems);
+			if (real != null) {
+				selectedToReal.put(selected, real);
 			}
 		}
+		selectedItems.removeAll(selectedToReal.keySet());
+		selectedItems.addAll(selectedToReal.values());
 	}
 }
