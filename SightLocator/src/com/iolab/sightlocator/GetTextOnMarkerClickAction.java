@@ -248,16 +248,30 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				// SightMarkerItem(LatLng position, String title, String
 				// address, String snippet, String imageURI, String color, int
 				// id, int[] parentIDs)
+				sightPosition = null;
+				if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
+						&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
+					sightPosition = new LatLng(cursor.getDouble(cursor
+							.getColumnIndex(COLUMN_LATITUDE)),
+							cursor.getDouble(cursor
+									.getColumnIndex(COLUMN_LONGITUDE)));
+				}
 				fullItems
-						.add(new SightMarkerItem(new LatLng(
-								cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)), cursor.getDouble(1)), //changed
+						.add(new SightMarkerItem(sightPosition,
 								cursor.getString(4), cursor.getString(5), null,
 								getSavedImagePath(cursor.getString(2)), null,
 								cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), null));
 				while(cursor.moveToNext()){
+					sightPosition = null;
+					if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
+							&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
+						sightPosition = new LatLng(cursor.getDouble(cursor
+								.getColumnIndex(COLUMN_LATITUDE)),
+								cursor.getDouble(cursor
+										.getColumnIndex(COLUMN_LONGITUDE)));
+					}
 					fullItems
-					.add(new SightMarkerItem(new LatLng(
-							cursor.getDouble(0), cursor.getDouble(1)),
+					.add(new SightMarkerItem(sightPosition,
 							cursor.getString(4), cursor.getString(5), null,
 							getSavedImagePath(cursor.getString(2)), null,
 							cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), null));

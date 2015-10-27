@@ -10,6 +10,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 public class MapImplementationGoogle implements AbstractMap {
 	
@@ -43,9 +44,42 @@ public class MapImplementationGoogle implements AbstractMap {
 	}
 
 	@Override
-	public void moveCameraTo(Collection<SightMarkerItem> items) {
-		// TODO Auto-generated method stub
-
+	public void moveCameraTo(Collection<SightMarkerItem> items, int padding) {
+		LatLngBounds bounds = getBoundsForItems(items);
+		if (bounds != null) {
+			mGMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,
+					padding));
+		} else {
+			// Possible behavior when there are no coordinates in the collection
+		}
 	}
-
+	
+	/* **************************************************************************** */
+    /* ************************************* Utility API ************************** */
+    /* **************************************************************************** */
+	
+	/**
+	 * Gets the {@link LatLngBounds} for items.
+	 *
+	 * @param items
+	 *            the items
+	 * @return the bounds for items, if at least one has a position. Otherwise,
+	 *         null is returned
+	 */
+	private LatLngBounds getBoundsForItems(Collection<SightMarkerItem> items) {
+		LatLngBounds.Builder builder = new LatLngBounds.Builder();
+		boolean hasPoints = false;
+		for (SightMarkerItem item : items) {
+			LatLng position = item.getPosition();
+			if (position != null) {
+				hasPoints = true;
+				builder.include(position);
+			}
+		}
+		if (hasPoints) {
+			return builder.build();
+		} else {
+			return null;
+		}
+	}
 }

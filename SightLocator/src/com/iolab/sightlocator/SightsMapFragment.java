@@ -306,15 +306,17 @@ public class SightsMapFragment extends Fragment implements
 		moveToItemsAndSelectThem(items);
 	}
 
-	private void moveToItemsAndSelectThem(Collection<SightMarkerItem> items){
-		if(items != null && !items.isEmpty()){
-				SightMarkerItem item = new ArrayList<SightMarkerItem>(items).get(0);
-				if(item.getPosition()!=null){
-				mMap.moveCameraTo(item);
-				} else {
-					//TODO
+	private void moveToItemsAndSelectThem(Collection<SightMarkerItem> items) {
+		if (items != null && !items.isEmpty()) {
+			if (items.size() == 1) {
+				SightMarkerItem item = items.iterator().next();
+				if (item.getPosition() != null) {
+					mMap.moveCameraTo(item);
 				}
-				mSelectedMarkerManager.selectItems(items);
+			} else {
+				mMap.moveCameraTo(items, 100);
+			}
+			mSelectedMarkerManager.selectItems(items);
 		}
 	}
 }
