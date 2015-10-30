@@ -314,7 +314,8 @@ public class SightsMapFragment extends Fragment implements
 					mMap.moveCameraTo(item);
 				}
 			} else {
-				mMap.moveCameraTo(items, 100);
+				int minDimension = Math.min(getView().getWidth(), getView().getHeight());
+				mMap.moveCameraTo(items, minDimension/3);
 			}
 			mSelectedMarkerManager.selectItems(items);
 		}
