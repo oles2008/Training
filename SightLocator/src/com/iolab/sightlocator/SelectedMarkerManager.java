@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.internal.gg;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -105,7 +107,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 *
 	 * @param selectedItem            the selected item
 	 * @param delay the delay
-	 * @param removeSelected whether currently selected ite,s should be removed
+	 * @param removeSelected whether currently selected items should be removed
 	 */
 	public void selectItem(SightMarkerItem selectedItem, int delay, boolean removeSelected) {
 		if (selectedItem != null) {
@@ -149,7 +151,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 *            the item to be selected
 	 */
 	public void selectItem(SightMarkerItem selectedItem){
-		selectItem(selectedItem, 0, false);
+		selectItem(selectedItem, 0, true);
 	}
 	
 	/**
@@ -171,12 +173,14 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	@Override
 	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
 			MarkerOptions markerOptions) {
-		if (!mCurrentSelectedItems.isEmpty()){
-			for(SightMarkerItem selectedItem: mCurrentSelectedItems){
-				if(selectedItem.isClustered()){
-					hideSelectedMarkerInCluster(selectedItem);
-				}
-			}
+		String items = "[";
+		for(SightMarkerItem item: cluster.getItems()){
+			items += item.getTitle();
+		}
+		items+= "]";
+		Log.d("MyLogs", "onBeforeClusterRendered: "+items);
+		if (containsSelectedItems(cluster.getItems())) {
+			addSelectedClusterDelayed(cluster, CLUSTER_ANIMATION_DURATION);
 		}
 	}
 
@@ -184,7 +188,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	public void onBeforeClusterItemRendered(SightMarkerItem item,
 			MarkerOptions markerOptions) {
 		if(mCurrentSelectedItems.contains(item)){
-			Log.d("MyLogs", "onBeforeClusterItemUpdated");
 			unclusterSelectedMarker(item);
 		}
 	}
@@ -195,7 +198,7 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 
 	/**
 	 * Adds a selected marker for an item which is considered selected. The
-	 * selected marker is added immediately is the item is already on the map.
+	 * selected marker is added immediately if the item is already on the map.
 	 * Otherwise, it is added as soon as the item is added.
 	 *
 	 * @param selectedItem
@@ -235,6 +238,63 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 				addSelectedMarker(item);
 			}
 		}, delay);
+	}
+	
+	/**
+	 * Adds a selected marker for a cluster which is considered selected.
+	 *
+	 * @param selectedCluster
+	 *            the selected cluster
+	 * @return the marker on the map, if it was added immediately, otherwise
+	 *         returns {@code null}
+	 * @throws IllegalStateException
+	 *             if the item is not found among the selected items
+	 */
+	private Marker addSelectedCluster(Cluster<SightMarkerItem> selectedCluster)
+			throws IllegalStateException {
+		Collection<SightMarkerItem> selectedItemsFromCluster = new HashSet<SightMarkerItem>(mCurrentSelectedItems);
+		selectedItemsFromCluster.retainAll(selectedCluster.getItems());
+		if (selectedItemsFromCluster.isEmpty()) {
+			throw new IllegalStateException(
+					"Cannot add selected marker for a cluster without selected items");
+		}
+		if (mItemsCurrentlyOnMap.containsAll(selectedItemsFromCluster)) {
+			Marker selectedMarker = mGoogleMap.addMarker(new MarkerOptions()
+					.position(selectedCluster.getPosition())
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+			for(SightMarkerItem selectedItem: selectedItemsFromCluster){
+				Log.d("MyLogs", "item: "+selectedItem.getTitle());
+				if (mCurrentSelectedMarkersMap.get(selectedItem) != null) {
+					mCurrentSelectedMarkersMap.get(selectedItem).remove();
+				}
+				mCurrentSelectedMarkersMap.put(selectedItem, selectedMarker);
+			}
+			return selectedMarker;
+		} else {
+			return null;
+		}
+	}
+
+	private void addSelectedClusterDelayed(final Cluster<SightMarkerItem> cluster, int delay) {
+		mRootView.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				addSelectedCluster(cluster);
+			}
+		}, delay);
+	}
+	
+	private boolean containsSelectedItems(Collection<SightMarkerItem> collection) {
+		if (collection == null || mCurrentSelectedItems == null) {
+			return false;
+		}
+		for (SightMarkerItem selectedItem : mCurrentSelectedItems) {
+			if (collection.contains(selectedItem)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void hideSelectedMarkerInCluster(SightMarkerItem selectedItem) {
