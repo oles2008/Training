@@ -2,7 +2,6 @@ package com.iolab.sightlocator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,10 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import com.google.android.gms.internal.gg;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -173,12 +170,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	@Override
 	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
 			MarkerOptions markerOptions) {
-		String items = "[";
-		for(SightMarkerItem item: cluster.getItems()){
-			items += item.getTitle();
-		}
-		items+= "]";
-		Log.d("MyLogs", "onBeforeClusterRendered: "+items);
 		if (containsSelectedItems(cluster.getItems())) {
 			addSelectedClusterDelayed(cluster, CLUSTER_ANIMATION_DURATION);
 		}
@@ -187,8 +178,8 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	@Override
 	public void onBeforeClusterItemRendered(SightMarkerItem item,
 			MarkerOptions markerOptions) {
-		if(mCurrentSelectedItems.contains(item)){
-			unclusterSelectedMarker(item);
+		if (mCurrentSelectedItems.contains(item) && !item.isClustered()) {
+			addSelectedMarkerDelayed(item, CLUSTER_ANIMATION_DURATION);
 		}
 	}
 
@@ -263,7 +254,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 					.position(selectedCluster.getPosition())
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 			for(SightMarkerItem selectedItem: selectedItemsFromCluster){
-				Log.d("MyLogs", "item: "+selectedItem.getTitle());
 				if (mCurrentSelectedMarkersMap.get(selectedItem) != null) {
 					mCurrentSelectedMarkersMap.get(selectedItem).remove();
 				}
@@ -297,28 +287,6 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		return false;
 	}
 
-	private void hideSelectedMarkerInCluster(SightMarkerItem selectedItem) {
-		Marker selectedMarker = mCurrentSelectedMarkersMap.get(selectedItem);
-		if (selectedMarker != null) {
-			selectedMarker.remove();
-			mCurrentSelectedMarkersMap.remove(selectedItem);
-		}
-	}
-
-	private void unclusterSelectedMarker(SightMarkerItem item) {
-		getItemFromMapForSelectedItem(item, mItemsCurrentlyOnMap);
-		if (!item.isClustered()) {
-			addSelectedMarkerDelayed(item, CLUSTER_ANIMATION_DURATION);
-		}
-	}
-	
-	private void markSavedSelectedItem(SightMarkerItem savedSelectedItem) {
-		savedSelectedItem = getItemFromMapForSelectedItem(savedSelectedItem, mItemsCurrentlyOnMap);
-		if (mItemsCurrentlyOnMap.contains(savedSelectedItem) && !savedSelectedItem.isClustered()) {
-			addSelectedMarker(savedSelectedItem);
-		}
-	}
-	
 	/**
 	 * For the given item, finds its equal instance used on the map.
 	 *
