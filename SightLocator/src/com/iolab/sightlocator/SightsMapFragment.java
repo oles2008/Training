@@ -174,6 +174,7 @@ public class SightsMapFragment extends Fragment implements
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterClickUpdates(cluster);
 		mSelectedMarkerManager.removeSelectedItems();
+		mSelectedMarkerManager.selectItems(cluster.getItems());
         return true;
     }
 	

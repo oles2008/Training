@@ -116,10 +116,24 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 				removeSelectedItems();
 			}
 			mCurrentSelectedItems.add(selectedItem);
-			if (delay > 0) {
-				addSelectedMarkerDelayed(selectedItem, delay);
+			if (!selectedItem.isClustered()) {
+				if (delay > 0) {
+					addSelectedMarkerDelayed(selectedItem, delay);
+				} else {
+					addSelectedMarker(selectedItem);
+				}
 			} else {
-				addSelectedMarker(selectedItem);
+				Marker existingMarker = getExistingSelectedMakerForCluster(selectedItem.getCluster());
+				if(existingMarker != null){
+					mCurrentSelectedMarkersMap.put(selectedItem, existingMarker);
+				} else {
+					if (delay > 0) {
+						addSelectedClusterDelayed(selectedItem.getCluster(),
+								delay);
+					} else {
+						addSelectedCluster(selectedItem.getCluster());
+					}
+				}
 			}
 		}
 	}
@@ -273,6 +287,15 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 				addSelectedCluster(cluster);
 			}
 		}, delay);
+	}
+	
+	private Marker getExistingSelectedMakerForCluster(Cluster<SightMarkerItem> cluster){
+		for(SightMarkerItem item: cluster.getItems()){
+			if(mCurrentSelectedMarkersMap.get(item) != null){
+				return mCurrentSelectedMarkersMap.get(item);
+			}
+		}
+		return null;
 	}
 	
 	private boolean containsSelectedItems(Collection<SightMarkerItem> collection) {
