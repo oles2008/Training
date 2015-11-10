@@ -78,7 +78,7 @@ public class SightsMapFragment extends Fragment implements
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
-		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, itemSet, savedInstanceState);
+		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, clusterManager, itemSet, savedInstanceState);
 		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
 		sightsRenderer.registerOnBeforeClusterRenderedListener(mSelectedMarkerManager);
 		clusterManager.setRenderer(sightsRenderer);
