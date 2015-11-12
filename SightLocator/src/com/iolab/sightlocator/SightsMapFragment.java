@@ -1,17 +1,19 @@
 package com.iolab.sightlocator;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar.OnNavigationListener;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
@@ -289,8 +292,46 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onMarkerCategoryChosen() {
-		// TODO Auto-generated method stub
+		Log.d("Marker", "onMarkerCategoryChosen");
+		LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetMarkersOnCameraUpdateAction(currentMapBounds,
+						++updateViewCallIndex));
+		intent.putExtra(Tags.ON_CAMERA_CHANGE_CALL_INDEX, updateViewCallIndex);
+		Bundle bundle = new Bundle();
+		String value = null;
 		
+		clusterManager.clearItems();
+		
+		Set<SightMarkerItem> tempMarkerItemSet = new HashSet<SightMarkerItem>();
+		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+		Log.d("Marker","chosen category > " + chosenCategories.toString() + " " +chosenCategories.getClass());
+		for (SightMarkerItem marker : itemSet){
+			Log.d("Marker","item set " + marker.category +" "+ marker.category.getClass());
+
+			String[] markerCategories = marker.category.split(",");
+			for (String category : markerCategories) {
+				if (chosenCategories.contains(category)) {
+					tempMarkerItemSet.add(marker);
+				}
+			}
+		}
+		
+		Log.d("Marker","temp marker set " + tempMarkerItemSet.toString());
+		
+		if(tempMarkerItemSet!=null){
+			for(SightMarkerItem item: tempMarkerItemSet){
+					clusterManager.addItem(item);
+			}
+			clusterManager.cluster();
+		}
+		Log.d("Marker", tempMarkerItemSet.toString());
+
+		
+//		bundle.putParcelableArrayList(Tags.MARKER_FILTER_CATEGORIES, value);
+		getActivity().startService(intent);
+	
 	}
 	
 	/* **************************************************************************** */

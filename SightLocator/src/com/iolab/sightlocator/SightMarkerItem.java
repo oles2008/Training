@@ -30,6 +30,13 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.id = id;
 	}
 	
+	public SightMarkerItem(LatLng position, String title, String address, int[] parentIDs, String category) {
+		this.position = position;
+		this.title = title;
+		this.category = category;
+		this.parentIDs = parentIDs;
+	}
+	
 	public SightMarkerItem(LatLng position, String title, String snippet, String color, int[] parentIDs) {
 		this.position = position;
 		this.title = title;
