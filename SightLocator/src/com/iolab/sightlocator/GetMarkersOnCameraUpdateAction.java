@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
@@ -89,20 +90,9 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		if (cursor.moveToFirst()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
-			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)}; //the last argument for sightMarkerItemList
-			
-			//temporary fix for cases when some parent IDs are empty and are treated as 0
-			int positionOfZero = -1;
-			for(int i=0; i<parentIDs.length;i++){
-				if(parentIDs[i]==0){
-					positionOfZero = i;
-					break;
-				}
-			}
-			if(positionOfZero!=-1){
-				parentIDs = Arrays.copyOfRange(parentIDs, 0, positionOfZero);
-			}
-			//end of temporary fix
+			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
+			Log.d("MyLogs", cursor.getString(cursor
+					.getColumnIndex(SIGHT_NAME+"en"))+", parentIDs: "+Arrays.toString(parentIDs));
 			sightMarkerItemList
 					.add(new SightMarkerItem(position, cursor.getString(cursor
 							.getColumnIndex(SIGHT_NAME+"en")), cursor
@@ -117,20 +107,9 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
 			
-			parentIDs = new int[]{cursor.getInt(5),cursor.getInt(6),cursor.getInt(7),cursor.getInt(8),cursor.getInt(9)};
-			
-			//temporary fix for cases when some parent IDs are empty and are treated as 0
-			int positionOfZero = -1;
-			for(int i=0; i<parentIDs.length;i++){
-				if(parentIDs[i]==0){
-					positionOfZero = i;
-					break;
-				}
-			}
-			if(positionOfZero!=-1){
-				parentIDs = Arrays.copyOfRange(parentIDs, 0, positionOfZero);
-			}
-			//end of temporary fix
+			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
+			Log.d("MyLogs", cursor.getString(cursor
+					.getColumnIndex(SIGHT_NAME+"en"))+", parentIDs: "+Arrays.toString(parentIDs));
 			sightMarkerItemList
 			.add(new SightMarkerItem(position, cursor.getString(cursor
 					.getColumnIndex(SIGHT_NAME+"en")), cursor

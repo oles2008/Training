@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
@@ -152,7 +153,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					TABLE_NAME,
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
 							COLUMN_SIGHT_IMAGE_PATH, SIGHT_DESCRIPTION + "en",
-							SIGHT_NAME + "en", SIGHT_ADDRESS + "en",COLUMN_ID },
+							SIGHT_NAME + "en", SIGHT_ADDRESS + "en",COLUMN_ID,
+							COLUMNS_LOCATION_LEVEL[0],
+							COLUMNS_LOCATION_LEVEL[1],
+							COLUMNS_LOCATION_LEVEL[2],
+							COLUMNS_LOCATION_LEVEL[3],
+							COLUMNS_LOCATION_LEVEL[4] },
 					whereClause, null, null, null, null);
 		}
 		return cursor;
