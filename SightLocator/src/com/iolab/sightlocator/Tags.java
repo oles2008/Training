@@ -19,6 +19,7 @@ public class Tags {/**/
 	public final static String ON_MAP_CLICK_COUNTER = "mapClickCounter";
 	public final static String POSITION_LAT = "positionLat";
 	public final static String POSITION_LNG = "positionLng";
+	public static final String PARENT_IDS = "parent_ids";
 	public final static String ID = "id";
 	public final static String TEXT_FRAGMENT_VISIBLE = "fragmentTextVisible";
     public final static String MAP_FRAGMENT_VISIBLE = "fragmentMapVisible";

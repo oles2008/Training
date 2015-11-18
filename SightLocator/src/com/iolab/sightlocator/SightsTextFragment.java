@@ -2,10 +2,12 @@ package com.iolab.sightlocator;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import android.app.Activity;
@@ -53,6 +55,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
 	private String mLanguage;
+	private Queue<DestinationEndPoint> mBackStack = new ArrayDeque<DestinationEndPoint>();
 
     OnTextFragmentClickListener mCallback;
 
@@ -326,6 +329,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSelectedItem.setPosition(position);
 		}
 		
+		if (bundle.getIntArray(Tags.PARENT_IDS) != null) {
+			int[] parentIDs = bundle.getIntArray(Tags.PARENT_IDS);
+			mSelectedItem.setParentIDs(parentIDs);
+		}
+		
 		if(bundle.getBoolean(Tags.SHOW_ON_MAP)){
 			Set<SightMarkerItem> itemsToBeShownOnMap = new HashSet<SightMarkerItem>();
 			itemsToBeShownOnMap.add(mSelectedItem);
@@ -378,9 +386,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 *
 	 * @param id the id of the item
 	 * @param showOnMap whether the item (or items) should be show and selected on map
+	 * 
+	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
-	private void navigateTo(int id, boolean showOnMap) {
-		navigateTo(id, showOnMap, null);
+	private DestinationEndPoint navigateTo(int id, boolean showOnMap) {
+		return navigateTo(id, showOnMap, null);
 	}
 
 	/**
@@ -388,9 +398,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 *
 	 * @param id the id of the item
 	 * @param showOnMap whether the item (or items) should be show and selected on map
-	 * @param items the multiple items to be shown, if any 
+	 * @param items the multiple items to be shown, if any
+	 * 
+	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
-	private void navigateTo(int id, boolean showOnMap,
+	private DestinationEndPoint navigateTo(int id, boolean showOnMap,
 			Collection<SightMarkerItem> items) {
 		// TODO avoid sending the same request if the selected marker is the
 		// same
@@ -407,6 +419,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
+		DestinationEndPoint destinationEndPoint = new DestinationEndPoint(id);
+		return destinationEndPoint;
 	}
 	
 	private void initializeListView() {
@@ -426,6 +440,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		} else {
 			mSights.setVisibility(View.GONE);
 		}
+	}
+	
+	/**
+	 * Navigate back.
+	 */
+	private void navigateBack() {
+		
 	}
 
 }

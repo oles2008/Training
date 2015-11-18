@@ -94,7 +94,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en"},
+									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en",
+									COLUMNS_LOCATION_LEVEL[0],
+									COLUMNS_LOCATION_LEVEL[1],
+									COLUMNS_LOCATION_LEVEL[2],
+									COLUMNS_LOCATION_LEVEL[3],
+									COLUMNS_LOCATION_LEVEL[4]},
 								"(" + COLUMN_LATITUDE + " = "
 									+ mPosition.latitude + " AND "
 									+ COLUMN_LONGITUDE + " = "
@@ -108,7 +113,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en"},
+									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en",
+									COLUMNS_LOCATION_LEVEL[0],
+									COLUMNS_LOCATION_LEVEL[1],
+									COLUMNS_LOCATION_LEVEL[2],
+									COLUMNS_LOCATION_LEVEL[3],
+									COLUMNS_LOCATION_LEVEL[4]},
 								"(" + COLUMN_ID + " = "
 									+ mID + ")",
 									null, null, null, null);
@@ -214,6 +224,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		String sightName = null;
 		String sightAddress = null;
 		LatLng sightPosition = null;
+		int[] parentIDs = null;
 
 		if(cursor == null){
 			return;
@@ -224,6 +235,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			sightDescription = cursor.getString(3);
 			sightName = cursor.getString(4);
 			sightAddress = cursor.getString(5);
+			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
+			
 			if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
 					&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
 				sightPosition = new LatLng(cursor.getDouble(cursor
@@ -242,6 +255,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		resultData.putString(Tags.PATH_TO_IMAGE, getSavedImagePath(pathToImage));
 		resultData.putString(Tags.SIGHT_NAME, sightName);
 		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
+		resultData.putIntArray(Tags.PARENT_IDS, parentIDs);
 		if(sightPosition != null) {
 			resultData.putParcelable(Tags.SIGHT_POSITION, sightPosition);
 		}

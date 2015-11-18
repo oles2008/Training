@@ -99,6 +99,10 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.position = position;
 	}
 	
+	public void setParentIDs(int[] parentIDs) {
+		this.parentIDs = parentIDs;
+	}
+	
 	public String getTitle() {
 		return title;
 	}
