@@ -37,7 +37,7 @@ public class CategoryUtils {
 		ArrayList<String> selectedMarkerCategories = new ArrayList<String>();
 		for (int i=0; i<Appl.selectedCategories.length; i++) {
 			if (Appl.selectedCategories[i]) {
-				selectedMarkerCategories.add(getMarkerCategories().get(i));
+				selectedMarkerCategories.add(getMarkerCategories().get(i).toLowerCase());
 			}
 		}
 		Log.d("Marker", selectedMarkerCategories.toString());

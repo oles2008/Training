@@ -23,7 +23,7 @@ public class MapImplementationGoogle implements AbstractMap {
 	 */
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public MapImplementationGoogle(Fragment parentFragment) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			mGMap = ((MapFragment) parentFragment.getChildFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 		} else {

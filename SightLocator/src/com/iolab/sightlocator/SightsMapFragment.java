@@ -9,6 +9,7 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.database.MergeCursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -67,7 +68,7 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			gMap = ((MapFragment) getChildFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 		} else {
@@ -304,29 +305,33 @@ public class SightsMapFragment extends Fragment implements
 		
 		clusterManager.clearItems();
 		
-		Set<SightMarkerItem> tempMarkerItemSet = new HashSet<SightMarkerItem>();
+		Set<SightMarkerItem> chosenCategoryMarkerItemSet = new HashSet<SightMarkerItem>();
 		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
-		Log.d("Marker","chosen category > " + chosenCategories.toString() + " " +chosenCategories.getClass());
+		Log.d("Marker","chosen category > " + chosenCategories.toString());
 		for (SightMarkerItem marker : itemSet){
 			Log.d("Marker","item set " + marker.category +" "+ marker.category.getClass());
 
 			String[] markerCategories = marker.category.split(",");
+			Log.d("Marker", "String[] markerCategories > " + markerCategories.toString());
+			
 			for (String category : markerCategories) {
-				if (chosenCategories.contains(category)) {
-					tempMarkerItemSet.add(marker);
+				if (chosenCategories.contains(category.toLowerCase())) {
+					chosenCategoryMarkerItemSet.add(marker);
+					Log.d("Marker", "if (chosenCategories.contains(category)) > " + " " + marker.title + " " + marker.category );
 				}
 			}
 		}
 		
-		Log.d("Marker","temp marker set " + tempMarkerItemSet.toString());
+		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
 		
-		if(tempMarkerItemSet!=null){
-			for(SightMarkerItem item: tempMarkerItemSet){
+		if(chosenCategoryMarkerItemSet!=null){
+			for(SightMarkerItem item: chosenCategoryMarkerItemSet){
 					clusterManager.addItem(item);
+					Log.d("Marker", "ADD ITEM > " + item.title);
 			}
 			clusterManager.cluster();
 		}
-		Log.d("Marker", tempMarkerItemSet.toString());
+		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
 
 		
 //		bundle.putParcelableArrayList(Tags.MARKER_FILTER_CATEGORIES, value);
