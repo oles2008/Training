@@ -20,6 +20,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -92,6 +95,30 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				R.id.imageView);
 		changeImageFragmentUsingImageUri(mImagePath);
 		return inflatedView;
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		inflater.inflate(R.menu.sights_text_fragment_menu, menu);
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+
+		case R.id.action_languages_dialog:
+			int itemId=3;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
+//			showLanguagesDialog(itemId);
+			return true;
+			
+		case R.id.action_back:
+			navigateBack();
+			return true;
+		
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
@@ -207,7 +234,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onMapClick(LatLng arg0) {
 		cleanAllViews();
-		navigateTo(mCommonParentID, false);
+		navigateTo(mCommonParentID, false, true);
 	}
 
 	private void registerImageViewClickListener() {
@@ -350,7 +377,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		int id = item.getID();
 		if ((mSelectedItem == null) || (mSelectedItem.getID() != id)) {
 			cleanAllViews();
-			navigateTo(id, false);
+			navigateTo(id, false, true);
 			mSights.setVisibility(View.GONE);
 			mSightListItems = null;
 			mAddress.setVisibility(View.VISIBLE);
@@ -367,7 +394,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			parentIDs.add(item.getParentIDs());
 		}
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
-		navigateTo(clusterCommonParentId, false, cluster.getItems());
+		navigateTo(clusterCommonParentId, false, cluster.getItems(), true);
 		return false;
 	}
 	
@@ -386,11 +413,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 *
 	 * @param id the id of the item
 	 * @param showOnMap whether the item (or items) should be show and selected on map
-	 * 
+	 * @param addToBackStack whether this navigation action should be added to back stack
 	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
-	private DestinationEndPoint navigateTo(int id, boolean showOnMap) {
-		return navigateTo(id, showOnMap, null);
+	private DestinationEndPoint navigateTo(int id, boolean showOnMap, boolean addToBackStack) {
+		return navigateTo(id, showOnMap, null, addToBackStack);
 	}
 
 	/**
@@ -399,11 +426,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @param id the id of the item
 	 * @param showOnMap whether the item (or items) should be show and selected on map
 	 * @param items the multiple items to be shown, if any
-	 * 
+	 * @param addToBackStack whether this navigation action should be added to back stack
 	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
 	private DestinationEndPoint navigateTo(int id, boolean showOnMap,
-			Collection<SightMarkerItem> items) {
+			Collection<SightMarkerItem> items, boolean addToBackStack) {
 		// TODO avoid sending the same request if the selected marker is the
 		// same
 		cleanAllViews();
@@ -419,7 +446,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
-		DestinationEndPoint destinationEndPoint = new DestinationEndPoint(id);
+		DestinationEndPoint destinationEndPoint = new DestinationEndPoint(id, items);
+		if(addToBackStack){
+			mBackStack.add(destinationEndPoint);
+		}
 		return destinationEndPoint;
 	}
 	
@@ -434,7 +464,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
 					SightMarkerItem selectedItem = mSightListItems.get(position);
-					navigateTo(selectedItem.getID(), true);
+					navigateTo(selectedItem.getID(), true, true);
 				}
 			});
 		} else {
@@ -446,7 +476,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * Navigate back.
 	 */
 	private void navigateBack() {
-		
+		if(!mBackStack.isEmpty()){
+			DestinationEndPoint backItem = mBackStack.poll();
+			navigateTo(backItem.getID(), true, backItem.getClusteredItems(), false);
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -10,21 +11,36 @@ import java.util.List;
 public class DestinationEndPoint {
 	
 	private int mID;
+	private Collection<SightMarkerItem> mClusteredItems;
 	private List<String> mCategories;
 	private String mLanguage;
 	
-	public DestinationEndPoint(int id, List<String> categories, String language){
+	
+	public DestinationEndPoint(int id, Collection<SightMarkerItem> clusteredItems, List<String> categories, String language){
 		mID = id;
+		mClusteredItems = clusteredItems;
 		mCategories = categories;
 		mLanguage = language;
 	}
 	
 	public DestinationEndPoint(int id){
-		this(id, null, null);
+		this(id, null, null, null);
+	}
+	
+	public DestinationEndPoint(int id, Collection<SightMarkerItem> clusteredItems){
+		this(id, clusteredItems, null, null);
 	}
 	
 	public int getID() {
 		return mID;
+	}
+	
+	public Collection<SightMarkerItem> getClusteredItems() {
+		return mClusteredItems;
+	}
+	
+	public void setClusteredItems(Collection<SightMarkerItem> clusteredItems) {
+		mClusteredItems = clusteredItems;
 	}
 	
 	public List<String> getCategories() {
