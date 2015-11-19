@@ -276,11 +276,15 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
+		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
 				if(itemSet.add(item)){
-					clusterManager.addItem(item);
+					String[] itemCategories = item.category.split(",");
+					if (isItemInCategories(chosenCategories, item, itemCategories)){
+						clusterManager.addItem(item);
+					}
 				}
 			}
 			clusterManager.cluster();
@@ -305,38 +309,58 @@ public class SightsMapFragment extends Fragment implements
 		
 		clusterManager.clearItems();
 		
+		//new "visible" markers list after user choses filtering by categories
 		Set<SightMarkerItem> chosenCategoryMarkerItemSet = new HashSet<SightMarkerItem>();
+		//list of categories that has been selected by user
 		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		Log.d("Marker","chosen category > " + chosenCategories.toString());
-		for (SightMarkerItem marker : itemSet){
-			Log.d("Marker","item set " + marker.category +" "+ marker.category.getClass());
+		
+		addFilteredItemsToMap(chosenCategoryMarkerItemSet, chosenCategories);
+		
+		getActivity().startService(intent);
+	
+	}
 
-			String[] markerCategories = marker.category.split(",");
-			Log.d("Marker", "String[] markerCategories > " + markerCategories.toString());
+	private void addFilteredItemsToMap(
+			Set<SightMarkerItem> chosenCategoryMarkerItemSet,
+			ArrayList<String> chosenCategories) {
+		clusterManager.clearItems();
+		//make selected markers only to be in "visible" list
+		for (SightMarkerItem item : itemSet){
+			Log.d("Marker","item set " + item.category +" "+ item.category.getClass());
+
+			String[] itemCategories = item.category.split(",");
+			Log.d("Marker", "String[] markerCategories > " + itemCategories.toString());
 			
-			for (String category : markerCategories) {
-				if (chosenCategories.contains(category.toLowerCase())) {
-					chosenCategoryMarkerItemSet.add(marker);
-					Log.d("Marker", "if (chosenCategories.contains(category)) > " + " " + marker.title + " " + marker.category );
-				}
+			if (isItemInCategories( 
+					chosenCategories,
+					item, 
+					itemCategories)) {
+				clusterManager.addItem(item);
 			}
+			
 		}
 		
 		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
 		
-		if(chosenCategoryMarkerItemSet!=null){
-			for(SightMarkerItem item: chosenCategoryMarkerItemSet){
-					clusterManager.addItem(item);
-					Log.d("Marker", "ADD ITEM > " + item.title);
-			}
-			clusterManager.cluster();
-		}
+		clusterManager.cluster();
 		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
+	}
 
-		
-//		bundle.putParcelableArrayList(Tags.MARKER_FILTER_CATEGORIES, value);
-		getActivity().startService(intent);
-	
+	private boolean isItemInCategories(
+			//Set<SightMarkerItem> chosenCategoryMarkerItemSet,
+			ArrayList<String> chosenCategories, SightMarkerItem marker,
+			String[] markerCategories) {
+		for (String category : markerCategories) {
+			// if selected categories are found in marker than add this marker to visible list
+			// or if user selected "All" categories
+			if (chosenCategories.contains(category.toLowerCase()) || chosenCategories.contains("all")) {
+				//chosenCategoryMarkerItemSet.add(marker);
+				Log.d("Marker", "if (chosenCategories.contains(category)) > " + " " + marker.title + " " + marker.category );
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/* **************************************************************************** */

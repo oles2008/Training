@@ -23,7 +23,9 @@ public class CategoryUtils {
 	}
 	
 	/**
-	 * @return Array list with marker categories from string resources
+	 * Create an ArrayList with all marker's categories.
+	 *
+	 * @return the marker categories
 	 */
 	public static ArrayList<String> getMarkerCategories(){
 		List<String> categoriesList = Arrays.asList(
@@ -33,6 +35,12 @@ public class CategoryUtils {
 		return new ArrayList<String>(categoriesList);
 	}
 	
+ 
+	/**
+	 * Create an ArrayList with the selected by user marker's categories.
+	 *
+	 * @return the ArrayList with selected marker categories
+	 */
 	public static ArrayList<String> getSelectedMarkerCategories(){
 		ArrayList<String> selectedMarkerCategories = new ArrayList<String>();
 		for (int i=0; i<Appl.selectedCategories.length; i++) {
