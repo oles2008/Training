@@ -9,7 +9,6 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.database.MergeCursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -69,16 +68,17 @@ public class SightsMapFragment extends Fragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			gMap = ((MapFragment) getChildFragmentManager().findFragmentById(
-					R.id.map)).getMap();
+			gMap = ((MapFragment) getChildFragmentManager()
+										.findFragmentById(R.id.map))
+						.getMap();
 		} else {
-			gMap = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.map)).getMap();
+			gMap = ((MapFragment) getFragmentManager()
+										.findFragmentById(R.id.map))
+						.getMap();
 		}
 		mMap = new MapImplementationGoogle(this);
 
-		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
-				gMap);
+		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(), gMap);
 		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, savedInstanceState);
 		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
 		sightsRenderer.registerOnBeforeClusterRenderedListener(mSelectedMarkerManager);
@@ -280,14 +280,19 @@ public class SightsMapFragment extends Fragment implements
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
-				if(itemSet.add(item)){
-					String[] itemCategories = item.category.split(",");
-					if (isItemInCategories(chosenCategories, item, itemCategories)){
-						clusterManager.addItem(item);
-					}
-				}
+				addItemToMapIfCategoryIsChosen(item, chosenCategories);
 			}
 			clusterManager.cluster();
+		}
+	}
+
+	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
+			ArrayList<String> chosenCategories) {
+		if(itemSet.add(item)){
+			String[] itemCategories = item.category.split(",");
+			if (isItemCategoryInChosenCategories(itemCategories, chosenCategories)){
+				clusterManager.addItem(item);
+			}
 		}
 	}
 	
@@ -297,66 +302,76 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onMarkerCategoryChosen() {
-		Log.d("Marker", "onMarkerCategoryChosen");
-		LatLngBounds currentMapBounds = gMap.getProjection().getVisibleRegion().latLngBounds;
+//		Log.d("Marker", "onMarkerCategoryChosen");
+		LatLngBounds currentMapBounds = gMap
+											.getProjection()
+											.getVisibleRegion()
+											.latLngBounds;
+		
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetMarkersOnCameraUpdateAction(currentMapBounds,
 						++updateViewCallIndex));
 		intent.putExtra(Tags.ON_CAMERA_CHANGE_CALL_INDEX, updateViewCallIndex);
-		Bundle bundle = new Bundle();
-		String value = null;
 		
 		clusterManager.clearItems();
 		
-		//new "visible" markers list after user choses filtering by categories
-		Set<SightMarkerItem> chosenCategoryMarkerItemSet = new HashSet<SightMarkerItem>();
 		//list of categories that has been selected by user
 		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
-		Log.d("Marker","chosen category > " + chosenCategories.toString());
+//		Log.d("Marker","chosen category > " + chosenCategories.toString());
 		
-		addFilteredItemsToMap(chosenCategoryMarkerItemSet, chosenCategories);
+		addFilteredItemsToMap(chosenCategories);
 		
 		getActivity().startService(intent);
 	
 	}
 
-	private void addFilteredItemsToMap(
-			Set<SightMarkerItem> chosenCategoryMarkerItemSet,
-			ArrayList<String> chosenCategories) {
+	private void addFilteredItemsToMap(ArrayList<String> chosenCategories) {
+		
 		clusterManager.clearItems();
-		//make selected markers only to be in "visible" list
+		
+		//make selected markers only to be present in "visible" list
 		for (SightMarkerItem item : itemSet){
-			Log.d("Marker","item set " + item.category +" "+ item.category.getClass());
-
+//			Log.d("Marker","item set " + item.category +" "+ item.category.getClass());
 			String[] itemCategories = item.category.split(",");
-			Log.d("Marker", "String[] markerCategories > " + itemCategories.toString());
-			
-			if (isItemInCategories( 
-					chosenCategories,
-					item, 
-					itemCategories)) {
+//			Log.d("Marker", "String[] markerCategories > " + itemCategories.toString());
+		
+			//add item to "visible" list if the item has "chosen" category
+			if (isItemCategoryInChosenCategories( 
+					itemCategories,
+					chosenCategories)) {
 				clusterManager.addItem(item);
 			}
-			
 		}
 		
-		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
-		
+//		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
 		clusterManager.cluster();
-		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
+//		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
 	}
 
-	private boolean isItemInCategories(
-			//Set<SightMarkerItem> chosenCategoryMarkerItemSet,
-			ArrayList<String> chosenCategories, SightMarkerItem marker,
-			String[] markerCategories) {
-		for (String category : markerCategories) {
-			// if selected categories are found in marker than add this marker to visible list
-			// or if user selected "All" categories
-			if (chosenCategories.contains(category.toLowerCase()) || chosenCategories.contains("all")) {
-				//chosenCategoryMarkerItemSet.add(marker);
-				Log.d("Marker", "if (chosenCategories.contains(category)) > " + " " + marker.title + " " + marker.category );
+	
+	private boolean isItemCategoryInChosenCategories(
+			String[] itemCategories,
+			ArrayList<String> chosenCategories) {
+		
+		for (String itemCategory : itemCategories) {
+			
+			//KOSTYL
+			//if user chooses "All"
+			if (chosenCategories.contains("all")) {
+				return true;
+			}
+			
+			//KOSTYL
+			// if selected category is in item than return true
+			if (chosenCategories.contains(itemCategory.toLowerCase())) {
+				return true;
+			}
+			
+			//KOSTYL
+			//for "Industry" and  "Industrial" category
+			if (chosenCategories.contains("industry")
+					&& itemCategory.contains("industrial")){
 				return true;
 			}
 		}
