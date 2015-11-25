@@ -289,10 +289,14 @@ public class SightsMapFragment extends Fragment implements
 	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
 			ArrayList<String> chosenCategories) {
 		if(itemSet.add(item)){
-			String[] itemCategories = item.category.split(",");
-			if (isItemCategoryInChosenCategories(itemCategories, chosenCategories)){
-				clusterManager.addItem(item);
+			for (String chosenCategory : chosenCategories) {
+				Category category = new Category(chosenCategory);
+				if (category.isItemBelongsToThisCategory(item)){
+					clusterManager.addItem(item);
+					break;
+				}
 			}
+
 		}
 	}
 	
@@ -330,52 +334,21 @@ public class SightsMapFragment extends Fragment implements
 		
 		clusterManager.clearItems();
 		
-		//make selected markers only to be present in "visible" list
+		//make only selected markers to be present in "visible" list
 		for (SightMarkerItem item : itemSet){
-//			Log.d("Marker","item set " + item.category +" "+ item.category.getClass());
-			String[] itemCategories = item.category.split(",");
-//			Log.d("Marker", "String[] markerCategories > " + itemCategories.toString());
-		
 			//add item to "visible" list if the item has "chosen" category
-			if (isItemCategoryInChosenCategories( 
-					itemCategories,
-					chosenCategories)) {
-				clusterManager.addItem(item);
+			for (String chosenCategory : chosenCategories) {
+				Category category = new Category(chosenCategory);
+				if (category.isItemBelongsToThisCategory(item)){
+					clusterManager.addItem(item);
+					break;
+				}
 			}
 		}
 		
 //		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
 		clusterManager.cluster();
 //		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
-	}
-
-	
-	private boolean isItemCategoryInChosenCategories(
-			String[] itemCategories,
-			ArrayList<String> chosenCategories) {
-		
-		for (String itemCategory : itemCategories) {
-			
-			//KOSTYL
-			//if user chooses "All"
-			if (chosenCategories.contains("all")) {
-				return true;
-			}
-			
-			//KOSTYL
-			// if selected category is in item than return true
-			if (chosenCategories.contains(itemCategory.toLowerCase())) {
-				return true;
-			}
-			
-			//KOSTYL
-			//for "Industry" and  "Industrial" category
-			if (chosenCategories.contains("industry")
-					&& itemCategory.contains("industrial")){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	/* **************************************************************************** */
