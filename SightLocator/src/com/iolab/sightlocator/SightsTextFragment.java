@@ -91,7 +91,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		inflater.inflate(R.menu.lang_dialog, menu);
+		inflater.inflate(R.menu.sights_text_fragment_menu, menu);
 	}
 	
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -99,7 +99,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		switch (item.getItemId()) {
 
 		case R.id.action_languages_dialog:
-			int itemId=1;
+			int itemId = -1;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
+			if(mSelectedItem != null){
+				itemId = mSelectedItem.getID();
+				}
 			showLanguagesDialog(itemId);
 			return true;
 		
