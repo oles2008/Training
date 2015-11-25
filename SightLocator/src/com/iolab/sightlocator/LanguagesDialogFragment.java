@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -19,6 +20,8 @@ import android.widget.ListView;
 public class LanguagesDialogFragment extends DialogFragment{
 	int mSelectedItem = -1;
 	String[] arrayOfLanguages; //input for builder.setSingleChoiceItems
+//	String[] arrayOfLangs = getResources().getStringArray(R.array.content_language); TODO should be removed later
+//	String[] arrayOfLangsAbbr = getResources().getStringArray(R.array.content_language_abbr);
 	int mItemId;
 	LanguagesDialogListener mListener; //we have created listener for dialog buttons
 	
@@ -37,6 +40,7 @@ public class LanguagesDialogFragment extends DialogFragment{
 
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		List<String> itemAvailableLanguages = new ArrayList<String>();
+		
 		String sqlQueryParticle = "";
 		//here we prepare sqlQueryParticle
 		for(int i=0;i<getResources().getStringArray(R.array.content_language_abbr).length;i++){
@@ -50,13 +54,22 @@ public class LanguagesDialogFragment extends DialogFragment{
 		//here we prepare input for cursors query
 		String sqlQuery = "SELECT " + sqlQueryParticle + " FROM " + SightsDatabaseOpenHelper.TABLE_NAME +
 							" WHERE " + SightsDatabaseOpenHelper.COLUMN_ID + " = " + mItemId;
+		//Log.w("ihor",sqlQuery);
 		//The cursor returns list of available languages for defined item
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().rawQuery(sqlQuery, null);
 		//here we transform cursors result into itemAvailableLanguages ArrayList
 		if(cursor.getCount() == 1){
 			cursor.moveToFirst();
 			for(int i=0;i<cursor.getColumnCount();i++){
-				if (!cursor.isNull(i)){itemAvailableLanguages.add(cursor.getString(i));}
+				if (!cursor.isNull(i)){
+					//itemAvailableLanguages.add(cursor.getString(i));
+					for(int j=0;j<getResources().getStringArray(R.array.content_language_abbr).length;j++){
+						if(cursor.getString(i).equals(getResources().getStringArray(R.array.content_language_abbr)[j])){
+							itemAvailableLanguages.add(getResources().getStringArray(R.array.content_language)[j]);
+							break;
+							}
+						}
+					}
 			}
 		}
 		cursor.close();
