@@ -1,8 +1,8 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,8 +20,6 @@ import android.widget.ListView;
 public class LanguagesDialogFragment extends DialogFragment{
 	int mSelectedItem = -1;
 	String[] arrayOfLanguages; //input for builder.setSingleChoiceItems
-//	String[] arrayOfLangs = getResources().getStringArray(R.array.content_language); TODO should be removed later
-//	String[] arrayOfLangsAbbr = getResources().getStringArray(R.array.content_language_abbr);
 	int mItemId;
 	LanguagesDialogListener mListener; //we have created listener for dialog buttons
 	
@@ -54,7 +52,6 @@ public class LanguagesDialogFragment extends DialogFragment{
 		//here we prepare input for cursors query
 		String sqlQuery = "SELECT " + sqlQueryParticle + " FROM " + SightsDatabaseOpenHelper.TABLE_NAME +
 							" WHERE " + SightsDatabaseOpenHelper.COLUMN_ID + " = " + mItemId;
-		//Log.w("ihor",sqlQuery);
 		//The cursor returns list of available languages for defined item
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().rawQuery(sqlQuery, null);
 		//here we transform cursors result into itemAvailableLanguages ArrayList
@@ -62,20 +59,20 @@ public class LanguagesDialogFragment extends DialogFragment{
 			cursor.moveToFirst();
 			for(int i=0;i<cursor.getColumnCount();i++){
 				if (!cursor.isNull(i)){
-					//itemAvailableLanguages.add(cursor.getString(i));
-					for(int j=0;j<getResources().getStringArray(R.array.content_language_abbr).length;j++){
-						if(cursor.getString(i).equals(getResources().getStringArray(R.array.content_language_abbr)[j])){
-							itemAvailableLanguages.add(getResources().getStringArray(R.array.content_language)[j]);
-							break;
-							}
-						}
+					Locale locale = new Locale(cursor.getString(i));
+					itemAvailableLanguages.add(locale.getDisplayLanguage());
 					}
 			}
 		}
 		cursor.close();
 		//here we define what list of languages will be input for dialog builder
 		if(itemAvailableLanguages.isEmpty()){
-			arrayOfLanguages = getResources().getStringArray(R.array.content_language);
+			String[] techArray = new String[getResources().getStringArray(R.array.content_language_abbr).length];
+			for(int i=0;i<getResources().getStringArray(R.array.content_language_abbr).length;i++){
+				Locale locale = new Locale(getResources().getStringArray(R.array.content_language_abbr)[i]);
+				techArray[i] = locale.getDisplayLanguage();
+				}
+			arrayOfLanguages = techArray;
 			}
 		else{
 			arrayOfLanguages = itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);
