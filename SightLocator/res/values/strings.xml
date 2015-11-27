@@ -46,6 +46,7 @@
     <string name="object_title"></string>
     <string name="back">Back</string>
     <string name="forward">Forward</string>
+    <string name="up">Up</string>
 
     <!-- Apps languages list -->
     <string-array name="apps_language">

@@ -129,6 +129,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		case R.id.action_forward:
 			navigateForward();
 			return true;
+			
+		case R.id.action_up:
+			navigateUp();
+			return true;
 		
 		default:
 			return super.onOptionsItemSelected(item);
@@ -519,6 +523,19 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if(!mForwardStack.isEmpty()){
 			DestinationEndPoint forwardItem = mForwardStack.poll();
 			navigateTo(forwardItem.getID(), true, forwardItem.getClusteredItems(), true, false);
+		}
+	}
+	
+	/**
+	 * Navigate up.
+	 */
+	private void navigateUp() {
+		int currentItemParent = ItemGroupAnalyzer.findCommonParent(
+				Collections.singletonList(mSelectedItem.getParentIDs()), 0);
+		if (currentItemParent == -1) {
+			navigateTo(mCommonParentID, true, true);
+		} else {
+			navigateTo(currentItemParent, true, true);
 		}
 	}
 
