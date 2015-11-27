@@ -21,6 +21,8 @@ public class Tags {/**/
 	public final static String POSITION_LNG = "positionLng";
 	public static final String PARENT_IDS = "parent_ids";
 	public final static String ID = "id";
+	public final static String BACK_STACK = "back_stack";
+	public final static String FORWARD_STACK = "forward_stack";
 	public final static String TEXT_FRAGMENT_VISIBLE = "fragmentTextVisible";
     public final static String MAP_FRAGMENT_VISIBLE = "fragmentMapVisible";
     public final static String SIGHT_LIST_VISIBLE = "sightListVisible";

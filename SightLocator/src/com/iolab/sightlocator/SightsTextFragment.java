@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
@@ -58,7 +59,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
 	private String mLanguage;
-	private Queue<DestinationEndPoint> mBackStack = new ArrayDeque<DestinationEndPoint>();
+	private Queue<DestinationEndPoint> mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
+	private Queue<DestinationEndPoint> mForwardStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
 
     OnTextFragmentClickListener mCallback;
 
@@ -76,7 +78,16 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSightListItems = savedInstanceState.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 			mSelectedItem = savedInstanceState.getParcelable(Tags.SELECTED_ITEM);
 			mImagePath = savedInstanceState.getString(Tags.PATH_TO_IMAGE);
+			List<DestinationEndPoint> savedBackStack = savedInstanceState.getParcelableArrayList(Tags.BACK_STACK);
+			if(savedBackStack != null){
+				mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>(savedBackStack));
+			}
+			List<DestinationEndPoint> savedForwardStack = savedInstanceState.getParcelableArrayList(Tags.FORWARD_STACK);
+			if(savedForwardStack != null){
+				mForwardStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>(savedForwardStack));
+			}
 		}
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -107,13 +118,16 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		// Handle item selection
 		switch (item.getItemId()) {
 
-		case R.id.action_languages_dialog:
-			int itemId=3;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
+//		case R.id.action_languages_dialog:
 //			showLanguagesDialog(itemId);
-			return true;
+//			return true;
 			
 		case R.id.action_back:
 			navigateBack();
+			return true;
+			
+		case R.id.action_forward:
+			navigateForward();
 			return true;
 		
 		default:
@@ -289,6 +303,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mSightListItems);
 		args.putParcelable(Tags.SELECTED_ITEM, mSelectedItem);
 		args.putString(Tags.PATH_TO_IMAGE, mImagePath);
+		args.putParcelableArrayList(Tags.BACK_STACK, new ArrayList<DestinationEndPoint>(mBackStack));
+		args.putParcelableArrayList(Tags.FORWARD_STACK, new ArrayList<DestinationEndPoint>(mForwardStack));
 	}
 
     @Override
@@ -314,6 +330,18 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public void onUpdateView(Bundle bundle) {
+		
+		if (bundle.getInt(Tags.ID, -1) != -1) {
+			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
+			mSightListItems = null;
+		}
+		
+		if (bundle.getString(Tags.SIGHT_NAME) != null) {
+			String title = bundle.getString(Tags.SIGHT_NAME);
+			mTitle.setText(title);
+			mSelectedItem.setTitle(title);
+		}
+		
 		if (bundle.getString(Tags.SIGHT_DESCRIPTION) != null) {
 			getScrollView().scrollTo(0, 0);
 			changeTextFragment(bundle.getString(Tags.SIGHT_DESCRIPTION));
@@ -333,16 +361,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					(Collection<? extends SightMarkerItem>) bundle
 							.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
 			initializeListView();
-		}
-		
-		if (bundle.getInt(Tags.ID, -1) != -1) {
-			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
-		}
-		
-		if (bundle.getString(Tags.SIGHT_NAME) != null) {
-			String title = bundle.getString(Tags.SIGHT_NAME);
-			mTitle.setText(title);
-			mSelectedItem.setTitle(title);
 		}
 
 		if (bundle.getString(Tags.SIGHT_ADDRESS) != null) {
@@ -394,7 +412,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			parentIDs.add(item.getParentIDs());
 		}
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
-		navigateTo(clusterCommonParentId, false, cluster.getItems(), true);
+		navigateTo(clusterCommonParentId, false, cluster.getItems(), true, true);
 		return false;
 	}
 	
@@ -405,7 +423,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		 mTitle.setText(null);
 		 mDescription.setText(null);
 		 mSights.setVisibility(View.GONE);
-		 mSightListItems = null; 
 	}
 
 	/**
@@ -417,7 +434,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
 	private DestinationEndPoint navigateTo(int id, boolean showOnMap, boolean addToBackStack) {
-		return navigateTo(id, showOnMap, null, addToBackStack);
+		return navigateTo(id, showOnMap, null, addToBackStack, true);
 	}
 
 	/**
@@ -427,12 +444,22 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @param showOnMap whether the item (or items) should be show and selected on map
 	 * @param items the multiple items to be shown, if any
 	 * @param addToBackStack whether this navigation action should be added to back stack
+	 * @param clearForwardStack TODO
 	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
 	private DestinationEndPoint navigateTo(int id, boolean showOnMap,
-			Collection<SightMarkerItem> items, boolean addToBackStack) {
+			Collection<SightMarkerItem> items, boolean addToBackStack, boolean clearForwardStack) {
 		// TODO avoid sending the same request if the selected marker is the
 		// same
+		DestinationEndPoint lastDestinationEndPoint = null;
+		if(addToBackStack && (mSelectedItem != null)){
+			lastDestinationEndPoint = new DestinationEndPoint(mSelectedItem.getID(), mSightListItems);
+			Log.d("MyLogs", "adding "+mSelectedItem.getTitle()+", "+mSelectedItem.getID()+", items: "+mSightListItems+" to backStack");
+			mBackStack.add(lastDestinationEndPoint);
+			if(clearForwardStack){
+				mForwardStack.clear();
+			}
+		}
 		cleanAllViews();
 		Intent intent = new Intent(getActivity(), SightsIntentService.class);
 		Bundle bundle = new Bundle();
@@ -446,11 +473,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
-		DestinationEndPoint destinationEndPoint = new DestinationEndPoint(id, items);
-		if(addToBackStack){
-			mBackStack.add(destinationEndPoint);
-		}
-		return destinationEndPoint;
+		return lastDestinationEndPoint;
 	}
 	
 	private void initializeListView() {
@@ -476,9 +499,26 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * Navigate back.
 	 */
 	private void navigateBack() {
-		if(!mBackStack.isEmpty()){
+		if (!mBackStack.isEmpty()) {
+			DestinationEndPoint currentDestinationEndPoint = new DestinationEndPoint(
+					mSelectedItem.getID(), mSightListItems);
+
+			mForwardStack.add(currentDestinationEndPoint);
+
 			DestinationEndPoint backItem = mBackStack.poll();
-			navigateTo(backItem.getID(), true, backItem.getClusteredItems(), false);
+			Log.d("MyLogs", "navigating back to "+backItem.getID()+", multipleItems: "+(backItem.getClusteredItems()!=null));
+			navigateTo(backItem.getID(), true, backItem.getClusteredItems(),
+					false, false);
+		}
+	}
+	
+	/**
+	 * Navigate back.
+	 */
+	private void navigateForward() {
+		if(!mForwardStack.isEmpty()){
+			DestinationEndPoint forwardItem = mForwardStack.poll();
+			navigateTo(forwardItem.getID(), true, forwardItem.getClusteredItems(), true, false);
 		}
 	}
 

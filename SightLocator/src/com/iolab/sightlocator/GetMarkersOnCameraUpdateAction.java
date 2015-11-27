@@ -91,8 +91,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
 			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
-			Log.d("MyLogs", cursor.getString(cursor
-					.getColumnIndex(SIGHT_NAME+"en"))+", parentIDs: "+Arrays.toString(parentIDs));
 			sightMarkerItemList
 					.add(new SightMarkerItem(position, cursor.getString(cursor
 							.getColumnIndex(SIGHT_NAME+"en")), cursor
@@ -108,8 +106,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 										cursor.getDouble(1));
 			
 			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
-			Log.d("MyLogs", cursor.getString(cursor
-					.getColumnIndex(SIGHT_NAME+"en"))+", parentIDs: "+Arrays.toString(parentIDs));
 			sightMarkerItemList
 			.add(new SightMarkerItem(position, cursor.getString(cursor
 					.getColumnIndex(SIGHT_NAME+"en")), cursor
