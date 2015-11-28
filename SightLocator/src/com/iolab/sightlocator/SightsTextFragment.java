@@ -458,7 +458,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		DestinationEndPoint lastDestinationEndPoint = null;
 		if(addToBackStack && (mSelectedItem != null)){
 			lastDestinationEndPoint = new DestinationEndPoint(mSelectedItem.getID(), mSightListItems);
-			Log.d("MyLogs", "adding "+mSelectedItem.getTitle()+", "+mSelectedItem.getID()+", items: "+mSightListItems+" to backStack");
 			mBackStack.add(lastDestinationEndPoint);
 			if(clearForwardStack){
 				mForwardStack.clear();
@@ -530,8 +529,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * Navigate up.
 	 */
 	private void navigateUp() {
-		int currentItemParent = ItemGroupAnalyzer.findCommonParent(
-				Collections.singletonList(mSelectedItem.getParentIDs()), 0);
+		int currentItemParent = -1;
+		if (mSelectedItem != null) {
+			currentItemParent = ItemGroupAnalyzer.findCommonParent(
+					Collections.singletonList(mSelectedItem.getParentIDs()), 0);
+		}
 		if (currentItemParent == -1) {
 			navigateTo(mCommonParentID, true, true);
 		} else {

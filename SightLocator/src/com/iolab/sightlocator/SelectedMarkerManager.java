@@ -26,6 +26,8 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	private static final int CLUSTER_ANIMATION_DURATION = 100;
 	private static final int ITEM_ADDITION_DURATION = 100;
 	private static final String KEY_CURRENT_SELECTED_ITEMS = "currentSelectedItems";
+	
+	private static final String TAG = SelectedMarkerManager.class.getCanonicalName(); 
 
 	private GoogleMap mGoogleMap;
 
@@ -240,14 +242,11 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 *            the selected item
 	 * @return the marker on the map, if it was added immediately, otherwise
 	 *         returns {@code null}
-	 * @throws IllegalStateException
-	 *             if the item is not found among the selected items
 	 */
-	private Marker addSelectedMarker(SightMarkerItem selectedItem)
-			throws IllegalStateException {
+	private Marker addSelectedMarker(SightMarkerItem selectedItem) {
 		if (!mCurrentSelectedItems.contains(selectedItem)) {
-			throw new IllegalStateException(
-					"Cannot add selected marker for non-selected item");
+			Log.e(TAG, "Attempted to add selected marker for "+selectedItem.getTitle());
+			return null;
 		}
 		if (mCurrentSelectedMarkersMap.get(selectedItem) != null) {
 			mCurrentSelectedMarkersMap.get(selectedItem).remove();
@@ -282,20 +281,17 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	 *            the selected cluster
 	 * @return the marker on the map, if it was added immediately, otherwise
 	 *         returns {@code null}
-	 * @throws IllegalStateException
-	 *             if the item is not found among the selected items
 	 */
-	private Marker addSelectedCluster(Cluster<SightMarkerItem> selectedCluster)
-			throws IllegalStateException {
+	private Marker addSelectedCluster(Cluster<SightMarkerItem> selectedCluster) {
 		Collection<SightMarkerItem> selectedItemsFromCluster = new HashSet<SightMarkerItem>(
 				mCurrentSelectedItems);
 		selectedItemsFromCluster.retainAll(selectedCluster.getItems());
 		if (selectedItemsFromCluster.isEmpty()) {
-			throw new IllegalStateException(
-					"Cannot add selected marker for a cluster without selected items");
+			Log.e(TAG, "Attempted to add selected cluster for "
+					+ printItems(selectedCluster.getItems()));
+			return null;
 		}
 		if (mItemsCurrentlyOnMap.containsAll(selectedItemsFromCluster)) {
-			Log.d("MyLogs", "mRootView.getContext(): " + mRootView.getContext());
 			SelectedClusterRenderer selectedClusterRenderer = new SelectedClusterRenderer(
 					mGoogleMap, mClusterManager);
 			MarkerOptions markerOptions = new MarkerOptions()
@@ -389,5 +385,20 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		}
 		selectedItems.removeAll(selectedToReal.keySet());
 		selectedItems.addAll(selectedToReal.values());
+	}
+	
+	/**
+	 * Prints the items. Used for debugging.
+	 *
+	 * @param items the items
+	 * @return the string
+	 */
+	private String printItems(Collection<SightMarkerItem> items){
+		StringBuilder errorMessageBuilder = new StringBuilder("[");
+		for(SightMarkerItem item: items){
+			errorMessageBuilder.append(item.getTitle() + ", ");
+		}
+		errorMessageBuilder.append("]");
+		return errorMessageBuilder.toString();
 	}
 }
