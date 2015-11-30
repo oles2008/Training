@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -298,9 +297,26 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
 			mSightListItems = new ArrayList<SightMarkerItem>(
 					(Collection<? extends SightMarkerItem>) bundle
-							.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
+															.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
+			
+			ArrayList<SightMarkerItem> filteredListViewItems = new ArrayList<SightMarkerItem>();
+			ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+			
+			for (SightMarkerItem item : mSightListItems){
+				for (String chosenCategory : chosenCategories) {
+					Category category = new Category(chosenCategory);
+					if (category.isItemBelongsToThisCategory(item)){
+						filteredListViewItems.add(item);
+						break;
+					}
+				}
+			}
+			
 			SightsAdapter adapter = new SightsAdapter(getActivity(),
-					R.layout.sights_list_item, mSightListItems);
+													R.layout.sights_list_item,
+													filteredListViewItems);
+													//mSightListItems);
+			
 			mSights.setAdapter(adapter);
 			mSights.setOnItemClickListener(new OnItemClickListener() {
 
