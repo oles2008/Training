@@ -43,7 +43,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMapClickCounter 		= inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter 	= inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
 		mID 					= inputBundle.getInt(Tags.COMMON_PARENT_ID,-1);
-//		inputBundle.setClassLoader(SightMarkerItem.class.getClassLoader());
 		mClusterItems 			= inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 	}
 	
@@ -71,7 +70,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		bundle.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mClusterItems);
 		
 		dest.writeBundle(bundle);
-		
 	}
 
 	public static final Parcelable.Creator<GetTextOnMarkerClickAction> CREATOR = new Parcelable.Creator<GetTextOnMarkerClickAction>() {
@@ -126,21 +124,25 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		if (mClusterItems != null && !mClusterItems.isEmpty()) {
 			whereClause = "("
-					+ ((mClusterItems.get(0).getPosition() != null) ? (COLUMN_LATITUDE
-							+ " = "
-							+ mClusterItems.get(0).getPosition().latitude
-							+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
-							.get(0).getPosition().longitude) : (COLUMN_ID
-							+ " = " + mClusterItems.get(0).getID())) + ")";
+					+ ((mClusterItems.get(0).getPosition() != null) ? 
+							(COLUMN_LATITUDE 
+									+ " = " + mClusterItems.get(0).getPosition().latitude
+									+ " AND " + 
+							COLUMN_LONGITUDE 
+									+ " = " + mClusterItems.get(0).getPosition().longitude) 
+							: (COLUMN_ID 
+									+ " = " + mClusterItems.get(0).getID())) + ")";
 
 			for (int i = 1; i < mClusterItems.size(); i++) {
 				whereClause += " OR ("
-						+ ((mClusterItems.get(i).getPosition() != null) ? (COLUMN_LATITUDE
-								+ " = "
-								+ mClusterItems.get(i).getPosition().latitude
-								+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
-								.get(i).getPosition().longitude) : (COLUMN_ID
-								+ " = " + mClusterItems.get(i).getID())) + ")";
+						+ ((mClusterItems.get(i).getPosition() != null) ? 
+								(COLUMN_LATITUDE
+										+ " = "	+ mClusterItems.get(i).getPosition().latitude
+										+ " AND " + 
+								COLUMN_LONGITUDE 
+										+ " = " + mClusterItems.get(i).getPosition().longitude) 
+								: (COLUMN_ID
+										+ " = " + mClusterItems.get(i).getID())) + ")";
 			}
 			
 		} else if (mID != -1) {
@@ -237,9 +239,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 //			sightAddress = cursor.getString(5);
 			
 			pathToImage 		= cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH));
-			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION));
-			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME));
-			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS));
+			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ "en"));
+			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ "en"));
+			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS 		+ "en"));
 			itemCategory 		= cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY));
 		}
 		
@@ -260,8 +262,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				fullItems
 					.add(new SightMarkerItem(new LatLng(cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)),
 														cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE))),
-												cursor.getString(cursor.getColumnIndex(SIGHT_NAME)), 		//cursor.getString(4),
-												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS)), 	//cursor.getString(5),
+												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en")), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en")), 	//cursor.getString(5),
 												null,
 												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
@@ -272,8 +274,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					fullItems
 						.add(new SightMarkerItem(new LatLng(cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE)),
 															cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE))),
-											cursor.getString(cursor.getColumnIndex(SIGHT_NAME)), //cursor.getString(4),
-											cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS)), //cursor.getString(5),
+											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en")), //cursor.getString(4),
+											cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en")), //cursor.getString(5),
 											null,
 											getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))), //getSavedImagePath(cursor.getString(2)), 
 											cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),

@@ -23,6 +23,11 @@ public class Category {
 	}
 	
 	public boolean isItemBelongsToThisCategory(SightMarkerItem item){
+		//TODO KOSTYL
+		if (item.getCategory() == null) {
+			return false;
+		}
+
 		//KOSTYL "All"
 		if (mCategoryString.equals("all")) {
 			return true;
