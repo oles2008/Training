@@ -34,8 +34,11 @@ import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListe
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
-		OnMapLongClickListener, OnClusterClickListener<SightMarkerItem>,
-		OnClusterItemClickListener<SightMarkerItem>, ViewUpdateListener {
+												OnMapLongClickListener,
+												OnClusterClickListener<SightMarkerItem>,
+												OnClusterItemClickListener<SightMarkerItem>,
+												ViewUpdateListener,
+												OnMarkerCategoryUpdateListener {
 
 	private static final int ICON_SIZE = 200;
 	
@@ -147,6 +150,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.subscribeForMapClickUpdates(this);
 		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
+		Appl.subscribeForMarkerCategoryUpdates(this);
 	}
 
 	/**
@@ -265,6 +269,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.unsubscribeFromMapClickUpdates(this);
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
+		Appl.unsubscribeFromMarkerCategoryUpdates(this);
 	}
 
 	private ScrollView getScrollView() {
@@ -299,37 +304,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					(Collection<? extends SightMarkerItem>) bundle
 															.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
 			
-			ArrayList<SightMarkerItem> filteredListViewItems = new ArrayList<SightMarkerItem>();
-			ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
-			
-			for (SightMarkerItem item : mSightListItems){
-				for (String chosenCategory : chosenCategories) {
-					Category category = new Category(chosenCategory);
-					if (category.isItemBelongsToThisCategory(item)){
-						filteredListViewItems.add(item);
-						break;
-					}
-				}
-			}
-			
-			SightsAdapter adapter = new SightsAdapter(getActivity(),
-													R.layout.sights_list_item,
-													filteredListViewItems);
-													//mSightListItems);
-			
-			mSights.setAdapter(adapter);
-			mSights.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					SightMarkerItem selectedItem = mSightListItems.get(position);
-					navigateTo(selectedItem.getID());
-					Appl.notifyNavigationUpdates(selectedItem);
-				}
-			});
-			mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
-					: View.GONE);
+			initializeListView();
 		}
 		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
@@ -341,6 +316,39 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mAddress.setText(bundle.getString(Tags.SIGHT_ADDRESS));
 		}
 			
+	}
+
+	private void initializeListView() {
+		ArrayList<SightMarkerItem> filteredListViewItems = new ArrayList<SightMarkerItem>();
+		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+		
+		for (SightMarkerItem item : mSightListItems){
+			for (String chosenCategory : chosenCategories) {
+				Category category = new Category(chosenCategory);
+				if (category.isItemBelongsToThisCategory(item)){
+					filteredListViewItems.add(item);
+					break;
+				}
+			}
+		}
+		
+		SightsAdapter adapter = new SightsAdapter(getActivity(),
+												R.layout.sights_list_item,
+												filteredListViewItems);
+		
+		mSights.setAdapter(adapter);
+		mSights.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				SightMarkerItem selectedItem = mSightListItems.get(position);
+				navigateTo(selectedItem.getID());
+				Appl.notifyNavigationUpdates(selectedItem);
+			}
+		});
+		mSights.setVisibility((mSightListItems.size() > 0) ? View.VISIBLE
+				: View.GONE);
 	}
 
 	@Override
@@ -408,6 +416,16 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				intent.putExtra(SightsIntentService.ACTION,
 						new GetTextOnMarkerClickAction(bundle));
 				getActivity().startService(intent);
+	}
+
+	/* **************************************************************************** */
+    /* ************************ OnMarkerCategoryUpdateListener ******************** */
+    /* **************************************************************************** */
+
+	@Override
+	public void onMarkerCategoryChosen() {
+		// TODO Auto-generated method stub
+		initializeListView();
 	}
 
 }

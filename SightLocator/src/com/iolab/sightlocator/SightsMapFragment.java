@@ -306,28 +306,10 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onMarkerCategoryChosen() {
-//		Log.d("Marker", "onMarkerCategoryChosen");
-		LatLngBounds currentMapBounds = gMap
-											.getProjection()
-											.getVisibleRegion()
-											.latLngBounds;
-		
-		Intent intent = new Intent(getActivity(), SightsIntentService.class);
-		intent.putExtra(SightsIntentService.ACTION,
-				new GetMarkersOnCameraUpdateAction(currentMapBounds,
-						++updateViewCallIndex));
-		intent.putExtra(Tags.ON_CAMERA_CHANGE_CALL_INDEX, updateViewCallIndex);
-		
 		clusterManager.clearItems();
-		
 		//list of categories that has been selected by user
 		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
-//		Log.d("Marker","chosen category > " + chosenCategories.toString());
-		
 		addFilteredItemsToMap(chosenCategories);
-		
-		getActivity().startService(intent);
-	
 	}
 
 	private void addFilteredItemsToMap(ArrayList<String> chosenCategories) {
