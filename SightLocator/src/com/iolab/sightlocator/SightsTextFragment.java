@@ -319,6 +319,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	}
 
 	private void initializeListView() {
+		if (mSightListItems == null){
+			mSights.setVisibility(View.GONE);
+			return;
+		}
 		ArrayList<SightMarkerItem> filteredListViewItems = new ArrayList<SightMarkerItem>();
 		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		
@@ -424,7 +428,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 	@Override
 	public void onMarkerCategoryChosen() {
-		// TODO Auto-generated method stub
 		initializeListView();
 	}
 
