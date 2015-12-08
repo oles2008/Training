@@ -1,17 +1,12 @@
 package com.iolab.sightlocator;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
-import android.util.Log;
 
 public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 
@@ -20,19 +15,22 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	// column names
-	public static final String COLUMN_ID = "_id";
-	public static final String COLUMN_LONGITUDE = "longitude";
-	public static final String COLUMN_LATITUDE = "latitude";
-	public static final String[] COLUMNS_LOCATION_LEVEL = { "level0", "level1",
-			"level2", "level3", "level4" };
-	public static final String COLUMN_SIGHT_IMAGE_PATH = "sight_image_path";
-	public static final String COLUMN_SIGHT_STATUS = "status";
+	public static final String COLUMN_ID 				= "_id";
+	public static final String COLUMN_LONGITUDE 		= "longitude";
+	public static final String COLUMN_LATITUDE 			= "latitude";
+	public static final String COLUMN_SIGHT_IMAGE_PATH 	= "sight_image_path";
+	public static final String COLUMN_SIGHT_STATUS 		= "status";
+	public static final String[] COLUMNS_LOCATION_LEVEL = { "level0", 
+															"level1",
+															"level2",
+															"level3",
+															"level4" };
 
 	// column name stubs
-	public static final String SIGHT_NAME = "name_";
-	public static final String SIGHT_ADDRESS = "address_";
-	public static final String SIGHT_DESCRIPTION = "description_";
-	public static final String MARKER_CATEGORY = "category";
+	public static final String SIGHT_NAME 				= "name_";
+	public static final String SIGHT_ADDRESS 			= "address_";
+	public static final String SIGHT_DESCRIPTION 		= "description_";
+	public static final String MARKER_CATEGORY 			= "category";
 
 	private static String DATABASE_CREATE = null;
 
@@ -44,26 +42,28 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	 * @return the database create statement
 	 */
 	private static String getDatabaseCreateStatement(List<String> languages) {
-		String createStatement = "create table " + TABLE_NAME + "(" + COLUMN_ID
-				+ " integer primary key autoincrement, " + COLUMN_LONGITUDE
-				+ " real, " + COLUMN_LATITUDE + " real, "
-				+ COLUMN_SIGHT_IMAGE_PATH + " text, " + COLUMN_SIGHT_STATUS
-				+ " integer, ";
+		String createStatement = "create table " 
+									+ TABLE_NAME + "(" 
+									+ COLUMN_ID	+ " integer primary key autoincrement, "
+									+ COLUMN_LONGITUDE 	+ " real, " 
+									+ COLUMN_LATITUDE 	+ " real, "
+									+ COLUMN_SIGHT_IMAGE_PATH + " text, "
+									+ COLUMN_SIGHT_STATUS + " integer, ";
+		
 		for (String locationLevelColumn : COLUMNS_LOCATION_LEVEL) {
 			createStatement += locationLevelColumn + " text, ";
 		}
 
 		int size = languages.size();
 		for (int i = 0; i < size - 1; i++) {
-			createStatement += SIGHT_NAME + languages.get(i) + " text, ";
-			createStatement += SIGHT_ADDRESS + languages.get(i) + " text, ";
-			createStatement += SIGHT_DESCRIPTION + languages.get(i) + " text, ";
+			createStatement += SIGHT_NAME 			+ languages.get(i) 	+ " text, ";
+			createStatement += SIGHT_ADDRESS 		+ languages.get(i) 	+ " text, ";
+			createStatement += SIGHT_DESCRIPTION 	+ languages.get(i) 	+ " text, ";
 		}
 
-		createStatement += SIGHT_NAME + languages.get(size - 1) + " text, ";
-		createStatement += SIGHT_ADDRESS + languages.get(size - 1) + " text, ";
-		createStatement += SIGHT_DESCRIPTION + languages.get(size - 1)
-				+ " text)";
+		createStatement += SIGHT_NAME 			+ languages.get(size - 1) 	+ " text, ";
+		createStatement += SIGHT_ADDRESS 		+ languages.get(size - 1) 	+ " text, ";
+		createStatement += SIGHT_DESCRIPTION 	+ languages.get(size - 1)	+ " text)";
 
 		return createStatement;
 	}
@@ -71,20 +71,27 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	private static String getDatabaseInsertStatement(String[] columnNames,
 			String[] values) {
 		String insertStatement = "";
+		
 		if (columnNames == null || values == null
 				|| columnNames.length != values.length) {
 			return insertStatement;
 		}
+		
 		insertStatement = "INSERT INTO " + TABLE_NAME + " (";
+		
 		for (int i = 0; i < columnNames.length; i++) {
 			insertStatement += columnNames[i] + ",";
 		}
+		
 		insertStatement += columnNames[columnNames.length - 1];
 		insertStatement += ") VALUES (";
+		
 		for (int i = 0; i < values.length; i++) {
 			insertStatement += values[i] + ",";
 		}
+		
 		insertStatement += values[values.length - 1] + ")";
+		
 		return insertStatement;
 	}
 
@@ -94,17 +101,11 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 
 	public SightsDatabaseOpenHelper(Context context, int version) {
 		super(context, DATABASE_NAME, null, version);
-		// File database = new
-		// File(Environment.getDataDirectory()+"/data/"+Appl.appContext.getPackageName()+"/databases/"+DATABASE_NAME);
-		// Log.d("MyLogs", "database exists before: "+database.exists());
-		// Log.d("MyLogs", "database size before: "+database.length());
 		copyDatabaseFromAssets();
-		// Log.d("MyLogs", "database size after: "+database.length());
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-
 	}
 
 	/**
@@ -113,6 +114,7 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	 * @param db
 	 *            the db
 	 */
+	@Deprecated
 	private void createHardcodedSightsTable(SQLiteDatabase db) {
 		db.execSQL(getDatabaseCreateStatement(getLanguageTagsList("en", "uk")));
 		db.beginTransaction();
@@ -174,20 +176,17 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 	}
 
 	private void copyDatabaseFromAssets() {
-		// Log.d("MyLogs",
-		// "dest: "+Environment.getDataDirectory()+"/data/"+Appl.appContext.getPackageName()+"/databases/"+DATABASE_NAME);
-		Utils.copyFromAssets(DATABASE_NAME, Environment.getDataDirectory()
+		Utils.copyFromAssets(DATABASE_NAME, 
+				Environment.getDataDirectory()
 				+ "/data/" 
 				+ Appl.appContext.getPackageName() 
 				+ "/databases/"
 				+ DATABASE_NAME);
-
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
-
 	}
 
 }

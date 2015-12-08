@@ -92,6 +92,7 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 	// defined by the NoticeDialogFragment.NoticeDialogListener interface
 	@Override
 	public void onFilterDialogPositiveClick(DialogFragment dialog) {
+		Appl.notifyMarkerCategoryUpdates();
 	}
 
 	@Override

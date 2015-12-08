@@ -28,7 +28,14 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.id = id;
 	}
 	
-	public SightMarkerItem(LatLng position, String title, String address, String snippet, String imageURI, String category, int id, int[] parentIDs) {
+	public SightMarkerItem(LatLng position, 
+	                       String title, 
+	                       String address, 
+	                       String snippet, 
+	                       String imageURI, 
+	                       String category, 
+	                       int id, 
+	                       int[] parentIDs) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
@@ -38,7 +45,22 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.id = id;
 	}
 	
-	public SightMarkerItem(LatLng position, String title, String snippet, String color, int[] parentIDs) {
+	public SightMarkerItem(LatLng position, 
+							String title, 
+							String address, 
+							int[] parentIDs, 
+							String category) {
+		this.position = position;
+		this.title = title;
+		this.category = category;
+		this.parentIDs = parentIDs;
+	}
+	
+	public SightMarkerItem(LatLng position, 
+	                       String title, 
+	                       String snippet, 
+	                       String color, 
+	                       int[] parentIDs) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
@@ -46,7 +68,10 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.parentIDs = parentIDs;
 	}
 	
-	public SightMarkerItem(LatLng position, String title, String snippet, String color) {
+	public SightMarkerItem(LatLng position, 
+	                       String title, 
+	                       String snippet, 
+	                       String color) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;

@@ -10,6 +10,7 @@ import android.annotation.TargetApi;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
@@ -67,12 +69,14 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			gMap = ((MapFragment) getChildFragmentManager().findFragmentById(
-					R.id.map)).getMap();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			gMap = ((MapFragment) getChildFragmentManager()
+										.findFragmentById(R.id.map))
+						.getMap();
 		} else {
-			gMap = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.map)).getMap();
+			gMap = ((MapFragment) getFragmentManager()
+										.findFragmentById(R.id.map))
+						.getMap();
 		}
 		mMap = new MapImplementationGoogle(this);
 
@@ -276,15 +280,27 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
+		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
-				if(itemSet.add(item)){
-					clusterManager.addItem(item);
-				}
+				addItemToMapIfCategoryIsChosen(item, chosenCategories);
 			}
 			clusterManager.cluster();
-			mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
+		}
+		mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
+	}
+
+	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
+			ArrayList<String> chosenCategories) {
+		if(itemSet.add(item)){
+			for (String chosenCategory : chosenCategories) {
+				Category category = new Category(chosenCategory);
+				if (category.isItemBelongsToThisCategory(item)){
+					clusterManager.addItem(item);
+					break;
+				}
+			}
 		}
 	}
 	
@@ -294,8 +310,31 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onMarkerCategoryChosen() {
-		// TODO Auto-generated method stub
+		clusterManager.clearItems();
+		//list of categories that has been selected by user
+		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+		addFilteredItemsToMap(chosenCategories);
+	}
+
+	private void addFilteredItemsToMap(ArrayList<String> chosenCategories) {
 		
+		clusterManager.clearItems();
+		
+		//make only selected markers to be present in "visible" list
+		for (SightMarkerItem item : itemSet){
+			//add item to "visible" list if the item has "chosen" category
+			for (String chosenCategory : chosenCategories) {
+				Category category = new Category(chosenCategory);
+				if (category.isItemBelongsToThisCategory(item)){
+					clusterManager.addItem(item);
+					break;
+				}
+			}
+		}
+		
+//		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
+		clusterManager.cluster();
+//		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
 	}
 	
 	/* **************************************************************************** */

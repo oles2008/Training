@@ -43,8 +43,11 @@ import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListe
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
-		OnMapLongClickListener, OnClusterClickListener<SightMarkerItem>,
-		OnClusterItemClickListener<SightMarkerItem>, ViewUpdateListener {
+												OnMapLongClickListener,
+												OnClusterClickListener<SightMarkerItem>,
+												OnClusterItemClickListener<SightMarkerItem>,
+												ViewUpdateListener,
+												OnMarkerCategoryUpdateListener {
 
 	private static final int ICON_SIZE = 200;
 	
@@ -197,6 +200,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.subscribeForMapClickUpdates(this);
 		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
+		Appl.subscribeForMarkerCategoryUpdates(this);
 	}
 
 	/**
@@ -320,6 +324,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.unsubscribeFromMapClickUpdates(this);
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
+		Appl.unsubscribeFromMarkerCategoryUpdates(this);
 	}
 
 	private ScrollView getScrollView() {
@@ -481,8 +486,20 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	private void initializeListView() {
 		if (mSightListItems != null && !mSightListItems.isEmpty()) {
+			ArrayList<SightMarkerItem> filteredListViewItems = new ArrayList<SightMarkerItem>();
+			ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+			
+			for (SightMarkerItem item : mSightListItems){
+				for (String chosenCategory : chosenCategories) {
+					Category category = new Category(chosenCategory);
+					if (category.isItemBelongsToThisCategory(item)){
+						filteredListViewItems.add(item);
+						break;
+					}
+				}
+			}
 			mSights.setAdapter(new SightsAdapter(getActivity(),
-					R.layout.sights_list_item, mSightListItems));
+					R.layout.sights_list_item, filteredListViewItems));
 			mSights.setVisibility(View.VISIBLE);
 			mSights.setOnItemClickListener(new OnItemClickListener() {
 
@@ -539,6 +556,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		} else {
 			navigateTo(currentItemParent, true, true);
 		}
+	}
+
+	/* **************************************************************************** */
+    /* ************************ OnMarkerCategoryUpdateListener ******************** */
+    /* **************************************************************************** */
+
+	@Override
+	public void onMarkerCategoryChosen() {
+		initializeListView();
 	}
 
 }

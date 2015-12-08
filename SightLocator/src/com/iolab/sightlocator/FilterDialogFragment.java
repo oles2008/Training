@@ -31,7 +31,7 @@ public class FilterDialogFragment extends DialogFragment{
 		// Where we track the selected items
 		final boolean[] tmpCheckedItems;
 		tmpCheckedItems = new boolean[(getResources().getStringArray(R.array.marker_category)).length];
-		System.arraycopy(Appl.checkedItems, 0, tmpCheckedItems, 0, Appl.checkedItems.length);
+		System.arraycopy(Appl.selectedCategories, 0, tmpCheckedItems, 0, Appl.selectedCategories.length);
 
 		// Use the Builder class for convenient dialog construction
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
@@ -41,7 +41,7 @@ public class FilterDialogFragment extends DialogFragment{
 		
 		// Specify the list array, the items to be selected by default (null for none),
 		// and the listener through which to receive callback when items are selected
-		dialogBuilder.setMultiChoiceItems(R.array.marker_category, Appl.checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+		dialogBuilder.setMultiChoiceItems(R.array.marker_category, Appl.selectedCategories, new DialogInterface.OnMultiChoiceClickListener() {
 				
 			@SuppressLint("NewApi")
 			@Override
@@ -52,34 +52,34 @@ public class FilterDialogFragment extends DialogFragment{
 				// if checked category "ALL"
 				if (which == 0) {
 					// change the list
-					Appl.checkedItems[0] = isChecked;
+					Appl.selectedCategories[0] = isChecked;
 					// uncheck all other checkboxes
-					for (int j = 1; j < Appl.checkedItems.length; j++) {
-						Appl.checkedItems[j] = false;
+					for (int j = 1; j < Appl.selectedCategories.length; j++) {
+						Appl.selectedCategories[j] = false;
 						listView.setItemChecked(j, false);
 					}
 				// if checked other categories
 				} else {
-					Appl.checkedItems[which] = isChecked;
+					Appl.selectedCategories[which] = isChecked;
 					// uncheck category "ALL"
-					Appl.checkedItems[0] = false;
+					Appl.selectedCategories[0] = false;
 					listView.setItemChecked(0, false);
 
 					// count how many categories are checked
 					int categoriesCount = 0;
-					for (int i = 1; i < Appl.checkedItems.length; i++) {
-						if (Appl.checkedItems[i] == true) {
+					for (int i = 1; i < Appl.selectedCategories.length; i++) {
+						if (Appl.selectedCategories[i] == true) {
 							categoriesCount++;
 						}
 					}
 
                     // if all categories (except "All") are checked (or unchecked)-
                     // then check "ALL" and uncheck all others
-                    if ((categoriesCount == Appl.checkedItems.length - 1)
+                    if ((categoriesCount == Appl.selectedCategories.length - 1)
                             || (categoriesCount == 0)) {
-                        Appl.checkedItems[0] = true;
-                        for (int j = 1; j < Appl.checkedItems.length; j++) {
-                            Appl.checkedItems[j] = false;
+                        Appl.selectedCategories[0] = true;
+                        for (int j = 1; j < Appl.selectedCategories.length; j++) {
+                            Appl.selectedCategories[j] = false;
                             listView.setItemChecked(j, false);
                         }
 
@@ -105,7 +105,7 @@ public class FilterDialogFragment extends DialogFragment{
 					// Send the negative button event back to the host activity
 					mListener.onFilterDialogNegativeClick(FilterDialogFragment.this);
 					dialog.cancel();
-					System.arraycopy(tmpCheckedItems, 0, Appl.checkedItems, 0, Appl.checkedItems.length);
+					System.arraycopy(tmpCheckedItems, 0, Appl.selectedCategories, 0, Appl.selectedCategories.length);
 				}
 			});
 		
