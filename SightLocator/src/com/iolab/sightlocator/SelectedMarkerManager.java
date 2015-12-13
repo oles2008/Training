@@ -178,6 +178,16 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 			}
 		}
 	}
+	
+	/**
+	 * How only those selected items that belong to the new selected categories. 
+	 * This method should be used after categories change.
+	 *
+	 */
+	public void reselectItemsAfterCategoryChange() {
+		List<SightMarkerItem> selectedItems = new ArrayList<SightMarkerItem>(mCurrentSelectedItems);
+		selectItems(selectedItems);
+	}
 
 	/**
 	 * Select item, de-select currently selected. Be sure to call
@@ -202,13 +212,10 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 		substituteSelectedItemsWithItemsFromMap(mCurrentSelectedItems,
 				mItemsCurrentlyOnMap);
 	}
-
+	
 	/* **************************************************************************** */
-	/*
-	 *  *********************** OnBeforeClusterRenderedListener
-	 * ********************
-	 */
-	/* **************************************************************************** */
+    /* ********************** OnBeforeClusterRenderedListener ********************* */
+    /* **************************************************************************** */
 
 	@Override
 	public void onBeforeClusterRendered(Cluster<SightMarkerItem> cluster,
@@ -227,11 +234,8 @@ public class SelectedMarkerManager implements OnBeforeClusterRenderedListener {
 	}
 
 	/* **************************************************************************** */
-	/*
-	 *  ************************************* Utility API
-	 * **************************
-	 */
-	/* **************************************************************************** */
+    /* ***************************** Utility API ********************************** */
+    /* **************************************************************************** */
 
 	/**
 	 * Adds a selected marker for an item which is considered selected. The
