@@ -558,17 +558,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			navigateTo(currentItemParent, true, true);
 		}
 	}
-
-	/* **************************************************************************** */
-    /* ************************ OnMarkerCategoryUpdateListener ******************** */
-    /* **************************************************************************** */
-
-	@Override
-	public void onMarkerCategoryChosen() {
-		initializeListView();
-	}
 	
-	public void setSelectedCategories(List<Category> setCategories){
+	/**
+	 * Sets the selected categories.
+	 *
+	 * @param setCategories the new selected categories
+	 */
+	private void setSelectedCategories(List<Category> setCategories){
 		
 		//create a temporary array to hold the current "checked" categories state 
 		boolean[] tmp = Arrays.copyOf(Appl.selectedCategories, Appl.selectedCategories.length);
@@ -612,5 +608,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.notifyMarkerCategoryUpdates();
 	}
 
+
+	/* **************************************************************************** */
+    /* ************************ OnMarkerCategoryUpdateListener ******************** */
+    /* **************************************************************************** */
+
+	@Override
+	public void onMarkerCategoryChosen() {
+		initializeListView();
+	}
 
 }
