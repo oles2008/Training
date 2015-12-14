@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -566,5 +567,50 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	public void onMarkerCategoryChosen() {
 		initializeListView();
 	}
+	
+	public void setSelectedCategories(List<Category> setCategories){
+		
+		//create a temporary array to hold the current "checked" categories state 
+		boolean[] tmp = Arrays.copyOf(Appl.selectedCategories, Appl.selectedCategories.length);
+		
+		//set all checkboxes to "unchecked" state
+		Arrays.fill(Appl.selectedCategories, Boolean.FALSE);
+
+		//get list of categories
+		ArrayList<String> itemCategories = CategoryUtils.getMarkerCategories();
+
+		//set "changed" flag, to indicate if any changes were made 
+		boolean changed = false;
+		
+		//iterate over all categories
+		for(int i=0; i<itemCategories.size(); i++){
+			//iterate over new categories
+			for(Category setCategory : setCategories){
+				
+				//if new category equals to current 
+				//change the checkbox to "checked" state
+				//and change flag to "changed"
+				if(setCategory
+						.toString()
+						.toLowerCase()
+						.equals(itemCategories
+								.get(i)
+								.toLowerCase())){
+					
+					Appl.selectedCategories[i] = true;
+					changed = true;
+					break;
+				}
+			}
+		}
+		
+		//return to previous checked state if not changed a category
+		if(!changed){
+			Appl.selectedCategories = Arrays.copyOf(tmp, Appl.selectedCategories.length);
+		}
+		
+		Appl.notifyMarkerCategoryUpdates();
+	}
+
 
 }
