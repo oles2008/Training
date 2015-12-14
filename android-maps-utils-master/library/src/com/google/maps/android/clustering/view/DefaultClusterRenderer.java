@@ -60,12 +60,12 @@ import static com.google.maps.android.clustering.algo.NonHierarchicalDistanceBas
 public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRenderer<T> {
     private static final boolean SHOULD_ANIMATE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     private final GoogleMap mMap;
-    private final IconGenerator mIconGenerator;
+    protected final IconGenerator mIconGenerator;
     private final ClusterManager<T> mClusterManager;
-    private final float mDensity;
+    protected final float mDensity;
 
     private static final int[] BUCKETS = {10, 20, 50, 100, 200, 500, 1000};
-    private ShapeDrawable mColoredCircleBackground;
+    protected ShapeDrawable mColoredCircleBackground;
 
     /**
      * Markers that are currently on the map.
@@ -162,7 +162,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         mClusterManager.getClusterMarkerCollection().setOnMarkerClickListener(null);
     }
 
-    private LayerDrawable makeClusterBackground() {
+    protected LayerDrawable makeClusterBackground() {
         mColoredCircleBackground = new ShapeDrawable(new OvalShape());
         ShapeDrawable outline = new ShapeDrawable(new OvalShape());
         outline.getPaint().setColor(0x80ffffff); // Transparent white.
@@ -182,7 +182,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         return squareTextView;
     }
 
-    private int getColor(int clusterSize) {
+    protected int getColor(int clusterSize) {
         final float hueRange = 220;
         final float sizeRange = 300;
         final float size = Math.min(clusterSize, sizeRange);

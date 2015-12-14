@@ -5,5 +5,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     
     <dimen name="list_view_image_width">50dp</dimen>
+    
+    <!-- Markers -->
+    <dimen name="selected_cluster_outline">4dp</dimen>
 
 </resources>

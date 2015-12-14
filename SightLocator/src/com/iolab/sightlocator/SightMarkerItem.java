@@ -7,29 +7,60 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.algo.StaticCluster;
 
 public class SightMarkerItem implements ClusterItem, Parcelable {
 	
 	private LatLng position;
-	public String title;
-	public String snippet;
-	public String address;
-	public String imageURI;
-	public String category;
-	public int id;
-	public int[] parentIDs;
+	private String title;
+	private String snippet;
+	private String address;
+	private String imageURI;
+	private String category;
+	private int id;
+	private int[] parentIDs;
+	//not to be saved in Parcel
+	private Cluster<SightMarkerItem> mCluster;
 	
-	public SightMarkerItem(LatLng position, String title, String address, String snippet, String imageURI, String category, int id, int[] parentIDs) {
+	public SightMarkerItem(int id) {
+		this.id = id;
+	}
+	
+	public SightMarkerItem(LatLng position, 
+	                       String title, 
+	                       String address, 
+	                       String snippet, 
+	                       String imageURI, 
+	                       String category, 
+	                       int id, 
+	                       int[] parentIDs) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
 		this.imageURI = imageURI;
 		this.category = category;
 		this.parentIDs = parentIDs;
+		this.id = id;
 	}
 	
-	public SightMarkerItem(LatLng position, String title, String snippet, String color, int[] parentIDs) {
+	public SightMarkerItem(LatLng position, 
+							String title, 
+							String address, 
+							int[] parentIDs, 
+							String category) {
+		this.position = position;
+		this.title = title;
+		this.category = category;
+		this.parentIDs = parentIDs;
+	}
+	
+	public SightMarkerItem(LatLng position, 
+	                       String title, 
+	                       String snippet, 
+	                       String color, 
+	                       int[] parentIDs) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
@@ -37,7 +68,10 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.parentIDs = parentIDs;
 	}
 	
-	public SightMarkerItem(LatLng position, String title, String snippet, String color) {
+	public SightMarkerItem(LatLng position, 
+	                       String title, 
+	                       String snippet, 
+	                       String color) {
 		this.position = position;
 		this.title = title;
 		this.snippet = snippet;
@@ -65,6 +99,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.imageURI=array[3];
 		this.category=array[4];
 		this.parentIDs = parcel.createIntArray();
+		this.id = parcel.readInt();
 	}
 	
 	public static final Parcelable.Creator<SightMarkerItem> CREATOR = new Creator<SightMarkerItem>() {
@@ -85,12 +120,28 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		return position;
 	}
 	
+	public void setPosition(LatLng position) {
+		this.position = position;
+	}
+	
+	public void setParentIDs(int[] parentIDs) {
+		this.parentIDs = parentIDs;
+	}
+	
 	public String getTitle() {
 		return title;
 	}
 	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
 	public String getAddress(){
 		return address;
+	}
+	
+	public void setAddress(String address){
+		this.address = address;
 	}
 	
 	public String getSnippet() {
@@ -122,6 +173,34 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	}
 	
 	/**
+	 * Sets the cluster containing this item.
+	 *
+	 * @param cluster the new cluster
+	 */
+	public void setCluster(Cluster<SightMarkerItem> cluster){
+		mCluster = cluster;
+	}
+	
+	/**
+	 * Gets the cluster which contains this item if the latter is clustered.
+	 *
+	 * @return the cluster which contains this item if the latter is clustered,
+	 *         {@code <code>null</code>} otherwise
+	 */
+	public Cluster<SightMarkerItem> getCluster() {
+		return mCluster;
+	}
+	
+	/**
+	 * Checks if this marker clustered.
+	 *
+	 * @return true, if is clustered
+	 */
+	public boolean isClustered() {
+		return (mCluster != null);
+	}
+	
+	/**
 	 * Creates {@link MarkerOptions} for this item's position, title and snippet.
 	 *
 	 * @return the marker options
@@ -136,6 +215,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		String[] array = {this.title, this.address, this.snippet, this.imageURI, this.category};
 		parcel.writeStringArray(array);
 		parcel.writeIntArray(parentIDs);
+		parcel.writeInt(this.id);
 	}
 
 	@Override
@@ -145,7 +225,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	
 	@Override
 	public int hashCode() {
-		return position.hashCode()+((title != null)? title.hashCode() : 0);
+		return id;
 	}
 	
 	@Override
@@ -154,9 +234,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 			return false;
 		}
 		SightMarkerItem item = (SightMarkerItem) obj;
-		return this.position.equals(item.getPosition())
-				&& (((this.title == null) && (item.getTitle() == null)) || (this.title
-						.equals(item.getTitle())));
+		return this.id == item.id;
 	}
 
 }

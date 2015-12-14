@@ -20,9 +20,9 @@ public class SightsHierarchichalAlgorithm extends
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
-		Set<? extends Cluster<SightMarkerItem>> clusterSet = super.getClusters(zoom);
+		Set<? extends Cluster<SightMarkerItem>> clusterSet = super.getClusters(zoom+2);
 		//to make it impossible for clusters to be split even under a large scale
-		Set<? extends Cluster<SightMarkerItem>> clustersBiggerZoom = super.getClusters(zoom+1);
+		Set<? extends Cluster<SightMarkerItem>> clustersBiggerZoom = super.getClusters(zoom+3);
 		Set<Cluster<SightMarkerItem>> resultSet = new HashSet<Cluster<SightMarkerItem>>();
 		for(Cluster<SightMarkerItem> cluster: clusterSet){
 			Set<Cluster<SightMarkerItem>> splitClusters = splitClusterAccordingToHierarchy(cluster);
