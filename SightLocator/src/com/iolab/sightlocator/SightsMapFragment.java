@@ -51,6 +51,7 @@ public class SightsMapFragment extends Fragment implements
 	private SightsRenderer sightsRenderer;
 
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
+	private Set<SightMarkerItem> mItemSetForGivenCategory = new HashSet<SightMarkerItem>();
 	
 	private SelectedMarkerManager mSelectedMarkerManager;
 	
@@ -82,7 +83,7 @@ public class SightsMapFragment extends Fragment implements
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
-		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, clusterManager, itemSet, savedInstanceState);
+		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, clusterManager, mItemSetForGivenCategory, savedInstanceState);
 		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
 		sightsRenderer.registerOnBeforeClusterRenderedListener(mSelectedMarkerManager);
 		clusterManager.setRenderer(sightsRenderer);
@@ -297,6 +298,7 @@ public class SightsMapFragment extends Fragment implements
 			for (String chosenCategory : chosenCategories) {
 				Category category = new Category(chosenCategory);
 				if (category.isItemBelongsToThisCategory(item)){
+					mItemSetForGivenCategory.add(item);
 					clusterManager.addItem(item);
 					break;
 				}
@@ -314,11 +316,13 @@ public class SightsMapFragment extends Fragment implements
 		//list of categories that has been selected by user
 		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		addFilteredItemsToMap(chosenCategories);
+		mSelectedMarkerManager.reselectItemsAfterCategoryChange();;
 	}
 
 	private void addFilteredItemsToMap(ArrayList<String> chosenCategories) {
 		
 		clusterManager.clearItems();
+		mItemSetForGivenCategory.clear();
 		
 		//make only selected markers to be present in "visible" list
 		for (SightMarkerItem item : itemSet){
@@ -326,15 +330,14 @@ public class SightsMapFragment extends Fragment implements
 			for (String chosenCategory : chosenCategories) {
 				Category category = new Category(chosenCategory);
 				if (category.isItemBelongsToThisCategory(item)){
+					mItemSetForGivenCategory.add(item);
 					clusterManager.addItem(item);
 					break;
 				}
 			}
 		}
 		
-//		Log.d("Marker","temp marker set " + chosenCategoryMarkerItemSet.toString());
 		clusterManager.cluster();
-//		Log.d("Marker", chosenCategoryMarkerItemSet.toString());
 	}
 	
 	/* **************************************************************************** */
