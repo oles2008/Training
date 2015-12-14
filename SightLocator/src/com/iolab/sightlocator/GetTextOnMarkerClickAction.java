@@ -34,6 +34,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private long mClusterClickCounter 	= -1;
 	private int mID 					= -1;
 	
+	private String langSuffix = "uk";
+	
 	private LatLng mPosition;
 	private ArrayList<SightMarkerItem> mClusterItems = null;
 	private boolean mShowOnMap = false;
@@ -97,9 +99,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en", 
-									SIGHT_NAME + "en", 
-									SIGHT_ADDRESS+"en",
+									SIGHT_DESCRIPTION + langSuffix, 
+									SIGHT_NAME + langSuffix, 
+									SIGHT_ADDRESS + langSuffix,
 									MARKER_CATEGORY,
 									COLUMNS_LOCATION_LEVEL[0],
 									COLUMNS_LOCATION_LEVEL[1],
@@ -119,9 +121,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en", 
-									SIGHT_NAME + "en", 
-									SIGHT_ADDRESS+"en",
+									SIGHT_DESCRIPTION + langSuffix, 
+									SIGHT_NAME + langSuffix, 
+									SIGHT_ADDRESS + langSuffix,
 									MARKER_CATEGORY,
 									COLUMNS_LOCATION_LEVEL[0],
 									COLUMNS_LOCATION_LEVEL[1],
@@ -172,9 +174,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					TABLE_NAME,
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
 							COLUMN_SIGHT_IMAGE_PATH, 
-							SIGHT_DESCRIPTION + "en",
-							SIGHT_NAME + "en", 
-							SIGHT_ADDRESS + "en",
+							SIGHT_DESCRIPTION + langSuffix,
+							SIGHT_NAME + langSuffix, 
+							SIGHT_ADDRESS + langSuffix,
 							COLUMN_ID,
 							MARKER_CATEGORY,
 							COLUMNS_LOCATION_LEVEL[0],
@@ -247,9 +249,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		if (cursor.moveToFirst()) {
 			pathToImage 		= cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH));
-			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ "en"));
-			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ "en"));
-			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS 		+ "en"));
+			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ langSuffix));
+			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ langSuffix));
+			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS 		+ langSuffix));
 			itemCategory 		= cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY));
 			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
 			
@@ -294,8 +296,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				}
 				fullItems
 					.add(new SightMarkerItem(sightPosition,
-												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en")), 		//cursor.getString(4),
-												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en")), 	//cursor.getString(5),
+												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + langSuffix)), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + langSuffix)), 	//cursor.getString(5),
 												null,
 												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
@@ -313,8 +315,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					}
 					fullItems
 						.add(new SightMarkerItem(sightPosition,
-											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + "en")), 		//cursor.getString(4),
-												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + "en")), 	//cursor.getString(5),
+											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + langSuffix)), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + langSuffix)), 	//cursor.getString(5),
 												null,
 												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
