@@ -202,4 +202,6 @@ public class Appl extends Application {
 	interface ViewUpdateListener {
 		void onUpdateView(Bundle bundle);
 	}
+	
+	
 }
