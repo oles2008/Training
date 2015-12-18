@@ -499,6 +499,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					}
 				}
 			}
+			
 			mSights.setAdapter(new SightsAdapter(getActivity(),
 					R.layout.sights_list_item, filteredListViewItems));
 			mSights.setVisibility(View.VISIBLE);

@@ -23,9 +23,11 @@ public class Category {
 	}
 	
 	public boolean isItemBelongsToThisCategory(SightMarkerItem item){
-		//TODO KOSTYL
-		if (item.getCategory() == null) {
-			return false;
+
+		//KOSTYL if Item has no category assigned
+		if (item.getCategory() == null
+				|| item.getCategory().isEmpty()) {
+			return true;
 		}
 
 		//KOSTYL "All"
@@ -48,6 +50,7 @@ public class Category {
 				.contains(mCategoryString)){
 			return true;
 		}
+		
 		return false;
 	}
 }

@@ -319,7 +319,7 @@ public class SightsMapFragment extends Fragment implements
 	private void addFilteredItemsToMap(ArrayList<String> chosenCategories) {
 		
 		clusterManager.clearItems();
-		
+
 		//make only selected markers to be present in "visible" list
 		for (SightMarkerItem item : itemSet){
 			//add item to "visible" list if the item has "chosen" category
