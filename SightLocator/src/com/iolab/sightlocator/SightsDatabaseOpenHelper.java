@@ -33,6 +33,33 @@ public class SightsDatabaseOpenHelper extends SQLiteOpenHelper {
 		copyDatabaseFromAssets();
 	}
 
+	private static String getDatabaseInsertStatement(String[] columnNames, 
+			String[] values) {
+		String insertStatement = "";
+		
+		if (columnNames == null || values == null
+				|| columnNames.length != values.length) {
+			return insertStatement;
+		}
+		
+		insertStatement = "INSERT INTO " + TABLE_NAME + " (";
+		
+		for (int i = 0; i < columnNames.length; i++) {
+			insertStatement += columnNames[i] + ",";
+		}
+		
+		insertStatement += columnNames[columnNames.length - 1];
+		insertStatement += ") VALUES (";
+		
+		for (int i = 0; i < values.length; i++) {
+			insertStatement += values[i] + ",";
+		}
+		
+		insertStatement += values[values.length - 1] + ")";
+		
+		return insertStatement;
+	}
+	
 	// onCreate and onUpgrade should be used if DB creation/upgrade is handled from code
 	@Override
 	public void onCreate(SQLiteDatabase db) {
