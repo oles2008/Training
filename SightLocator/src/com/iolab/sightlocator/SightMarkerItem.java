@@ -18,6 +18,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	private String snippet;
 	private String address;
 	private String imageURI;
+	private String imageSourceType;
 	private String category;
 	private int id;
 	private int[] parentIDs;
@@ -32,7 +33,8 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	                       String title, 
 	                       String address, 
 	                       String snippet, 
-	                       String imageURI, 
+	                       String imageURI,
+	                       String imageSource,
 	                       String category, 
 	                       int id, 
 	                       int[] parentIDs) {
@@ -40,6 +42,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.title = title;
 		this.snippet = snippet;
 		this.imageURI = imageURI;
+		this.imageSourceType = imageSource;
 		this.category = category;
 		this.parentIDs = parentIDs;
 		this.id = id;
@@ -97,7 +100,8 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.address=array[1];
 		this.snippet=array[2];
 		this.imageURI=array[3];
-		this.category=array[4];
+		this.imageSourceType=array[4];
+		this.category=array[5];
 		this.parentIDs = parcel.createIntArray();
 		this.id = parcel.readInt();
 	}
@@ -151,7 +155,11 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	public String getImageURI() {
 		return imageURI;
 	}
-	
+
+	public String getImageSourceType() {
+		return imageSourceType;
+	}
+
 	public String getCategory() {
 		return category;
 	}
@@ -212,7 +220,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeParcelable(position, flags);
-		String[] array = {this.title, this.address, this.snippet, this.imageURI, this.category};
+		String[] array = {this.title, this.address, this.snippet, this.imageURI, this.imageSourceType, this.category};
 		parcel.writeStringArray(array);
 		parcel.writeIntArray(parentIDs);
 		parcel.writeInt(this.id);
