@@ -13,6 +13,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -42,19 +43,22 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
+import com.iolab.sightlocator.FilterDialogFragment.FilterDialogListener;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
 												OnMapLongClickListener,
 												OnClusterClickListener<SightMarkerItem>,
 												OnClusterItemClickListener<SightMarkerItem>,
 												ViewUpdateListener,
-												OnMarkerCategoryUpdateListener {
+												OnMarkerCategoryUpdateListener,
+												FilterDialogListener {
 
 	private static final int ICON_SIZE = 200;
 	
 	private ListView mSights;
 	private SightMarkerItem mSelectedItem;
 	private ArrayList<SightMarkerItem> mSightListItems;
+	private ArrayList<SightMarkerItem> mListItemsFromSelectedCategories;
 	private String mImagePath;
 	private TextView mAddress;
 	private TextView mTitle;
@@ -121,6 +125,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
+
+		case R.id.action_filter:
+			showFilterDialog();
+			return true;
 
 //		case R.id.action_languages_dialog:
 //			showLanguagesDialog(itemId);
@@ -487,27 +495,27 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	private void initializeListView() {
 		if (mSightListItems != null && !mSightListItems.isEmpty()) {
-			ArrayList<SightMarkerItem> filteredListViewItems = new ArrayList<SightMarkerItem>();
+			mListItemsFromSelectedCategories = new ArrayList<SightMarkerItem>();
 			ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 			
 			for (SightMarkerItem item : mSightListItems){
 				for (String chosenCategory : chosenCategories) {
 					Category category = new Category(chosenCategory);
 					if (category.isItemBelongsToThisCategory(item)){
-						filteredListViewItems.add(item);
+						mListItemsFromSelectedCategories.add(item);
 						break;
 					}
 				}
 			}
 			mSights.setAdapter(new SightsAdapter(getActivity(),
-					R.layout.sights_list_item, filteredListViewItems));
+					R.layout.sights_list_item, mListItemsFromSelectedCategories));
 			mSights.setVisibility(View.VISIBLE);
 			mSights.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					SightMarkerItem selectedItem = mSightListItems.get(position);
+					SightMarkerItem selectedItem = mListItemsFromSelectedCategories.get(position);
 					navigateTo(selectedItem.getID(), true, true);
 				}
 			});
@@ -563,8 +571,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * Sets the selected categories.
 	 *
 	 * @param setCategories the new selected categories
+	 * @param addToBackStack whether this action should be added to the back stack
 	 */
-	private void setSelectedCategories(List<Category> setCategories){
+	private void selectCategories(List<Category> setCategories, boolean addToBackStack){
 		
 		//create a temporary array to hold the current "checked" categories state 
 		boolean[] tmp = Arrays.copyOf(Appl.selectedCategories, Appl.selectedCategories.length);
@@ -606,8 +615,32 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		Appl.notifyMarkerCategoryUpdates();
+		
+		if (addToBackStack) {
+			DestinationEndPoint backStackItem = new DestinationEndPoint(-1,
+					null, itemCategories, null);
+		}
 	}
 
+	public void showFilterDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialog = new FilterDialogFragment(this);
+		dialog.show(getFragmentManager(), "FilterDialogFragment");
+	}
+	
+	/* **************************************************************************** */
+    /* *************************** FilterDialogListener *************************** */
+    /* **************************************************************************** */
+
+	@Override
+	public void onFilterDialogPositiveClick(DialogFragment dialog) {
+		Appl.notifyMarkerCategoryUpdates();
+	}
+
+	@Override
+	public void onFilterDialogNegativeClick(DialogFragment dialog) {
+		Appl.notifyMarkerCategoryUpdates();
+	}
 
 	/* **************************************************************************** */
     /* ************************ OnMarkerCategoryUpdateListener ******************** */

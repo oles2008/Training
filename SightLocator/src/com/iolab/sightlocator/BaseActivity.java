@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class BaseActivity extends Activity implements FilterDialogFragment.FilterDialogListener, LanguagesDialogFragment.LanguagesDialogListener{
+public class BaseActivity extends Activity implements LanguagesDialogFragment.LanguagesDialogListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,14 +50,6 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 //		case R.id.action_quick_about:
 //			showAbout();
 //			return true;
-
-		case R.id.action_filter:
-			showFilterDialog();
-			return true;
-
-		case R.id.action_quick_filter:
-			showFilterDialog();
-			return true;
 			
 		case R.id.action_languages_dialog:
 			showLanguagesDialog();
@@ -79,25 +71,6 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 	private void showHelp(){
 		Intent intent =  new Intent(this, DisplayHelpTextActivity.class);
 		startActivity(intent);
-	}
-
-	public void showFilterDialog() {
-		// Create an instance of the dialog fragment and show it
-		DialogFragment dialog = new FilterDialogFragment();
-		dialog.show(getFragmentManager(), "FilterDialogFragment");
-	}
-
-	// The dialog fragment receives a reference to this Activity through the
-	// Fragment.onAttach() callback, which it uses to call the following methods
-	// defined by the NoticeDialogFragment.NoticeDialogListener interface
-	@Override
-	public void onFilterDialogPositiveClick(DialogFragment dialog) {
-		Appl.notifyMarkerCategoryUpdates();
-	}
-
-	@Override
-	public void onFilterDialogNegativeClick(DialogFragment dialog) {
-		Appl.notifyMarkerCategoryUpdates();
 	}
 	
 	private void showLanguagesDialog() {

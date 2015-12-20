@@ -34,7 +34,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private long mClusterClickCounter 	= -1;
 	private int mID 					= -1;
 	
-	private String langSuffix = "uk";
+	private String langSuffix = "en";
 	
 	private LatLng mPosition;
 	private ArrayList<SightMarkerItem> mClusterItems = null;

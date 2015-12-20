@@ -16,7 +16,7 @@ public class DestinationEndPoint implements Parcelable {
 	
 	private int mID;
 	private Collection<SightMarkerItem> mClusteredItems;
-	private List<String> mCategories;
+	private List<String> mCategories = new ArrayList<String>();
 	private String mLanguage;
 	
 	
@@ -52,6 +52,9 @@ public class DestinationEndPoint implements Parcelable {
 	
 	public void setClusteredItems(Collection<SightMarkerItem> clusteredItems) {
 		mClusteredItems = clusteredItems;
+		if(mClusteredItems == null){
+			mClusteredItems = new ArrayList<SightMarkerItem>();
+		}
 	}
 	
 	public List<String> getCategories() {

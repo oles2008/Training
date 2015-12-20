@@ -17,14 +17,9 @@ public class FilterDialogFragment extends DialogFragment{
 	}
 	
 	FilterDialogListener mListener;
-	
-	public void onAttach(Activity activity){
-		super.onAttach(activity);
-		try {
-			mListener = (FilterDialogListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement FilterDialogListener");
-		}
+
+	public FilterDialogFragment(FilterDialogListener filterDialogListener) {
+		mListener = filterDialogListener;
 	}
 
 	public Dialog onCreateDialog(Bundle savedInstanceState){
