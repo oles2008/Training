@@ -103,16 +103,30 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			if(mSelectedItem != null){
 				itemId = mSelectedItem.getID();
 				}
-			showLanguagesDialog(itemId);
+			if(itemId != -1){
+			//run GetAvailableContentLanguagesAction
+			Intent intent = new Intent(getActivity(), SightsIntentService.class);
+			intent.putExtra(SightsIntentService.ACTION,
+					new GetAvailableContentLanguagesAction(itemId));
+			getActivity().startService(intent);
+			}else{
+				showLanguagesDialog();
+			}
 			return true;
-		
-		default:
+			default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	private void showLanguagesDialog(int itemId) {
+	
+	private void showLanguagesDialog(String[] inputLanguages) {
 		// Create an instance of the dialog fragment and show it
-		DialogFragment dialogLangs = new LanguagesDialogFragment(itemId);
+		DialogFragment dialogLangs = new LanguagesDialogFragment(inputLanguages);
+		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
+	}
+	
+	private void showLanguagesDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialogLangs = new LanguagesDialogFragment();
 		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
 	}
 	
@@ -399,8 +413,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	       Fragment textFragment = getActivity().getFragmentManager().findFragmentById(R.id.text_fragment);
 			TextView object_address = (TextView) textFragment.getView().findViewById(R.id.address);
 			object_address.setText(bundle.getString(Tags.SIGHT_ADDRESS));
-}
+			}
 			
+         if (bundle.getStringArray(Tags.AVAILABLE_LANGUAGES) != null){
+        	 showLanguagesDialog(bundle.getStringArray(Tags.AVAILABLE_LANGUAGES));
+        	 }
 	}
 
 	@Override

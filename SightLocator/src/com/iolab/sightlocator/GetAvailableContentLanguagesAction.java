@@ -44,7 +44,8 @@ public class GetAvailableContentLanguagesAction implements ServiceAction, Parcel
 		dest.writeInt(mItemId);
 	}
 	
-	private ArrayList<String> getListOfLanguages() {
+	private String[] getListOfLanguages() {
+	//private ArrayList<String> getListOfLanguages() {
 		ArrayList<String> itemAvailableLanguages = new ArrayList<String>();
 		String sqlQueryParticle = "";
 		// here we prepare sqlQueryParticle
@@ -86,15 +87,14 @@ public class GetAvailableContentLanguagesAction implements ServiceAction, Parcel
 			}
 		}
 		cursor.close();
-
-		return itemAvailableLanguages;
+		return itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);
+		//return itemAvailableLanguages;
 	}
 
 	@Override
 	public void runInService() {
 		Bundle resultData = new Bundle();
-		resultData.putStringArrayList(Tags.AVAILABLE_LANGUAGES, getListOfLanguages());
-		Log.w("igor",getListOfLanguages()+"inAction");
+		resultData.putStringArray(Tags.AVAILABLE_LANGUAGES, getListOfLanguages());
 		Appl.receiver.send(0, resultData);
 		
 	}
