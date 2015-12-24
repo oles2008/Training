@@ -25,4 +25,5 @@ public class Tags {/**/
 	public static final String SIGHT_NAME = "name";
 	public static final String SIGHT_ADDRESS = "address";
 	public static final String AVAILABLE_LANGUAGES = "available_languages";
+	public static final String LANGUAGE = "language";
 }

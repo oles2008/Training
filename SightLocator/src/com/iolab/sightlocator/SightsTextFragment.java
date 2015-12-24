@@ -477,6 +477,24 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key){
 		mLanguage = sharedPreferences.getString(key, null);
-		Log.w("igor","onSPChange: "+sharedPreferences.getString(key, null));
+		//test script till the end of method
+		Resources res = getResources();
+		FragmentManager fragmentManager = getFragmentManager();
+
+		Utils.changeImageFragmentToOnePixel(res.getDrawable(R.drawable.one_pixel)
+				.toString(), res, fragmentManager);
+		mSelectedItem = null;
+		mAddress.setVisibility(View.GONE);
+		mSights.setVisibility(View.GONE);
+		mSightListItems = null;
+		
+		Intent intent = new Intent(getActivity(), SightsIntentService.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(Tags.COMMON_PARENT_ID,mCommonParentID);
+		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER,++mClusterClickCounter);
+		bundle.putString(Tags.LANGUAGE, mLanguage);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetTextOnMarkerClickAction(bundle));
+		getActivity().startService(intent);
 	}
 }

@@ -45,7 +45,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mID = inputBundle.getInt(Tags.COMMON_PARENT_ID,-1);
 //		inputBundle.setClassLoader(SightMarkerItem.class.getClassLoader());
 		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
-		//mLanguage = inputBundle.getString(Tags.LANGUAGE); ??
+		if (inputBundle.getString(Tags.LANGUAGE) != null
+				&& !inputBundle.getString(Tags.LANGUAGE).isEmpty()) {
+			mLanguage = inputBundle.getString(Tags.LANGUAGE);
+		}
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
