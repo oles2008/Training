@@ -281,7 +281,7 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
-		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+		ArrayList<Category> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
@@ -293,11 +293,10 @@ public class SightsMapFragment extends Fragment implements
 	}
 
 	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
-			ArrayList<String> chosenCategories) {
+			ArrayList<Category> chosenCategories) {
 		if(itemSet.add(item)){
-			for (String chosenCategory : chosenCategories) {
-				Category category = new Category(chosenCategory);
-				if (category.isItemBelongsToThisCategory(item)){
+			for (Category chosenCategory : chosenCategories) {
+				if (chosenCategory.isItemBelongsToThisCategory(item)){
 					mItemSetForGivenCategory.add(item);
 					clusterManager.addItem(item);
 					break;
@@ -314,12 +313,12 @@ public class SightsMapFragment extends Fragment implements
 	public void onMarkerCategoryChosen() {
 		clusterManager.clearItems();
 		//list of categories that has been selected by user
-		ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+		ArrayList<Category> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		addFilteredItemsToMap(chosenCategories);
 		mSelectedMarkerManager.reselectItemsAfterCategoryChange();;
 	}
 
-	private void addFilteredItemsToMap(ArrayList<String> chosenCategories) {
+	private void addFilteredItemsToMap(ArrayList<Category> chosenCategories) {
 		
 		clusterManager.clearItems();
 		mItemSetForGivenCategory.clear();
@@ -327,9 +326,8 @@ public class SightsMapFragment extends Fragment implements
 		//make only selected markers to be present in "visible" list
 		for (SightMarkerItem item : itemSet){
 			//add item to "visible" list if the item has "chosen" category
-			for (String chosenCategory : chosenCategories) {
-				Category category = new Category(chosenCategory);
-				if (category.isItemBelongsToThisCategory(item)){
+			for (Category chosenCategory : chosenCategories) {
+				if (chosenCategory.isItemBelongsToThisCategory(item)){
 					mItemSetForGivenCategory.add(item);
 					clusterManager.addItem(item);
 					break;

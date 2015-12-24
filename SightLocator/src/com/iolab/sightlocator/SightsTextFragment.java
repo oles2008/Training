@@ -459,7 +459,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * Navigates to the given item.
 	 *
 	 * @param id the id of the item
-	 * @param showOnMap whether the item (or items) should be show and selected on map
+	 * @param showOnMap whether the item (or items) should be shown and selected on map
 	 * @param items the multiple items to be shown, if any
 	 * @param addToBackStack whether this navigation action should be added to back stack
 	 * @param clearForwardStack TODO
@@ -493,15 +493,53 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		return lastDestinationEndPoint;
 	}
 	
+	/**
+	 * Navigates to the given {@link DestinationEndPoint}, which may include the
+	 * item, a specific set of its children, categories or language change.
+	 *
+	 * @param destinationEndPoint
+	 *            the destination end point
+	 * @param showOnMap
+	 *            whether the item (or items) should be shown and selected on
+	 *            map
+	 * @param addToBackStack
+	 *            whether this navigation action should be added to back stack
+	 * @param clearForwardStack
+	 *            TODO
+	 * @return the {@link DestinationEndPoint} representing this navigation
+	 *         action
+	 */
+	private DestinationEndPoint navigateTo(DestinationEndPoint destinationEndPoint, boolean showOnMap,
+			boolean addToBackStack, boolean clearForwardStack){
+		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(mSelectedItem.getID(), mSightListItems);
+		lastDestinationEndPoint.setCategories(CategoryUtils.getSelectedMarkerCategories());
+		lastDestinationEndPoint.setLanguage(mLanguage);
+		if((destinationEndPoint.getID()!= -1) && (mSelectedItem.getID() != destinationEndPoint.getID())){
+			navigateTo(destinationEndPoint.getID(), showOnMap, destinationEndPoint.getClusteredItems(), false, clearForwardStack);
+		}
+		if((destinationEndPoint.getCategories()!= null) && !CategoryUtils.getSelectedMarkerCategories().equals(destinationEndPoint.getCategories())){
+			selectCategories(destinationEndPoint.getCategories(), lastDestinationEndPoint.getCategories(), false);
+		}
+		if((destinationEndPoint.getLanguage()!=null) && !destinationEndPoint.getLanguage().isEmpty() && !mLanguage.equals(destinationEndPoint.getLanguage())){
+			//changeLanguage(destinationEndPoint.getLanguage());
+		}
+		if(addToBackStack && (mSelectedItem != null)){
+			mBackStack.add(lastDestinationEndPoint);
+			if(clearForwardStack){
+				mForwardStack.clear();
+			}
+		}
+		return destinationEndPoint;
+	}
+	
 	private void initializeListView() {
 		if (mSightListItems != null && !mSightListItems.isEmpty()) {
 			mListItemsFromSelectedCategories = new ArrayList<SightMarkerItem>();
-			ArrayList<String> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+			ArrayList<Category> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 			
 			for (SightMarkerItem item : mSightListItems){
-				for (String chosenCategory : chosenCategories) {
-					Category category = new Category(chosenCategory);
-					if (category.isItemBelongsToThisCategory(item)){
+				for (Category chosenCategory : chosenCategories) {
+					if (chosenCategory.isItemBelongsToThisCategory(item)){
 						mListItemsFromSelectedCategories.add(item);
 						break;
 					}
@@ -536,7 +574,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 			DestinationEndPoint backItem = mBackStack.poll();
 			Log.d("MyLogs", "navigating back to "+backItem.getID()+", multipleItems: "+(backItem.getClusteredItems()!=null));
-			navigateTo(backItem.getID(), true, backItem.getClusteredItems(),
+			navigateTo(backItem, true,
 					false, false);
 		}
 	}
@@ -547,7 +585,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void navigateForward() {
 		if(!mForwardStack.isEmpty()){
 			DestinationEndPoint forwardItem = mForwardStack.poll();
-			navigateTo(forwardItem.getID(), true, forwardItem.getClusteredItems(), true, false);
+			navigateTo(forwardItem, true, true, false);
 		}
 	}
 	
@@ -570,10 +608,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	/**
 	 * Sets the selected categories.
 	 *
-	 * @param setCategories the new selected categories
+	 * @param newSelectedCategories the new selected categories
 	 * @param addToBackStack whether this action should be added to the back stack
 	 */
-	private void selectCategories(List<Category> setCategories, boolean addToBackStack){
+	private void selectCategories(List<Category> newSelectedCategories, List<Category> oldSelectedCategories, boolean addToBackStack){
 		
 		//create a temporary array to hold the current "checked" categories state 
 		boolean[] tmp = Arrays.copyOf(Appl.selectedCategories, Appl.selectedCategories.length);
@@ -590,7 +628,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		//iterate over all categories
 		for(int i=0; i<itemCategories.size(); i++){
 			//iterate over new categories
-			for(Category setCategory : setCategories){
+			for(Category setCategory : newSelectedCategories){
 				
 				//if new category equals to current 
 				//change the checkbox to "checked" state
@@ -618,7 +656,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		
 		if (addToBackStack) {
 			DestinationEndPoint backStackItem = new DestinationEndPoint(-1,
-					null, itemCategories, null);
+					null, newSelectedCategories, null);
+			mBackStack.add(backStackItem);
+			mForwardStack.clear();
 		}
 	}
 
@@ -633,13 +673,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
     /* **************************************************************************** */
 
 	@Override
-	public void onFilterDialogPositiveClick(DialogFragment dialog) {
-		Appl.notifyMarkerCategoryUpdates();
+	public void onFilterDialogPositiveClick(DialogFragment dialog, List<Category> newCategories, List<Category> oldCategories) {
+		selectCategories(newCategories, oldCategories, true);
 	}
 
 	@Override
 	public void onFilterDialogNegativeClick(DialogFragment dialog) {
-		Appl.notifyMarkerCategoryUpdates();
+		//Do nothing
 	}
 
 	/* **************************************************************************** */

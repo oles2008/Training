@@ -41,14 +41,13 @@ public class CategoryUtils {
 	 *
 	 * @return the ArrayList with selected marker categories
 	 */
-	public static ArrayList<String> getSelectedMarkerCategories(){
-		ArrayList<String> selectedMarkerCategories = new ArrayList<String>();
+	public static ArrayList<Category> getSelectedMarkerCategories(){
+		ArrayList<Category> selectedMarkerCategories = new ArrayList<Category>();
 		for (int i=0; i<Appl.selectedCategories.length; i++) {
 			if (Appl.selectedCategories[i]) {
-				selectedMarkerCategories.add(getMarkerCategories().get(i).toLowerCase());
+				selectedMarkerCategories.add(new Category(getMarkerCategories().get(i).toLowerCase()));
 			}
 		}
-		Log.d("Marker", selectedMarkerCategories.toString());
 		return selectedMarkerCategories;
 	}
 }

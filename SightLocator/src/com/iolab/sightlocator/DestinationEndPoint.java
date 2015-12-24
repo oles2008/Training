@@ -16,11 +16,11 @@ public class DestinationEndPoint implements Parcelable {
 	
 	private int mID;
 	private Collection<SightMarkerItem> mClusteredItems;
-	private List<String> mCategories = new ArrayList<String>();
+	private List<Category> mCategories = new ArrayList<Category>();
 	private String mLanguage;
 	
 	
-	public DestinationEndPoint(int id, Collection<SightMarkerItem> clusteredItems, List<String> categories, String language){
+	public DestinationEndPoint(int id, Collection<SightMarkerItem> clusteredItems, List<Category> categories, String language){
 		mID = id;
 		mClusteredItems = clusteredItems;
 		mCategories = categories;
@@ -30,7 +30,7 @@ public class DestinationEndPoint implements Parcelable {
 	public DestinationEndPoint(Parcel src){
 		mID = src.readInt();
 		mClusteredItems = src.readArrayList(SightMarkerItem.class.getClassLoader());
-		mCategories = src.readArrayList(String.class.getClassLoader());
+		mCategories = src.readArrayList(Category.class.getClassLoader());
 		mLanguage = src.readString();
 	}
 	
@@ -57,11 +57,11 @@ public class DestinationEndPoint implements Parcelable {
 		}
 	}
 	
-	public List<String> getCategories() {
+	public List<Category> getCategories() {
 		return mCategories;
 	}
 	
-	public void setCategories(List<String> categories) {
+	public void setCategories(List<Category> categories) {
 		mCategories = categories;
 	}
 	
