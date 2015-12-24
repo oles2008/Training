@@ -15,11 +15,11 @@ public class CategoryUtils {
 	private CategoryUtils(){}
 
 	public static int getCategoryMarkerResId(String category) {
-		return 0;
+		return R.drawable.orange_map_marker;
 	}
 	
 	public static int getCategorySelectedMarkerResId(String category) {
-		return R.drawable.orange_dot_marker_selected;
+		return R.drawable.orange_map_marker_selected;
 	}
 	
 	/**

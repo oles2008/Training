@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,20 +62,18 @@ public class MainActivity extends BaseActivity
             getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
         }
                 
-        // check if gps module is presented, switched off
+        // check if gps module is presented, enabled or disabled
         LocationManager mgr = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
         if (mgr != null) {
         	if (mgr.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
         		if(mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-					Toast.makeText(Appl.appContext, "GPS is enabled", 
-        					Toast.LENGTH_SHORT).show();
+					Log.d("gps", "GPS is enabled");
         		} else {
         			showGPSDisabledAlertToUser();
         		}
         	}
         	else {
-        		Toast.makeText(getApplicationContext(), "GPS is not found", 
-        					Toast.LENGTH_SHORT).show();
+				Log.d("gps", "GPS is not found");
         	}
         }
     }
