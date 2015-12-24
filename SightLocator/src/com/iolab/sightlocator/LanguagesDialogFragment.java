@@ -1,6 +1,5 @@
 package com.iolab.sightlocator;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -14,34 +13,41 @@ public class LanguagesDialogFragment extends DialogFragment {
 	int mItemId = -1;
 	String[] arrayOfLanguages; //input for builder.setSingleChoiceItems
 	String[] availableLanguages;//goes from Action
-	LanguagesDialogListener mListener; //we have created listener for dialog buttons
+	String[] langsForSharedPreference;
+	SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefListener;
+	
 	
 	//class constructor
-	LanguagesDialogFragment(String[] languages){
+	LanguagesDialogFragment(String[] languages, SharedPreferences.OnSharedPreferenceChangeListener sharedPrefListener){
 		availableLanguages = languages;
+		mSharedPrefListener = sharedPrefListener;
 	}
 	
-	LanguagesDialogFragment(){
+	LanguagesDialogFragment(SharedPreferences.OnSharedPreferenceChangeListener sharedPrefListener){
 		availableLanguages = null;
+		mSharedPrefListener = sharedPrefListener;
 	}
 		
-	public void onAttach(Activity activity){
-		super.onAttach(activity);
-		try {
-			mListener = (LanguagesDialogListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement LanguagesDialogListener");
-		}
-	}
+//	public void onAttach(Activity activity){
+//		super.onAttach(activity);
+//		try {
+//			mListener = (LanguagesDialogListener) activity;
+//		} catch (ClassCastException e) {
+//			throw new ClassCastException(activity.toString() + " must implement LanguagesDialogListener");
+//		}
+//	}
 
 	//List of abbreviations is transformed into long names for dialog builder
 	//If array  from action is empty then list of languages from strings will be taken
 	private void setArrayOfLanguages() {
 		if (availableLanguages != null && availableLanguages.length != 0) {
 			arrayOfLanguages = Language.getDisplayLanguagesFromAbbrArray(availableLanguages);
+			langsForSharedPreference = availableLanguages;
 		} else {
 			arrayOfLanguages = Language.getDisplayLanguagesFromAbbrArray(Appl.appContext.getResources().getStringArray(
 					R.array.content_language_abbr));
+			langsForSharedPreference = Appl.appContext.getResources().getStringArray(
+					R.array.content_language_abbr);
 		}
 	}
 	
@@ -49,16 +55,12 @@ public class LanguagesDialogFragment extends DialogFragment {
 		SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(getString(R.string.content_language),langToSet);
-		editor.commit();						
+		editor.commit();
+		mSharedPrefListener.onSharedPreferenceChanged(sharedPref, getString(R.string.content_language));
 	}
 	
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		//run action
-//		Intent intent = new Intent(getActivity(), SightsIntentService.class);
-//		intent.putExtra(SightsIntentService.ACTION,
-//				new GetAvailableContentLanguagesAction(mItemId));
-//		getActivity().startService(intent);
-//		//prepare input for builder
+		//prepare input for builder
 		setArrayOfLanguages();
 		//create dialog using builder
 	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -74,16 +76,13 @@ public class LanguagesDialogFragment extends DialogFragment {
 			public void onClick(DialogInterface dialog, int which) {
 				// Set into SharedPreferences variable selected in dialog language
 				if(mSelectedItem != -1){
-				setLanguageIntoPreference(arrayOfLanguages[mSelectedItem]);
+				setLanguageIntoPreference(langsForSharedPreference[mSelectedItem]);
 				}
-				mListener.onLanguagesDialogPositiveClick(LanguagesDialogFragment.this);
-			}
+				}
 		});
 	    builder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// Send the negative button event back to the host activity
-				mListener.onLanguagesDialogNegativeClick(LanguagesDialogFragment.this);
 				dialog.cancel();
 			}
 		});

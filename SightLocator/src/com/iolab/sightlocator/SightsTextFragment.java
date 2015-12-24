@@ -11,6 +11,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -41,7 +42,9 @@ import com.iolab.sightlocator.Appl.ViewUpdateListener;
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		OnMapLongClickListener, OnMarkerClickListener,
 		OnClusterClickListener<SightMarkerItem>,
-		OnClusterItemClickListener<SightMarkerItem>, ViewUpdateListener {
+		OnClusterItemClickListener<SightMarkerItem>,
+		ViewUpdateListener,
+		SharedPreferences.OnSharedPreferenceChangeListener{
 
 	private final int ICON_SIZE = 200;
 	private Marker mSelectedMarker = null;
@@ -120,13 +123,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	private void showLanguagesDialog(String[] inputLanguages) {
 		// Create an instance of the dialog fragment and show it
-		DialogFragment dialogLangs = new LanguagesDialogFragment(inputLanguages);
+		DialogFragment dialogLangs = new LanguagesDialogFragment(inputLanguages,this);
 		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
 	}
 	
 	private void showLanguagesDialog() {
 		// Create an instance of the dialog fragment and show it
-		DialogFragment dialogLangs = new LanguagesDialogFragment();
+		DialogFragment dialogLangs = new LanguagesDialogFragment(this);
 		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
 	}
 	
@@ -471,5 +474,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mAddress.setVisibility(View.GONE);
 		return false;
 	}
-
+	
+	public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key){
+		mLanguage = sharedPreferences.getString(key, null);
+		Log.w("igor","onSPChange: "+sharedPreferences.getString(key, null));
+	}
 }

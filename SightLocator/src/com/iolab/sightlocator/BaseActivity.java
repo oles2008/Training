@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class BaseActivity extends Activity implements FilterDialogFragment.FilterDialogListener, LanguagesDialogFragment.LanguagesDialogListener{
+public class BaseActivity extends Activity implements FilterDialogFragment.FilterDialogListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -109,18 +109,6 @@ public class BaseActivity extends Activity implements FilterDialogFragment.Filte
 	*/
 	public void onPause(){
 		super.onPause();
-	}
-
-	@Override
-	public void onLanguagesDialogPositiveClick(DialogFragment dialog) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onLanguagesDialogNegativeClick(DialogFragment dialog) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
