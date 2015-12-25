@@ -468,9 +468,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		return false;
 	}
 	
-	public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key){
-		mLanguage = sharedPreferences.getString(key, null);
-		//test script till the end of method
+	public void changeLanguage(String language){
+		mLanguage = language;
+		//test script. May be changed
 		Resources res = getResources();
 		FragmentManager fragmentManager = getFragmentManager();
 
@@ -490,4 +490,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
 	}
+	
+	public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key){
+		changeLanguage(sharedPreferences.getString(key, null));
+			}
 }
