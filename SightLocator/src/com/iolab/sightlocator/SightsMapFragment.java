@@ -294,13 +294,10 @@ public class SightsMapFragment extends Fragment implements
 
 	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
 			ArrayList<Category> chosenCategories) {
-		if(itemSet.add(item)){
-			for (Category chosenCategory : chosenCategories) {
-				if (chosenCategory.isItemBelongsToThisCategory(item)){
-					mItemSetForGivenCategory.add(item);
-					clusterManager.addItem(item);
-					break;
-				}
+		if (itemSet.add(item)) {
+			if (CategoryUtils.isItemInCategories(chosenCategories, item)) {
+				mItemSetForGivenCategory.add(item);
+				clusterManager.addItem(item);
 			}
 		}
 	}

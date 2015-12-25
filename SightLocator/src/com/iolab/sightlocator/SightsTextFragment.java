@@ -462,7 +462,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @param showOnMap whether the item (or items) should be shown and selected on map
 	 * @param items the multiple items to be shown, if any
 	 * @param addToBackStack whether this navigation action should be added to back stack
-	 * @param clearForwardStack TODO
+	 * @param clearForwardStack whether forward stack should be cleared
 	 * @return the {@link DestinationEndPoint} representing this navigation action
 	 */
 	private DestinationEndPoint navigateTo(int id, boolean showOnMap,
@@ -505,22 +505,24 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @param addToBackStack
 	 *            whether this navigation action should be added to back stack
 	 * @param clearForwardStack
-	 *            TODO
+	 *            whether forward stack should be cleared
 	 * @return the {@link DestinationEndPoint} representing this navigation
 	 *         action
 	 */
 	private DestinationEndPoint navigateTo(DestinationEndPoint destinationEndPoint, boolean showOnMap,
 			boolean addToBackStack, boolean clearForwardStack){
-		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(mSelectedItem.getID(), mSightListItems);
+		int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
+		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(selectedItemId, mSightListItems);
 		lastDestinationEndPoint.setCategories(CategoryUtils.getSelectedMarkerCategories());
 		lastDestinationEndPoint.setLanguage(mLanguage);
-		if((destinationEndPoint.getID()!= -1) && (mSelectedItem.getID() != destinationEndPoint.getID())){
+		if((destinationEndPoint.getID()!= -1) && (selectedItemId != destinationEndPoint.getID())){
 			navigateTo(destinationEndPoint.getID(), showOnMap, destinationEndPoint.getClusteredItems(), false, clearForwardStack);
 		}
 		if((destinationEndPoint.getCategories()!= null) && !CategoryUtils.getSelectedMarkerCategories().equals(destinationEndPoint.getCategories())){
 			selectCategories(destinationEndPoint.getCategories(), lastDestinationEndPoint.getCategories(), false);
 		}
 		if((destinationEndPoint.getLanguage()!=null) && !destinationEndPoint.getLanguage().isEmpty() && !mLanguage.equals(destinationEndPoint.getLanguage())){
+			//TODO
 			//changeLanguage(destinationEndPoint.getLanguage());
 		}
 		if(addToBackStack && (mSelectedItem != null)){
@@ -538,11 +540,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			ArrayList<Category> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 			
 			for (SightMarkerItem item : mSightListItems){
-				for (Category chosenCategory : chosenCategories) {
-					if (chosenCategory.isItemBelongsToThisCategory(item)){
-						mListItemsFromSelectedCategories.add(item);
-						break;
-					}
+				if(CategoryUtils.isItemInCategories(chosenCategories, item)){
+					mListItemsFromSelectedCategories.add(item);
 				}
 			}
 			mSights.setAdapter(new SightsAdapter(getActivity(),
@@ -567,13 +566,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 */
 	private void navigateBack() {
 		if (!mBackStack.isEmpty()) {
+			int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
+			//TODO Add language
 			DestinationEndPoint currentDestinationEndPoint = new DestinationEndPoint(
-					mSelectedItem.getID(), mSightListItems);
+					selectedItemId, mSightListItems, CategoryUtils.getSelectedMarkerCategories(), null);
 
 			mForwardStack.add(currentDestinationEndPoint);
 
 			DestinationEndPoint backItem = mBackStack.poll();
-			Log.d("MyLogs", "navigating back to "+backItem.getID()+", multipleItems: "+(backItem.getClusteredItems()!=null));
 			navigateTo(backItem, true,
 					false, false);
 		}
@@ -655,11 +655,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.notifyMarkerCategoryUpdates();
 		
 		if (addToBackStack) {
-			DestinationEndPoint backStackItem = new DestinationEndPoint(-1,
-					null, newSelectedCategories, null);
+			int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
+			DestinationEndPoint backStackItem = new DestinationEndPoint(selectedItemId,
+					null, oldSelectedCategories, null);
 			mBackStack.add(backStackItem);
 			mForwardStack.clear();
 		}
+		
+		
 	}
 
 	public void showFilterDialog() {

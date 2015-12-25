@@ -2,6 +2,7 @@ package com.iolab.sightlocator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import android.util.Log;
@@ -49,5 +50,21 @@ public class CategoryUtils {
 			}
 		}
 		return selectedMarkerCategories;
+	}
+	
+	/**
+	 * Checks if the {@link SightMarkerItem} belongs to the given categories.
+	 *
+	 * @param categories the categories
+	 * @param item the item
+	 * @return true, if is item belongs to at least one of the categories
+	 */
+	public static boolean isItemInCategories(Collection<Category> categories, SightMarkerItem item) {
+		for (Category category : categories) {
+			if (category.isItemBelongsToThisCategory(item)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
