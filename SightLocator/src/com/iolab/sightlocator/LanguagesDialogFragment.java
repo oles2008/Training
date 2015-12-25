@@ -27,16 +27,7 @@ public class LanguagesDialogFragment extends DialogFragment {
 		availableLanguages = null;
 		mSharedPrefListener = sharedPrefListener;
 	}
-		
-//	public void onAttach(Activity activity){
-//		super.onAttach(activity);
-//		try {
-//			mListener = (LanguagesDialogListener) activity;
-//		} catch (ClassCastException e) {
-//			throw new ClassCastException(activity.toString() + " must implement LanguagesDialogListener");
-//		}
-//	}
-
+	
 	//List of abbreviations is transformed into long names for dialog builder
 	//If array  from action is empty then list of languages from strings will be taken
 	private void setArrayOfLanguages() {

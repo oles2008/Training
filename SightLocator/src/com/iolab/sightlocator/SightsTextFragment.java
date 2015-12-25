@@ -441,13 +441,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
 		mSelectedItem = item;
-
-
-      /*  Fragment textFragmet = getActivity().getFragmentManager()
-						.findFragmentById(R.id.text_fragment);
-				TextView object_title = (TextView) textFragmet.getView().findViewById(R.id.text_view_object_title);
-				object_title.setText(item.getTitle());   
-		*/
 		mSights.setVisibility(View.GONE);
 		mSightListItems = null;
 		mAddress.setVisibility(View.VISIBLE);    

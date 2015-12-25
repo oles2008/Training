@@ -12,7 +12,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 public class GetAvailableContentLanguagesAction implements ServiceAction, Parcelable{
-	int mItemId = -1;//TODO How get this from external env
+	int mItemId = -1;
 	
 	public GetAvailableContentLanguagesAction(int id) {
 		mItemId = id;
@@ -75,8 +75,7 @@ public class GetAvailableContentLanguagesAction implements ServiceAction, Parcel
 		// The cursor returns list of available languages for defined item
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.rawQuery(sqlQuery, null);
-		// here we transform cursors result into itemAvailableLanguages
-		// ArrayList
+		// here we transform cursors result into itemAvailableLanguages ArrayList
 		if (cursor.getCount() == 1) {
 			cursor.moveToFirst();
 			for (int i = 0; i < cursor.getColumnCount(); i++) {
@@ -88,7 +87,6 @@ public class GetAvailableContentLanguagesAction implements ServiceAction, Parcel
 		}
 		cursor.close();
 		return itemAvailableLanguages.toArray(new String[itemAvailableLanguages.size()]);
-		//return itemAvailableLanguages;
 	}
 
 	@Override
