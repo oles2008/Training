@@ -182,6 +182,15 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	}
 	
 	/**
+	 * Sets the category.
+	 *
+	 * @param category the new category
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+	/**
 	 * Gets the cluster which contains this item if the latter is clustered.
 	 *
 	 * @return the cluster which contains this item if the latter is clustered,

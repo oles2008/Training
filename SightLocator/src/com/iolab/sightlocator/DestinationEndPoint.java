@@ -72,6 +72,22 @@ public class DestinationEndPoint implements Parcelable {
 	public void setLanguage(String language) {
 		mLanguage = language;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("ID: ");
+		result.append(getID());
+		result.append(", categories: [");
+		if (getCategories() != null) {
+			for (Category category : getCategories()) {
+				result.append(category.toString());
+				result.append(", ");
+			}
+			result.replace(result.length() - 1, result.length(), "]");
+		}
+		return result.toString();
+	}
 
 	@Override
 	public int describeContents() {

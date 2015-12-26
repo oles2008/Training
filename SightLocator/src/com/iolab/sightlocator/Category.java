@@ -25,7 +25,7 @@ public class Category {
 	public boolean isItemBelongsToThisCategory(SightMarkerItem item){
 		//TODO KOSTYL
 		if (item.getCategory() == null) {
-			return false;
+			return true;
 		}
 
 		//KOSTYL "All"

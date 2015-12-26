@@ -143,7 +143,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			return true;
 			
 		case R.id.action_up:
-			navigateUp();
+			navigateUp(true);
 			return true;
 		
 		default:
@@ -352,6 +352,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (bundle.getInt(Tags.ID, -1) != -1) {
 			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
 			mSightListItems = null;
+			cleanAllViews();
 		}
 		
 		if (bundle.getString(Tags.SIGHT_NAME) != null) {
@@ -390,6 +391,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (bundle.getParcelable(Tags.SIGHT_POSITION) != null) {
 			LatLng position = bundle.getParcelable(Tags.SIGHT_POSITION);
 			mSelectedItem.setPosition(position);
+		}
+		
+		if (bundle.getString(Tags.MARKER_FILTER_CATEGORIES) != null) {
+			mSelectedItem.setCategory(bundle.getString(Tags.MARKER_FILTER_CATEGORIES));
 		}
 		
 		if (bundle.getIntArray(Tags.PARENT_IDS) != null) {
@@ -514,6 +519,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
 		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(selectedItemId, mSightListItems);
 		lastDestinationEndPoint.setCategories(CategoryUtils.getSelectedMarkerCategories());
+		//TODO
 		lastDestinationEndPoint.setLanguage(mLanguage);
 		if((destinationEndPoint.getID()!= -1) && (selectedItemId != destinationEndPoint.getID())){
 			navigateTo(destinationEndPoint.getID(), showOnMap, destinationEndPoint.getClusteredItems(), false, clearForwardStack);
@@ -525,7 +531,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			//TODO
 			//changeLanguage(destinationEndPoint.getLanguage());
 		}
-		if(addToBackStack && (mSelectedItem != null)){
+		if(addToBackStack){
 			mBackStack.add(lastDestinationEndPoint);
 			if(clearForwardStack){
 				mForwardStack.clear();
@@ -591,17 +597,18 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	/**
 	 * Navigate up.
+	 * @param addToBackStack whether this action should be added to back stack
 	 */
-	private void navigateUp() {
+	private void navigateUp(boolean addToBackStack) {
 		int currentItemParent = -1;
 		if (mSelectedItem != null) {
 			currentItemParent = ItemGroupAnalyzer.findCommonParent(
 					Collections.singletonList(mSelectedItem.getParentIDs()), 0);
 		}
 		if (currentItemParent == -1) {
-			navigateTo(mCommonParentID, true, true);
+			navigateTo(mCommonParentID, true, addToBackStack);
 		} else {
-			navigateTo(currentItemParent, true, true);
+			navigateTo(currentItemParent, true, addToBackStack);
 		}
 	}
 	
@@ -654,12 +661,20 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		
 		Appl.notifyMarkerCategoryUpdates();
 		
+		
 		if (addToBackStack) {
 			int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
 			DestinationEndPoint backStackItem = new DestinationEndPoint(selectedItemId,
 					null, oldSelectedCategories, null);
 			mBackStack.add(backStackItem);
 			mForwardStack.clear();
+		}
+		
+		if (mSelectedItem != null
+				&& !CategoryUtils.isItemInCategories(
+						CategoryUtils.getSelectedMarkerCategories(),
+						mSelectedItem)) {
+			navigateUp(false);
 		}
 		
 		
