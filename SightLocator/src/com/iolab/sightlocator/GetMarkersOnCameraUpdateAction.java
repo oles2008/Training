@@ -127,12 +127,12 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 										cursor.getDouble(1));
 			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
 			sightMarkerItemList
-					.add(new SightMarkerItem(position, cursor.getString(cursor
-							.getColumnIndex(SIGHT_NAME+"en")), cursor
-							.getString(cursor.getColumnIndex(SIGHT_ADDRESS+"en")),
-							null, null, cursor.getString(cursor
-									.getColumnIndex(MARKER_CATEGORY)), cursor.getInt(cursor
-									.getColumnIndex(COLUMN_ID)), parentIDs));
+					.add(new SightMarkerItem(position, 
+							cursor.getString(cursor.getColumnIndex(SIGHT_NAME+"en")), 
+							cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS+"en")),
+							null, null, Tags.IMAGE_BLANK,
+							cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)), 
+							cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), parentIDs));
 			listOfArrays.add(parentIDs);			
 
 		}
@@ -143,12 +143,12 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			
 			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
 			sightMarkerItemList
-			.add(new SightMarkerItem(position, cursor.getString(cursor
-					.getColumnIndex(SIGHT_NAME+"en")), cursor
-					.getString(cursor.getColumnIndex(SIGHT_ADDRESS+"en")),
-					null, null, cursor.getString(cursor
-							.getColumnIndex(MARKER_CATEGORY)), cursor.getInt(cursor
-							.getColumnIndex(COLUMN_ID)), parentIDs));			
+			.add(new SightMarkerItem(position, 
+					cursor.getString(cursor.getColumnIndex(SIGHT_NAME+"en")), 
+					cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS+"en")),
+					null, null, Tags.IMAGE_BLANK,
+					cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)), 
+					cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), parentIDs));			
 			listOfArrays.add(parentIDs); 
 		}
 				

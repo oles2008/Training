@@ -15,7 +15,9 @@ import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.database.Cursor;
@@ -24,6 +26,7 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -193,47 +196,65 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		return cursor;
 	}
 	
-	private String getSavedImagePath(String pathToImageFromDatabase) {
-		if (pathToImageFromDatabase !=null && pathToImageFromDatabase.startsWith("/")){
-			pathToImageFromDatabase = pathToImageFromDatabase.substring(1, pathToImageFromDatabase.length());
+	private Pair<String, String> getImagePathAndSource(String imagePathFromDatabase) {
+		if (imagePathFromDatabase == null || imagePathFromDatabase.isEmpty()){
+			return new Pair<String, String>(null, Tags.IMAGE_BLANK);
 		}
 		
-		if (pathToImageFromDatabase == null || pathToImageFromDatabase.isEmpty()){
-			return null;
-		}else{
-			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED))
-			{
-//				Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
-			
-				String destinationPath = Environment
-						.getExternalStorageDirectory().getPath()
-						+ "/"
-						+ Appl.appContext.getPackageName()
-						+ "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS 
-						+ pathToImageFromDatabase;
-				
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImageFromDatabase, destinationPath);
-				return destinationPath;
-				
-			} else
-			{
-				Log.d("Mytag","Internal storage:");
-				
-				
-				String destinationPath = Appl.appContext.getCacheDir() + "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImageFromDatabase;
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImageFromDatabase, destinationPath);
-				
-//				Log.d("Mytag","Destination:"+ destinationPath);
-				return destinationPath;
-			}
+		if(imagePathFromDatabase.startsWith("/")){
+			imagePathFromDatabase = imagePathFromDatabase.substring(1, imagePathFromDatabase.length());
 		}
+
+		String path;
+		String type;
+		File file;
+		
+		Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
+		// looking for an image in the following order:
+		// 1. In external resources
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			path = Appl.appContext.getExternalCacheDir() + "/"
+				+ Tags.PATH_TO_IMAGES_IN_ASSETS 
+				+ imagePathFromDatabase;
+//			path = Environment.getExternalStorageDirectory().getPath() + "/"
+//				+ Appl.appContext.getPackageName()
+		}
+		// 2. In internal resources
+		else {
+			path = Appl.appContext.getCacheDir() + "/"
+				+ Tags.PATH_TO_IMAGES_IN_ASSETS 
+				+ imagePathFromDatabase;
+		}
+		file = new File(path);
+		if(file.exists()) {
+			return new Pair<String, String>(path, Tags.IMAGE_FROM_CASHE);
+		}
+
+		// 3. In assets
+		List<String> assets = new ArrayList<String>();
+		try {
+			String folder = Tags.PATH_TO_IMAGES_IN_ASSETS;
+			if(folder.endsWith("/")) {
+				folder = folder.substring(0, folder.length() - 1);
+			}
+			assets = Arrays.asList(Appl.appContext.getAssets().list(folder));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(assets.contains(imagePathFromDatabase)){
+			path = Tags.PATH_TO_IMAGES_IN_ASSETS + imagePathFromDatabase;
+			type = Tags.IMAGE_FROM_ASSET;
+			
+			return new Pair<String, String>(path, type);
+		}
+		
+		// 4. Online
+		// look for an image online and save into cache
+		
+		return new Pair<String, String>(null, Tags.IMAGE_BLANK);
 	}
-	
+
 	@Override
 	public void runInService() {
 		
@@ -268,11 +289,14 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			}
 		}
 		
+		Pair<String, String> pathType = getImagePathAndSource(pathToImage);
+		
 		Bundle resultData = new Bundle();
 		resultData.putInt(Tags.ID, mID);
 		resultData.putString(	Tags.SIGHT_DESCRIPTION, sightDescription);
 		resultData.putLong(		Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
-		resultData.putString(	Tags.PATH_TO_IMAGE, getSavedImagePath(pathToImage));
+		resultData.putString(	Tags.PATH_TO_IMAGE, pathType.first);
+		resultData.putString(	Tags.TYPE_OF_IMAGE_SOURCE, pathType.second);
 		resultData.putString(	Tags.SIGHT_NAME, sightName);
 		resultData.putString(	Tags.SIGHT_ADDRESS, sightAddress);
 		resultData.putString(	Tags.MARKER_FILTER_CATEGORIES, itemCategory);
@@ -298,12 +322,14 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							cursor.getDouble(cursor
 									.getColumnIndex(COLUMN_LONGITUDE)));
 				}
+				
+				pathType = getImagePathAndSource(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH)));
 				fullItems
 					.add(new SightMarkerItem(sightPosition,
 												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + mLanguage)), 		//cursor.getString(4),
 												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + mLanguage)), 	//cursor.getString(5),
 												null,
-												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
+												pathType.first, pathType.second,	//getSavedImagePath(cursor.getString(2)),
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
 												cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
 												null));
@@ -317,12 +343,13 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								cursor.getDouble(cursor
 										.getColumnIndex(COLUMN_LONGITUDE)));
 					}
+					pathType = getImagePathAndSource(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH)));
 					fullItems
 						.add(new SightMarkerItem(sightPosition,
 											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + mLanguage)), 		//cursor.getString(4),
 												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + mLanguage)), 	//cursor.getString(5),
 												null,
-												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
+												pathType.first, pathType.second,
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
 											cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
 											null));

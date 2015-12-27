@@ -2,6 +2,7 @@ package com.iolab.sightlocator;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,6 +66,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private ArrayList<SightMarkerItem> mSightListItems;
 	private ArrayList<SightMarkerItem> mListItemsFromSelectedCategories;
 	private String mImagePath;
+	private String mImageSource = Tags.IMAGE_BLANK;
 	private TextView mAddress;
 	private TextView mTitle;
 	private TextView mDescription;
@@ -91,6 +94,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSightListItems = savedInstanceState.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 			mSelectedItem = savedInstanceState.getParcelable(Tags.SELECTED_ITEM);
 			mImagePath = savedInstanceState.getString(Tags.PATH_TO_IMAGE);
+			mImageSource = savedInstanceState.getString(Tags.TYPE_OF_IMAGE_SOURCE);
 			List<DestinationEndPoint> savedBackStack = savedInstanceState.getParcelableArrayList(Tags.BACK_STACK);
 			if(savedBackStack != null){
 				mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>(savedBackStack));
@@ -117,7 +121,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mDescription = (TextView) inflatedView.findViewById(R.id.textView);
 		mImage = (ImageView) inflatedView.findViewById(
 				R.id.imageView);
-		changeImageFragmentUsingImageUri(mImagePath);
+
+		changeImageFragment(mImagePath, mImageSource); 
 		return inflatedView;
 	}
 	
@@ -274,26 +279,45 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
     /**
 	 * On markers click change image fragment from default (one pixel image) to
-	 * an icon, using image uri. The uri is stored in ImageView tag and then
-	 * used in onSaveInstanceState() and onActivityCreated methods
+	 * an icon, using image uri and type of source (assets or storage) type. 
 	 * 
 	 * @param uri
 	 *            the uri, path to device Download folder
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @param type
+	 * 			  describe type of the source of an image
 	 */
-	private void changeImageFragmentUsingImageUri(String uri) {
-		mImagePath = uri;
-		if (uri == null || uri.isEmpty()) {
+	private void changeImageFragment(String uri, String type) {
+		// blank image
+		if(type.equals(Tags.IMAGE_BLANK) || type == null || type.isEmpty()) {
 			mImage.setImageBitmap(null);
 			return;
 		}
-		mImage.setImageURI(Uri.parse(uri));
-		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
-		mImage.setImageBitmap(resizedBitmap);
-		//mImage.setTag(R.string.imageview_tag_uri, uri);
-	}
+		
+		// image from storage
+		if(type.equals(Tags.IMAGE_FROM_CASHE)){
+			mImage.setImageURI(Uri.parse(uri));		
+		}
 
+		// image from assets
+		if(type.equals(Tags.IMAGE_FROM_ASSET)){
+			try{
+			    // get input stream
+			    InputStream ims = Appl.appContext.getAssets().open(uri);
+			    
+			    // load image as Drawable and set to ImageView
+			    Drawable draw = Drawable.createFromStream(ims, null);
+			    mImage.setImageDrawable(draw);
+			}
+			catch(IOException ex) {
+				return;
+			}
+		}
+		
+		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
+		mImage.setImageBitmap(resizedBitmap);		
+	}
+	
+	
 	@Override
 	public void onMapLongClick(LatLng arg0) {
 		onMapClick(arg0);
@@ -357,6 +381,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mSightListItems);
 		args.putParcelable(Tags.SELECTED_ITEM, mSelectedItem);
 		args.putString(Tags.PATH_TO_IMAGE, mImagePath);
+		args.putString(Tags.TYPE_OF_IMAGE_SOURCE, mImageSource);
 		args.putParcelableArrayList(Tags.BACK_STACK, new ArrayList<DestinationEndPoint>(mBackStack));
 		args.putParcelableArrayList(Tags.FORWARD_STACK, new ArrayList<DestinationEndPoint>(mForwardStack));
 	}
@@ -404,8 +429,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-			changeImageFragmentUsingImageUri(bundle
-					.getString(Tags.PATH_TO_IMAGE));
+			changeImageFragment(bundle.getString(Tags.PATH_TO_IMAGE), 
+					bundle.getString(Tags.TYPE_OF_IMAGE_SOURCE));
+//			changeImageFragmentUsingImageUri(bundle
+//					.getString(Tags.PATH_TO_IMAGE));
 		} 
 		
 		if (bundle.getInt(Tags.COMMON_PARENT_ID,-1) != -1) {
@@ -481,12 +508,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	}
 	
 	private void cleanAllViews(){
-		 changeImageFragmentUsingImageUri(null);
-		 changeTextFragment(null);
-		 mAddress.setText(null);
-		 mTitle.setText(null);
-		 mDescription.setText(null);
-		 mSights.setVisibility(View.GONE);
+		changeImageFragment(null, Tags.IMAGE_BLANK);
+		changeTextFragment(null);
+		mAddress.setText(null);
+		mTitle.setText(null);
+		mDescription.setText(null);
+		mSights.setVisibility(View.GONE);
 	}
 
 	/**
