@@ -1,11 +1,18 @@
 package com.iolab.sightlocator;
 
-public class Category {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Category implements Parcelable {
 
 	private String mCategoryString;
 	
 	public Category(String string) {
 		mCategoryString = string.toLowerCase().trim();
+	}
+	
+	public Category(Parcel in) {
+		this(in.readString());
 	}
 	
 	@Override
@@ -49,5 +56,27 @@ public class Category {
 			return true;
 		}
 		return false;
+	}
+	
+	public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>() {
+		public Category createFromParcel(Parcel in) {
+			return new Category(in);
+		}
+
+		public Category[] newArray(int size) {
+			return new Category[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(mCategoryString);
+		
 	}
 }

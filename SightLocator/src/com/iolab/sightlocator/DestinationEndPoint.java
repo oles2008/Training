@@ -15,7 +15,7 @@ import android.os.Parcelable;
 public class DestinationEndPoint implements Parcelable {
 	
 	private int mID;
-	private Collection<SightMarkerItem> mClusteredItems;
+	private Collection<SightMarkerItem> mClusteredItems = new ArrayList<SightMarkerItem>();
 	private List<Category> mCategories = new ArrayList<Category>();
 	private String mLanguage;
 	
@@ -23,7 +23,13 @@ public class DestinationEndPoint implements Parcelable {
 	public DestinationEndPoint(int id, Collection<SightMarkerItem> clusteredItems, List<Category> categories, String language){
 		mID = id;
 		mClusteredItems = clusteredItems;
+		if(mClusteredItems == null) {
+			mClusteredItems = new ArrayList<SightMarkerItem>();
+		}
 		mCategories = categories;
+		if(mCategories == null) {
+			mCategories = new ArrayList<Category>();
+		}
 		mLanguage = language;
 	}
 	
@@ -34,6 +40,9 @@ public class DestinationEndPoint implements Parcelable {
 			mClusteredItems = new ArrayList<SightMarkerItem>();
 		}
 		mCategories = src.readArrayList(Category.class.getClassLoader());
+		if(mCategories == null) {
+			mCategories = new ArrayList<Category>();
+		}
 		mLanguage = src.readString();
 	}
 	
@@ -66,6 +75,9 @@ public class DestinationEndPoint implements Parcelable {
 	
 	public void setCategories(List<Category> categories) {
 		mCategories = categories;
+		if(categories == null) {
+			mCategories = new ArrayList<Category>();
+		}
 	}
 	
 	public String getLanguage() {
