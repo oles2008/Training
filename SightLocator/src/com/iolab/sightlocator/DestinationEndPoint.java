@@ -30,6 +30,9 @@ public class DestinationEndPoint implements Parcelable {
 	public DestinationEndPoint(Parcel src){
 		mID = src.readInt();
 		mClusteredItems = src.readArrayList(SightMarkerItem.class.getClassLoader());
+		if(mClusteredItems == null) {
+			mClusteredItems = new ArrayList<SightMarkerItem>();
+		}
 		mCategories = src.readArrayList(Category.class.getClassLoader());
 		mLanguage = src.readString();
 	}
