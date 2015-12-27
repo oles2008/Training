@@ -33,4 +33,6 @@ public class Tags {/**/
 	public static final String MARKER_FILTER_CATEGORIES = "markerFilterCategories";
 	public static final String SIGHT_POSITION = "sight_position";
 	public static final String SHOW_ON_MAP = "show_on_map";
+	public static final String AVAILABLE_LANGUAGES = "available_languages";
+	public static final String LANGUAGE = "language";
 }

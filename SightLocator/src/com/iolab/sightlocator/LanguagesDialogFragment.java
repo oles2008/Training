@@ -1,7 +1,5 @@
 package com.iolab.sightlocator;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -10,63 +8,88 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ListView;
 
-public class LanguagesDialogFragment extends DialogFragment{
-	int selectedItem = -1;
-	public interface LanguagesDialogListener {
-		public void onLanguagesDialogPositiveClick(DialogFragment dialog);
-		public void onLanguagesDialogNegativeClick(DialogFragment dialog);
+public class LanguagesDialogFragment extends DialogFragment {
+	int mSelectedItem = -1;
+	int mItemId = -1;
+	String mCurrentLanguage;
+	String[] arrayOfLanguages; //input for builder.setSingleChoiceItems
+	String[] availableLanguages;//goes from Action
+	String[] langsForSharedPreference;
+	LanguagesDialogListener mLanguageDialogListener;
+	
+	
+	//class constructor
+	LanguagesDialogFragment(String[] languages, LanguagesDialogListener langDialogListener, String currentLang){
+		availableLanguages = languages;
+		mLanguageDialogListener = langDialogListener;
+		mCurrentLanguage = currentLang;
 	}
 	
-	LanguagesDialogListener mListener; //we have created listener for dialog buttons
+	LanguagesDialogFragment(LanguagesDialogListener langDialogListener, String currentLang){
+		availableLanguages = null;
+		mLanguageDialogListener = langDialogListener;
+		mCurrentLanguage = currentLang;
+	}
 	
-	public void onAttach(Activity activity){
-		super.onAttach(activity);
-		try {
-			mListener = (LanguagesDialogListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement LanguagesDialogListener");
+	//List of abbreviations is transformed into long names for dialog builder
+	//If array  from action is empty then list of languages from strings will be taken
+	private void setArrayOfLanguages() {
+		if (availableLanguages != null && availableLanguages.length != 0) {
+			arrayOfLanguages = Language.getDisplayLanguagesFromAbbrArray(availableLanguages);
+			langsForSharedPreference = availableLanguages;
+		} else {
+			arrayOfLanguages = Language.getDisplayLanguagesFromAbbrArray(Appl.appContext.getResources().getStringArray(
+					R.array.content_language_abbr));
+			langsForSharedPreference = Appl.appContext.getResources().getStringArray(
+					R.array.content_language_abbr);
 		}
 	}
-
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
 	
-	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    builder.setTitle(R.string.languages_dialog_title)
-	           .setSingleChoiceItems(R.array.apps_language,-1, new DialogInterface.OnClickListener() {
-	        	   
-	               public void onClick(DialogInterface dialog, int which) {
-	               // The 'which' argument contains the index position
-	               // of the selected item
-	            	   selectedItem = which;
-	           }
-	     
-	    });
-	    builder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// Set into SharedPreferences variable selected in dialog language
-				if(selectedItem != -1){
-				SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-				SharedPreferences.Editor editor = sharedPref.edit();
-				editor.putInt(getString(R.string.application_language), selectedItem);
-				editor.commit();
-				selectedItem = -1;
-				//Log.w("ihor",Integer.toString(sharedPref.getInt(getString(R.string.application_language),0)));
-				}
-				mListener.onLanguagesDialogPositiveClick(LanguagesDialogFragment.this);
+	private int getLanguagePosition(String languageTag){
+		for(int i=0;i<langsForSharedPreference.length;i++) {
+			if(languageTag.equals(langsForSharedPreference[i])){
+				return i;
 			}
+		}
+		return -1;
+	}
+	
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		//prepare input for builder
+		setArrayOfLanguages();
+		mSelectedItem = getLanguagePosition(mCurrentLanguage);
+		//create dialog using builder
+	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	    builder.setTitle(R.string.content_lang_dialog_title)
+	    	   .setSingleChoiceItems(arrayOfLanguages,mSelectedItem, new DialogInterface.OnClickListener() {
+	               public void onClick(DialogInterface dialog, int which) {
+	               // The 'which' argument contains the index position of the selected item
+	            	   mSelectedItem = which;
+	           } 
+	    });
+		builder.setPositiveButton(R.string.dialog_ok_button,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// Set into SharedPreferences variable selected in
+						// dialog language
+						if (mSelectedItem != getLanguagePosition(mCurrentLanguage)) {
+							mLanguageDialogListener
+									.onLanguageChosen(langsForSharedPreference[mSelectedItem]);
+						}
+					}
 		});
-		
 	    builder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// Send the negative button event back to the host activity
-				mListener.onLanguagesDialogNegativeClick(LanguagesDialogFragment.this);
 				dialog.cancel();
 			}
 		});
 	    return builder.create();
 	}
+	public interface LanguagesDialogListener {
+		public void onLanguageChosen(String languageTag);
+	}
+	
 }

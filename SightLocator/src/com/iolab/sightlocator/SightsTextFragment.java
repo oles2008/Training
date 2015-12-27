@@ -16,7 +16,9 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -44,6 +46,7 @@ import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
 import com.iolab.sightlocator.FilterDialogFragment.FilterDialogListener;
+import com.iolab.sightlocator.LanguagesDialogFragment.LanguagesDialogListener;
 
 public class SightsTextFragment extends Fragment implements OnMapClickListener,
 												OnMapLongClickListener,
@@ -51,7 +54,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 												OnClusterItemClickListener<SightMarkerItem>,
 												ViewUpdateListener,
 												OnMarkerCategoryUpdateListener,
-												FilterDialogListener {
+												FilterDialogListener,
+		                                        LanguagesDialogListener {
 
 	private static final int ICON_SIZE = 200;
 	
@@ -80,6 +84,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initContentLanguage();
 		if (savedInstanceState != null) {
 			mClusterClickCounter = savedInstanceState.getLong(
 					Tags.ON_MARKER_CLICK_COUNTER, 0);
@@ -145,12 +150,44 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		case R.id.action_up:
 			navigateUp(true);
 			return true;
+			
+		case R.id.action_languages_dialog:
+			int itemId = -1;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
+			if (mSelectedItem != null) {
+				itemId = mSelectedItem.getID();
+			}
+			if (itemId != -1) {
+				startGetAvailableLanguagesAction(itemId);
+			} else {
+				showLanguagesDialogWithAllLanguages();
+			}
+			return true;
 		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
+	private void startGetAvailableLanguagesAction(int itemId) {
+		Intent intent = new Intent(getActivity(),
+				SightsIntentService.class);
+		intent.putExtra(SightsIntentService.ACTION,
+				new GetAvailableContentLanguagesAction(itemId));
+		getActivity().startService(intent);
+	}
+	
+	private void showLanguagesDialog(String[] inputLanguages) {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialogLangs = new LanguagesDialogFragment(inputLanguages,this, mLanguage);
+		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
+	}
+	
+	private void showLanguagesDialogWithAllLanguages() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialogLangs = new LanguagesDialogFragment(this, mLanguage);
+		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
+	}
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -410,6 +447,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			}
 			Appl.notifyNavigationUpdates(itemsToBeShownOnMap);
 		}
+		
+		if (bundle.getStringArray(Tags.AVAILABLE_LANGUAGES) != null){
+        	showLanguagesDialog(bundle.getStringArray(Tags.AVAILABLE_LANGUAGES));
+        }
 			
 	}
 
@@ -492,6 +533,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, ++mClusterClickCounter);
 		bundle.putBoolean(Tags.SHOW_ON_MAP, showOnMap);
+		bundle.putString(Tags.LANGUAGE, mLanguage);
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
@@ -519,7 +561,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
 		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(selectedItemId, mSightListItems);
 		lastDestinationEndPoint.setCategories(CategoryUtils.getSelectedMarkerCategories());
-		//TODO
 		lastDestinationEndPoint.setLanguage(mLanguage);
 		if((destinationEndPoint.getID()!= -1) && (selectedItemId != destinationEndPoint.getID())){
 			navigateTo(destinationEndPoint.getID(), showOnMap, destinationEndPoint.getClusteredItems(), false, clearForwardStack);
@@ -528,8 +569,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			selectCategories(destinationEndPoint.getCategories(), lastDestinationEndPoint.getCategories(), false);
 		}
 		if((destinationEndPoint.getLanguage()!=null) && !destinationEndPoint.getLanguage().isEmpty() && !mLanguage.equals(destinationEndPoint.getLanguage())){
-			//TODO
-			//changeLanguage(destinationEndPoint.getLanguage());
+			changeLanguage(destinationEndPoint.getLanguage(), false);
 		}
 		if(addToBackStack){
 			mBackStack.add(lastDestinationEndPoint);
@@ -573,9 +613,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void navigateBack() {
 		if (!mBackStack.isEmpty()) {
 			int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
-			//TODO Add language
 			DestinationEndPoint currentDestinationEndPoint = new DestinationEndPoint(
-					selectedItemId, mSightListItems, CategoryUtils.getSelectedMarkerCategories(), null);
+					selectedItemId, mSightListItems, CategoryUtils.getSelectedMarkerCategories(), mLanguage);
 
 			mForwardStack.add(currentDestinationEndPoint);
 
@@ -708,5 +747,37 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	public void onMarkerCategoryChosen() {
 		initializeListView();
 	}
-
+	
+	private void initContentLanguage() {
+		SharedPreferences sharedPref = getActivity().getPreferences(
+				Context.MODE_PRIVATE);
+		mLanguage = sharedPref.getString(getString(R.string.content_language),
+				"en");
+	}
+	
+	private void changeLanguageInPreferences(String langToSet){
+		SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(getString(R.string.content_language),langToSet);
+		editor.commit();
+	}
+	
+	private void changeLanguage(String langToSet, boolean addToBackStack){
+		changeLanguageInPreferences(langToSet);
+		if (addToBackStack) {
+			int selectedItemId = (mSelectedItem == null) ? -1 : mSelectedItem.getID();
+			DestinationEndPoint backStackItem = new DestinationEndPoint(selectedItemId,
+					null, null, mLanguage);
+			mBackStack.add(backStackItem);
+			mForwardStack.clear();
+		}
+		mLanguage = langToSet;
+		if(mSelectedItem != null) {
+			navigateTo(mSelectedItem.getID(), false, mSightListItems, false, false);
+		}
+	}
+	
+	public void onLanguageChosen(String languageTag) {
+		changeLanguage(languageTag, true);
+	}
 }

@@ -34,9 +34,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	private long mClusterClickCounter 	= -1;
 	private int mID 					= -1;
 	
-	private String langSuffix = "en";
-	
 	private LatLng mPosition;
+	private String mLanguage = "en";
 	private ArrayList<SightMarkerItem> mClusterItems = null;
 	private boolean mShowOnMap = false;
 	
@@ -52,6 +51,10 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mID = inputBundle.getInt(Tags.ID,-1);
 		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
 		mShowOnMap = inputBundle.getBoolean(Tags.SHOW_ON_MAP, false);
+		if (inputBundle.getString(Tags.LANGUAGE) != null
+				&& !inputBundle.getString(Tags.LANGUAGE).isEmpty()) {
+			mLanguage = inputBundle.getString(Tags.LANGUAGE);
+		}
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
@@ -77,6 +80,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		bundle.putInt(Tags.ID, mID);
 		bundle.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mClusterItems);
 		bundle.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
+		bundle.putString(Tags.LANGUAGE, mLanguage);
 		
 		dest.writeBundle(bundle);
 	}
@@ -99,9 +103,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + langSuffix, 
-									SIGHT_NAME + langSuffix, 
-									SIGHT_ADDRESS + langSuffix,
+									SIGHT_DESCRIPTION + mLanguage, 
+									SIGHT_NAME + mLanguage, 
+									SIGHT_ADDRESS + mLanguage,
 									MARKER_CATEGORY,
 									COLUMNS_LOCATION_LEVEL[0],
 									COLUMNS_LOCATION_LEVEL[1],
@@ -121,9 +125,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + langSuffix, 
-									SIGHT_NAME + langSuffix, 
-									SIGHT_ADDRESS + langSuffix,
+									SIGHT_DESCRIPTION + mLanguage, 
+									SIGHT_NAME + mLanguage, 
+									SIGHT_ADDRESS + mLanguage,
 									MARKER_CATEGORY,
 									COLUMNS_LOCATION_LEVEL[0],
 									COLUMNS_LOCATION_LEVEL[1],
@@ -174,9 +178,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					TABLE_NAME,
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
 							COLUMN_SIGHT_IMAGE_PATH, 
-							SIGHT_DESCRIPTION + langSuffix,
-							SIGHT_NAME + langSuffix, 
-							SIGHT_ADDRESS + langSuffix,
+							SIGHT_DESCRIPTION + mLanguage,
+							SIGHT_NAME + mLanguage, 
+							SIGHT_ADDRESS + mLanguage,
 							COLUMN_ID,
 							MARKER_CATEGORY,
 							COLUMNS_LOCATION_LEVEL[0],
@@ -249,9 +253,9 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		if (cursor.moveToFirst()) {
 			pathToImage 		= cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH));
-			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ langSuffix));
-			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ langSuffix));
-			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS 		+ langSuffix));
+			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ mLanguage));
+			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ mLanguage));
+			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS 		+ mLanguage));
 			itemCategory 		= cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY));
 			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
 			
@@ -296,8 +300,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 				}
 				fullItems
 					.add(new SightMarkerItem(sightPosition,
-												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + langSuffix)), 		//cursor.getString(4),
-												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + langSuffix)), 	//cursor.getString(5),
+												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + mLanguage)), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + mLanguage)), 	//cursor.getString(5),
 												null,
 												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
@@ -315,8 +319,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 					}
 					fullItems
 						.add(new SightMarkerItem(sightPosition,
-											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + langSuffix)), 		//cursor.getString(4),
-												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + langSuffix)), 	//cursor.getString(5),
+											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + mLanguage)), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + mLanguage)), 	//cursor.getString(5),
 												null,
 												getSavedImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH))),	//getSavedImagePath(cursor.getString(2)),
 												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
