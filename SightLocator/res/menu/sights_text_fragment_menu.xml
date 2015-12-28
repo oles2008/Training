@@ -2,32 +2,31 @@
     
     <item
         android:id="@+id/action_filter"
-        android:icon="@drawable/ic_action_sort_by_size"
+        android:icon="@drawable/ic_action_toc"
         android:showAsAction="ifRoom"
         android:title="@string/action_button_filter"/>
     
     <item
-        android:id="@+id/action_back"
-        android:icon="@drawable/action_back"
+        android:id="@+id/action_languages_dialog"
+        android:icon="@drawable/ic_action_language"
         android:showAsAction="ifRoom"
-        android:title="@string/back"/>
-    
-    <item
-        android:id="@+id/action_forward"
-        android:icon="@drawable/action_forward"
-        android:showAsAction="ifRoom"
-        android:title="@string/forward"/>
+        android:title="@string/content_lang_dialog_title"/>
     
     <item
         android:id="@+id/action_up"
-        android:icon="@drawable/ic_action_upward"
+        android:icon="@drawable/ic_action_arrow_upward"
         android:showAsAction="ifRoom"
         android:title="@string/up"/>
     
     <item
-        android:id="@+id/action_languages_dialog"
-        android:icon="@drawable/ic_languages_dialog"
+        android:id="@+id/action_forward"
+        android:icon="@drawable/ic_action_arrow_forward"
         android:showAsAction="ifRoom"
-        android:title="@string/content_lang_dialog_title"/>
-
+        android:title="@string/forward"/>
+    <item
+        android:id="@+id/action_back"
+        android:icon="@drawable/ic_action_arrow_back"
+        android:showAsAction="ifRoom"
+        android:title="@string/back"/>
+    
 </menu>
