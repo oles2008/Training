@@ -29,11 +29,6 @@ public class SightsLocationSource implements LocationSource, LocationListener {
 
 	@Override
 	public void activate(OnLocationChangedListener onLocationChangedListener) {
-		//for debugging
-		Toast toast = Toast.makeText(Appl.appContext, "activating locationListener", Toast.LENGTH_SHORT);
-		toast.show();
-		//
-		
 		this.onLocationChangedListener = onLocationChangedListener;
 		
 		//to set initial location
@@ -68,12 +63,7 @@ public class SightsLocationSource implements LocationSource, LocationListener {
 	}
 
 	@Override
-	public void deactivate() {
-		//for debugging
-		Toast toast = Toast.makeText(Appl.appContext, "deactivating locationListener", Toast.LENGTH_SHORT);
-		toast.show();
-		//
-		
+	public void deactivate() {	
 		locationManager.removeUpdates(this);
 	}
 

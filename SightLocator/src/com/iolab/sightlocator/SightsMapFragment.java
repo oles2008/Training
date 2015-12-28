@@ -1,14 +1,21 @@
 package com.iolab.sightlocator;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.annotation.TargetApi;
+import android.app.ActionBar.OnNavigationListener;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.iolab.sightlocator.Appl.ViewUpdateListener;
@@ -32,15 +40,18 @@ public class SightsMapFragment extends Fragment implements
 											ViewUpdateListener, 
 											ClusterManager.OnClusterClickListener<SightMarkerItem>,
 											ClusterManager.OnClusterItemClickListener<SightMarkerItem>,
-											OnMarkerCategoryUpdateListener {
+											OnMarkerCategoryUpdateListener,
+											SightNavigationListener {
 	
 	private GoogleMap gMap;
+	private AbstractMap mMap;
 	private LocationSource sightLocationSource;
 	private boolean moveMapOnLocationUpdate = true;
 	private ClusterManager<SightMarkerItem> clusterManager;
 	private SightsRenderer sightsRenderer;
 
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
+	private Set<SightMarkerItem> mItemSetForGivenCategory = new HashSet<SightMarkerItem>();
 	
 	private SelectedMarkerManager mSelectedMarkerManager;
 	
@@ -55,15 +66,24 @@ public class SightsMapFragment extends Fragment implements
 		}
 	}
 	
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		gMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			gMap = ((MapFragment) getChildFragmentManager()
+										.findFragmentById(R.id.map))
+						.getMap();
+		} else {
+			gMap = ((MapFragment) getFragmentManager()
+										.findFragmentById(R.id.map))
+						.getMap();
+		}
+		mMap = new MapImplementationGoogle(this);
 
 		clusterManager = new ClusterManager<SightMarkerItem>(getActivity(),
 				gMap);
-		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, savedInstanceState);
+		mSelectedMarkerManager = new SelectedMarkerManager(getView(), gMap, clusterManager, mItemSetForGivenCategory, savedInstanceState);
 		sightsRenderer = new SightsRenderer(getActivity(), gMap, clusterManager);
 		sightsRenderer.registerOnBeforeClusterRenderedListener(mSelectedMarkerManager);
 		clusterManager.setRenderer(sightsRenderer);
@@ -137,7 +157,7 @@ public class SightsMapFragment extends Fragment implements
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				Appl.notifyMapClickUpdates(arg0);
-				mSelectedMarkerManager.removeSelectedItem();
+				mSelectedMarkerManager.removeSelectedItems();
 			}
 		});
 	}
@@ -149,7 +169,7 @@ public class SightsMapFragment extends Fragment implements
 				//the user wants to stay here
 				moveMapOnLocationUpdate = false;
 				Appl.notifyLongMapClickUpdates(arg0);
-				mSelectedMarkerManager.removeSelectedItem();
+				mSelectedMarkerManager.removeSelectedItems();
 			}
 		});
 	}
@@ -158,7 +178,8 @@ public class SightsMapFragment extends Fragment implements
     public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		moveMapOnLocationUpdate = false;
 		Appl.notifyClusterClickUpdates(cluster);
-		mSelectedMarkerManager.removeSelectedItem();
+		mSelectedMarkerManager.removeSelectedItems();
+		mSelectedMarkerManager.selectItems(cluster.getItems());
         return true;
     }
 	
@@ -236,6 +257,7 @@ public class SightsMapFragment extends Fragment implements
 		registerOnMapTouchedListener();
 		registerOnMyLocationButtonClickListener();
 		
+		Appl.subscribeForNavigationUpdates(this);		
 		Appl.subscribeForMarkerCategoryUpdates(this);
 	}
 
@@ -244,7 +266,7 @@ public class SightsMapFragment extends Fragment implements
 		super.onSaveInstanceState(args);
 		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
 		args.putLong("updateViewCallIndex", updateViewCallIndex);
-		mSelectedMarkerManager.saveSelectedItem(args);
+		mSelectedMarkerManager.saveSelectedItems(args);
 	}
 	
 	@Override
@@ -252,20 +274,31 @@ public class SightsMapFragment extends Fragment implements
 		super.onPause();
 		sightLocationSource.deactivate();
 		Appl.unsubscribeFromViewUpdates(this);
+		Appl.unsubscribeFromNavigationUpdates(this);
 		Appl.unsubscribeFromMarkerCategoryUpdates(this);
 	}
 	
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		List<SightMarkerItem> sightMarkerItemList = bundle.getParcelableArrayList(Tags.MARKERS);
+		ArrayList<Category> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
 		
 		if(sightMarkerItemList!=null){
 			for(SightMarkerItem item: sightMarkerItemList){
-				if(itemSet.add(item)){
-					clusterManager.addItem(item);
-				}
+				addItemToMapIfCategoryIsChosen(item, chosenCategories);
 			}
 			clusterManager.cluster();
+		}
+		mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
+	}
+
+	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
+			ArrayList<Category> chosenCategories) {
+		if (itemSet.add(item)) {
+			if (CategoryUtils.isItemInCategories(chosenCategories, item)) {
+				mItemSetForGivenCategory.add(item);
+				clusterManager.addItem(item);
+			}
 		}
 	}
 	
@@ -275,8 +308,54 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onMarkerCategoryChosen() {
-		// TODO Auto-generated method stub
-		
+		clusterManager.clearItems();
+		//list of categories that has been selected by user
+		ArrayList<Category> chosenCategories = CategoryUtils.getSelectedMarkerCategories();
+		addFilteredItemsToMap(chosenCategories);
+		mSelectedMarkerManager.reselectItemsAfterCategoryChange();;
 	}
 
+	private void addFilteredItemsToMap(ArrayList<Category> chosenCategories) {
+		
+		clusterManager.clearItems();
+		mItemSetForGivenCategory.clear();
+		
+		//make only selected markers to be present in "visible" list
+		for (SightMarkerItem item : itemSet){
+			//add item to "visible" list if the item has "chosen" category
+			for (Category chosenCategory : chosenCategories) {
+				if (chosenCategory.isItemBelongsToThisCategory(item)){
+					mItemSetForGivenCategory.add(item);
+					clusterManager.addItem(item);
+					break;
+				}
+			}
+		}
+		
+		clusterManager.cluster();
+	}
+	
+	/* **************************************************************************** */
+    /* ************************ SightNavigationListener *************************** */
+    /* **************************************************************************** */
+
+	@Override
+	public void onNavigation(Collection<SightMarkerItem> items) {
+		moveToItemsAndSelectThem(items);
+	}
+
+	private void moveToItemsAndSelectThem(Collection<SightMarkerItem> items) {
+		if (items != null && !items.isEmpty()) {
+			if (items.size() == 1) {
+				SightMarkerItem item = items.iterator().next();
+				if (item.getPosition() != null) {
+					mMap.moveCameraTo(item);
+				}
+			} else {
+				int minDimension = Math.min(getView().getWidth(), getView().getHeight());
+				mMap.moveCameraTo(items, minDimension/3);
+			}
+			mSelectedMarkerManager.selectItems(items);
+		}
+	}
 }

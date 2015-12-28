@@ -1,17 +1,23 @@
 package com.iolab.sightlocator;
 
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
-import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_IMAGE_PATH;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_STATUS;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.MARKER_CATEGORY;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_DESCRIPTION;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.database.Cursor;
@@ -20,17 +26,21 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 
 public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
-	private long mMarkerClickCounter = -1;
-	private long mMapClickCounter = -1;
-	private long mClusterClickCounter = -1;
+	private long mMarkerClickCounter 	= -1;
+	private long mMapClickCounter 		= -1;
+	private long mClusterClickCounter 	= -1;
+	private int mID 					= -1;
+	
 	private LatLng mPosition;
-	private int mID = -1;
+	private String mLanguage = "en";
 	private ArrayList<SightMarkerItem> mClusterItems = null;
+	private boolean mShowOnMap = false;
 	
 	public GetTextOnMarkerClickAction(Bundle inputBundle) {
 		if (inputBundle.containsKey(Tags.POSITION_LAT)
@@ -41,9 +51,13 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		mMarkerClickCounter = inputBundle.getInt(Tags.ON_MARKER_CLICK_COUNTER);
 		mMapClickCounter = inputBundle.getInt(Tags.ON_MAP_CLICK_COUNTER);
 		mClusterClickCounter = inputBundle.getInt(Tags.ON_CLUSTER_CLICK_COUNTER);
-		mID = inputBundle.getInt(Tags.COMMON_PARENT_ID,-1);
-//		inputBundle.setClassLoader(SightMarkerItem.class.getClassLoader());
+		mID = inputBundle.getInt(Tags.ID,-1);
 		mClusterItems = inputBundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST);
+		mShowOnMap = inputBundle.getBoolean(Tags.SHOW_ON_MAP, false);
+		if (inputBundle.getString(Tags.LANGUAGE) != null
+				&& !inputBundle.getString(Tags.LANGUAGE).isEmpty()) {
+			mLanguage = inputBundle.getString(Tags.LANGUAGE);
+		}
 	}
 	
 	private GetTextOnMarkerClickAction(Parcel parcel){
@@ -66,11 +80,12 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		bundle.putLong(Tags.ON_CLUSTER_CLICK_COUNTER, mClusterClickCounter);
 		bundle.putLong(Tags.ON_MAP_CLICK_COUNTER, mMapClickCounter);
 		bundle.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
-		bundle.putInt(Tags.COMMON_PARENT_ID, mID);
+		bundle.putInt(Tags.ID, mID);
 		bundle.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mClusterItems);
+		bundle.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
+		bundle.putString(Tags.LANGUAGE, mLanguage);
 		
 		dest.writeBundle(bundle);
-		
 	}
 
 	public static final Parcelable.Creator<GetTextOnMarkerClickAction> CREATOR = new Parcelable.Creator<GetTextOnMarkerClickAction>() {
@@ -82,6 +97,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			return new GetTextOnMarkerClickAction[size];
 		}
 	};
+	
 	public Cursor getCursor(){
 		Cursor cursor = null;
 		if(mPosition != null){
@@ -90,7 +106,15 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en"},
+									SIGHT_DESCRIPTION + mLanguage, 
+									SIGHT_NAME + mLanguage, 
+									SIGHT_ADDRESS + mLanguage,
+									MARKER_CATEGORY,
+									COLUMNS_LOCATION_LEVEL[0],
+									COLUMNS_LOCATION_LEVEL[1],
+									COLUMNS_LOCATION_LEVEL[2],
+									COLUMNS_LOCATION_LEVEL[3],
+									COLUMNS_LOCATION_LEVEL[4]},
 								"(" + COLUMN_LATITUDE + " = "
 									+ mPosition.latitude + " AND "
 									+ COLUMN_LONGITUDE + " = "
@@ -104,7 +128,15 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							new String[] { COLUMN_LATITUDE,
 									COLUMN_LONGITUDE,
 									COLUMN_SIGHT_IMAGE_PATH,
-									SIGHT_DESCRIPTION + "en", SIGHT_NAME + "en", SIGHT_ADDRESS+"en"},
+									SIGHT_DESCRIPTION + mLanguage, 
+									SIGHT_NAME + mLanguage, 
+									SIGHT_ADDRESS + mLanguage,
+									MARKER_CATEGORY,
+									COLUMNS_LOCATION_LEVEL[0],
+									COLUMNS_LOCATION_LEVEL[1],
+									COLUMNS_LOCATION_LEVEL[2],
+									COLUMNS_LOCATION_LEVEL[3],
+									COLUMNS_LOCATION_LEVEL[4]},
 								"(" + COLUMN_ID + " = "
 									+ mID + ")",
 									null, null, null, null);
@@ -123,7 +155,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 							+ mClusterItems.get(0).getPosition().latitude
 							+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
 							.get(0).getPosition().longitude) : (COLUMN_ID
-							+ " = " + mClusterItems.get(0).id)) + ")";
+							+ " = " + mClusterItems.get(0).getID())) + ")";
 
 			for (int i = 1; i < mClusterItems.size(); i++) {
 				whereClause += " OR ("
@@ -132,7 +164,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 								+ mClusterItems.get(i).getPosition().latitude
 								+ " AND " + COLUMN_LONGITUDE + " = " + mClusterItems
 								.get(i).getPosition().longitude) : (COLUMN_ID
-								+ " = " + mClusterItems.get(i).id)) + ")";
+								+ " = " + mClusterItems.get(i).getID())) + ")";
 			}
 		} else if (mID != -1) {
 			whereClause = "("
@@ -148,53 +180,81 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase().query(
 					TABLE_NAME,
 					new String[] { COLUMN_LATITUDE, COLUMN_LONGITUDE,
-							COLUMN_SIGHT_IMAGE_PATH, SIGHT_DESCRIPTION + "en",
-							SIGHT_NAME + "en", SIGHT_ADDRESS + "en" },
+							COLUMN_SIGHT_IMAGE_PATH, 
+							SIGHT_DESCRIPTION + mLanguage,
+							SIGHT_NAME + mLanguage, 
+							SIGHT_ADDRESS + mLanguage,
+							COLUMN_ID,
+							MARKER_CATEGORY,
+							COLUMNS_LOCATION_LEVEL[0],
+							COLUMNS_LOCATION_LEVEL[1],
+							COLUMNS_LOCATION_LEVEL[2],
+							COLUMNS_LOCATION_LEVEL[3],
+							COLUMNS_LOCATION_LEVEL[4] },
 					whereClause, null, null, null, null);
 		}
 		return cursor;
 	}
 	
-	private String getSavedImagePath(String pathToImageFromDatabase) {
-		if (pathToImageFromDatabase !=null && pathToImageFromDatabase.startsWith("/")){
-			pathToImageFromDatabase = pathToImageFromDatabase.substring(1, pathToImageFromDatabase.length());
+	private Pair<String, String> getImagePathAndSource(String imagePathFromDatabase) {
+		if (imagePathFromDatabase == null || imagePathFromDatabase.isEmpty()){
+			return new Pair<String, String>(null, Tags.IMAGE_BLANK);
 		}
 		
-		if (pathToImageFromDatabase == null || pathToImageFromDatabase.isEmpty()){
-			return null;
-		}else{
-			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED))
-			{
-				Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
-			
-			
-				String destinationPath = Environment
-						.getExternalStorageDirectory().getPath()
-						+ "/"
-						+ Appl.appContext.getPackageName()
-						+ "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImageFromDatabase;
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImageFromDatabase, destinationPath);
-				return destinationPath;
-				
-			} else
-			{
-				Log.d("Mytag","Internal storage:");
-				
-				
-				String destinationPath = Appl.appContext.getCacheDir() + "/"
-						+ Tags.PATH_TO_IMAGES_IN_ASSETS + pathToImageFromDatabase;
-				Utils.copyFromAssets(Tags.PATH_TO_IMAGES_IN_ASSETS
-						+ pathToImageFromDatabase, destinationPath);
-				
-				Log.d("Mytag","Destination:"+ destinationPath);
-				return destinationPath;
-			}
+		if(imagePathFromDatabase.startsWith("/")){
+			imagePathFromDatabase = imagePathFromDatabase.substring(1, imagePathFromDatabase.length());
 		}
+
+		String path;
+		String type;
+		File file;
+		
+		Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
+		// looking for an image in the following order:
+		// 1. In external resources
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			path = Appl.appContext.getExternalCacheDir() + "/"
+				+ Tags.PATH_TO_IMAGES_IN_ASSETS 
+				+ imagePathFromDatabase;
+//			path = Environment.getExternalStorageDirectory().getPath() + "/"
+//				+ Appl.appContext.getPackageName()
+		}
+		// 2. In internal resources
+		else {
+			path = Appl.appContext.getCacheDir() + "/"
+				+ Tags.PATH_TO_IMAGES_IN_ASSETS 
+				+ imagePathFromDatabase;
+		}
+		file = new File(path);
+		if(file.exists()) {
+			return new Pair<String, String>(path, Tags.IMAGE_FROM_CASHE);
+		}
+
+		// 3. In assets
+		List<String> assets = new ArrayList<String>();
+		try {
+			String folder = Tags.PATH_TO_IMAGES_IN_ASSETS;
+			if(folder.endsWith("/")) {
+				folder = folder.substring(0, folder.length() - 1);
+			}
+			assets = Arrays.asList(Appl.appContext.getAssets().list(folder));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(assets.contains(imagePathFromDatabase)){
+			path = Tags.PATH_TO_IMAGES_IN_ASSETS + imagePathFromDatabase;
+			type = Tags.IMAGE_FROM_ASSET;
+			
+			return new Pair<String, String>(path, type);
+		}
+		
+		// 4. Online
+		// look for an image online and save into cache
+		
+		return new Pair<String, String>(null, Tags.IMAGE_BLANK);
 	}
-	
+
 	@Override
 	public void runInService() {
 		
@@ -204,53 +264,105 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		String pathToImage = null;
 		String sightName = null;
 		String sightAddress = null;
+		String itemCategory 		= null;
+		LatLng sightPosition = null;
+		int[] parentIDs = null;
 
 		if(cursor == null){
 			return;
 		}
 		
 		if (cursor.moveToFirst()) {
-			pathToImage = cursor.getString(2);
-			sightDescription = cursor.getString(3);
-			sightName = cursor.getString(4);
-			sightAddress = cursor.getString(5);
+			pathToImage 		= cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH));
+			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ mLanguage));
+			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ mLanguage));
+			sightAddress 		= cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS 		+ mLanguage));
+			itemCategory 		= cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY));
+			parentIDs = DatabaseHelper.getParentArrayFromCursor(cursor);
+			
+			if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
+					&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
+				sightPosition = new LatLng(cursor.getDouble(cursor
+						.getColumnIndex(COLUMN_LATITUDE)),
+						cursor.getDouble(cursor
+								.getColumnIndex(COLUMN_LONGITUDE)));
+			}
 		}
-
 		
+		Pair<String, String> pathType = getImagePathAndSource(pathToImage);
 		
 		Bundle resultData = new Bundle();
-		resultData.putString(Tags.SIGHT_DESCRIPTION, sightDescription);
-		resultData.putLong(Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
-		resultData.putString(Tags.PATH_TO_IMAGE, getSavedImagePath(pathToImage));
-		resultData.putString(Tags.SIGHT_NAME, sightName);
-		resultData.putString(Tags.SIGHT_ADDRESS, sightAddress);
+		resultData.putInt(Tags.ID, mID);
+		resultData.putString(	Tags.SIGHT_DESCRIPTION, sightDescription);
+		resultData.putLong(		Tags.ON_MARKER_CLICK_COUNTER, mMarkerClickCounter);
+		resultData.putString(	Tags.PATH_TO_IMAGE, pathType.first);
+		resultData.putString(	Tags.TYPE_OF_IMAGE_SOURCE, pathType.second);
+		resultData.putString(	Tags.SIGHT_NAME, sightName);
+		resultData.putString(	Tags.SIGHT_ADDRESS, sightAddress);
+		resultData.putString(	Tags.MARKER_FILTER_CATEGORIES, itemCategory);
+		resultData.putIntArray(Tags.PARENT_IDS, parentIDs);
+		if(sightPosition != null) {
+			resultData.putParcelable(Tags.SIGHT_POSITION, sightPosition);
+		}
 		Appl.receiver.send(0, resultData);
 		
 		if((mClusterItems!=null && !mClusterItems.isEmpty()) || (mID!=-1)){
 			cursor = getMultipleItemsCursor();
 			ArrayList<SightMarkerItem> fullItems = new ArrayList<SightMarkerItem>();
+	
 			if (cursor.moveToFirst()) {
 				// SightMarkerItem(LatLng position, String title, String
 				// address, String snippet, String imageURI, String color, int
 				// id, int[] parentIDs)
+				sightPosition = null;
+				if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
+						&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
+					sightPosition = new LatLng(cursor.getDouble(cursor
+							.getColumnIndex(COLUMN_LATITUDE)),
+							cursor.getDouble(cursor
+									.getColumnIndex(COLUMN_LONGITUDE)));
+				}
+				
+				pathType = getImagePathAndSource(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH)));
 				fullItems
-						.add(new SightMarkerItem(new LatLng(
-								cursor.getDouble(0), cursor.getDouble(1)),
-								cursor.getString(4), cursor.getString(5), null,
-								getSavedImagePath(cursor.getString(2)), null,
-								-1, null));
+					.add(new SightMarkerItem(sightPosition,
+												cursor.getString(cursor.getColumnIndex(SIGHT_NAME + mLanguage)), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + mLanguage)), 	//cursor.getString(5),
+												null,
+												pathType.first, pathType.second,	//getSavedImagePath(cursor.getString(2)),
+												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
+												cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+												null));
+				
 				while(cursor.moveToNext()){
+					sightPosition = null;
+					if (!cursor.isNull(cursor.getColumnIndex(COLUMN_LATITUDE))
+							&& !cursor.isNull(cursor.getColumnIndex(COLUMN_LONGITUDE))) {
+						sightPosition = new LatLng(cursor.getDouble(cursor
+								.getColumnIndex(COLUMN_LATITUDE)),
+								cursor.getDouble(cursor
+										.getColumnIndex(COLUMN_LONGITUDE)));
+					}
+					pathType = getImagePathAndSource(cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH)));
 					fullItems
-					.add(new SightMarkerItem(new LatLng(
-							cursor.getDouble(0), cursor.getDouble(1)),
-							cursor.getString(4), cursor.getString(5), null,
-							getSavedImagePath(cursor.getString(2)), null,
-							-1, null));
+						.add(new SightMarkerItem(sightPosition,
+											cursor.getString(cursor.getColumnIndex(SIGHT_NAME + mLanguage)), 		//cursor.getString(4),
+												cursor.getString(cursor.getColumnIndex(SIGHT_ADDRESS + mLanguage)), 	//cursor.getString(5),
+												null,
+												pathType.first, pathType.second,
+												cursor.getString(cursor.getColumnIndex(MARKER_CATEGORY)),
+											cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+											null));
 				}
 				resultData = new Bundle();
 				resultData.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, fullItems);
 				Appl.receiver.send(0, resultData);
 			}
+		}
+		if(mShowOnMap){
+			resultData = new Bundle();
+			resultData.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
+			Appl.receiver.send(0, resultData);
 		}
 	}
 	

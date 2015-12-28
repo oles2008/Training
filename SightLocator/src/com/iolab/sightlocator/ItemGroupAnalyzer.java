@@ -15,7 +15,7 @@ public class ItemGroupAnalyzer {
 	private static final String TAG = ItemGroupAnalyzer.class.getCanonicalName();  
 	
 	public static int findCommonParent(List<int[]> list, int percentageToIgnore){
-		return findCommonParent(list, percentageToIgnore, null);
+		return findCommonParent(new ArrayList<int[]>(list), percentageToIgnore, null);
 	}
 	
 	public static List<ClusterGroup> split(List<int[]> list, int maxNumberToSplitInto){
