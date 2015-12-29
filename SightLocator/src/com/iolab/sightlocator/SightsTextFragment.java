@@ -36,6 +36,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -71,6 +72,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private TextView mTitle;
 	private TextView mDescription;
 	private ImageView mImage;
+	private ScrollView mScrollView;
+	private LinearLayout mScrollingLayout;
+	
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
 	private String mLanguage;
@@ -112,6 +116,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			Bundle savedInstanceState) {
 		View inflatedView = inflater.inflate(R.layout.text_fragment, container,
 				false);
+		mScrollView = (ScrollView) inflatedView.findViewById(R.id.scrollView);
+		mScrollingLayout = (LinearLayout) inflatedView.findViewById(R.id.linear_layout_child_of_scroll);
 		mSights = (ListView) inflatedView.findViewById(R.id.listView);
 		initializeListView();
 		mAddress = (TextView) inflatedView.findViewById(R.id.address);
@@ -252,6 +258,35 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
 		Appl.subscribeForMarkerCategoryUpdates(this);
+	}
+	
+	/**
+	 * Adjust the sizes of the scrollable content and the list of items after layout has been inflated.
+	 *
+	 */
+	private void correctScrollAndList() {
+		final LinearLayout.LayoutParams scrollViewParams = (LayoutParams) mScrollView.getLayoutParams();
+		final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
+		scrollViewParams.weight =1;
+		listViewParams.weight = 1;
+		getView().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				int overollHeight = getView().getHeight();
+				int linearLayoutInScrollHeight = mTitle.getHeight() + mImage.getHeight() + mDescription.getHeight();
+				int listViewHeight = mSights.getHeight();
+				Log.d("MyLogs", "overall: "+overollHeight+", scroll: "+linearLayoutInScrollHeight+", list: "+listViewHeight);
+				if(linearLayoutInScrollHeight < overollHeight/2) {
+					scrollViewParams.weight = (listViewHeight-10)/linearLayoutInScrollHeight;
+					mScrollView.setLayoutParams(scrollViewParams);
+					mSights.setLayoutParams(listViewParams);
+				} else {
+					int listViewItemHeight = mSights.getChildAt(0).getHeight();
+					Log.d("MyLogs", "item height: "+listViewItemHeight);
+				}
+			}
+		});
 	}
 
 	/**
@@ -479,6 +514,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
         	showLanguagesDialog(bundle.getStringArray(Tags.AVAILABLE_LANGUAGES));
         }
 			
+		correctScrollAndList();
 	}
 
 	@Override
