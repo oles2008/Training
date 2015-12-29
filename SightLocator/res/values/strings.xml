@@ -67,5 +67,7 @@
     <string name="action_filter_entertaiment">Entertaiment</string>
     <string name="action_filter_monument">Monument</string>
 
-    
+    <!-- Default text that is shown when original is absent-->
+    <string name="default_description_text">There is no available description in English, please choose other language</string>
+    <string name="default_address_text">There is no available address in English, please choose other language</string>
 </resources>

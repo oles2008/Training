@@ -291,6 +291,17 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		
 		Pair<String, String> pathType = getImagePathAndSource(pathToImage);
 		
+		if (sightDescription == null) {
+			sightDescription = Appl.appContext.getResources().getString(R.string.default_description_text);
+		} else if (sightDescription.length() == 0) {
+			sightDescription = Appl.appContext.getResources().getString(R.string.default_description_text);
+		}
+		if (sightAddress == null) {
+			sightAddress = Appl.appContext.getResources().getString(R.string.default_address_text);
+		} else if (sightAddress.length() == 0) {
+			sightAddress = Appl.appContext.getResources().getString(R.string.default_address_text);
+		}
+		
 		Bundle resultData = new Bundle();
 		resultData.putInt(Tags.ID, mID);
 		resultData.putString(	Tags.SIGHT_DESCRIPTION, sightDescription);
