@@ -36,6 +36,7 @@ public class Tags {/**/
 	public static final String SHOW_ON_MAP = "show_on_map";
 	public static final String AVAILABLE_LANGUAGES = "available_languages";
 	public static final String LANGUAGE = "language";
+	public static final String CONTENT_LANGUAGE = "content_language";
 	
 	public static final String IMAGE_FROM_ASSET = "imageFromAsset";
 	public static final String IMAGE_FROM_CASHE = "imageFromCashe";

@@ -778,14 +778,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void initContentLanguage() {
 		SharedPreferences sharedPref = getActivity().getPreferences(
 				Context.MODE_PRIVATE);
-		mLanguage = sharedPref.getString(getString(R.string.content_language),
+		mLanguage = sharedPref.getString(Tags.CONTENT_LANGUAGE,
 				"en");
 	}
 	
 	private void changeLanguageInPreferences(String langToSet){
 		SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(getString(R.string.content_language),langToSet);
+		editor.putString(Tags.CONTENT_LANGUAGE,langToSet);
 		editor.commit();
 	}
 	
