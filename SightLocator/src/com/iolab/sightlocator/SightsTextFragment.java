@@ -283,6 +283,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					mSights.setLayoutParams(listViewParams);
 				} else {
 					int listViewItemHeight = mSights.getChildAt(0).getHeight();
+					if(listViewItemHeight*mSights.getAdapter().getCount() < listViewHeight * 0.8){
+						scrollViewParams.weight = (listViewHeight+10)/linearLayoutInScrollHeight;
+					}
 					Log.d("MyLogs", "item height: "+listViewItemHeight);
 				}
 			}
@@ -514,7 +517,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
         	showLanguagesDialog(bundle.getStringArray(Tags.AVAILABLE_LANGUAGES));
         }
 			
-		correctScrollAndList();
+		if(mSightListItems != null && !mSightListItems.isEmpty()) {
+			correctScrollAndList();
+		}
 	}
 
 	@Override
