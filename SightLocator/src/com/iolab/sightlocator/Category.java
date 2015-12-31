@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public class Category implements Parcelable {
 
 	private String mCategoryString;
+	private String mCategoryValue;
 	
 	public Category(String string) {
 		mCategoryString = string.toLowerCase().trim();

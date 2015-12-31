@@ -23,19 +23,18 @@ public class CategoryUtils {
 		return R.drawable.orange_map_marker_selected;
 	}
 	
-	/**
-	 * Create an ArrayList with all marker's categories.
-	 *
-	 * @return the marker categories
-	 */
-	public static ArrayList<String> getMarkerCategories(){
-		List<String> categoriesList = Arrays.asList(
-				Appl.appContext.getResources()
-								.getStringArray(
-										R.array.marker_category));
-		return new ArrayList<String>(categoriesList);
-	}
-	
+//	/**
+//	 * Create an ArrayList with all marker's categories.
+//	 *
+//	 * @return the marker categories
+//	 */
+//	public static ArrayList<String> getMarkerCategories(){
+//		List<String> categoriesList = Arrays.asList(
+//				Appl.appContext.getResources()
+//								.getStringArray(
+//										R.array.marker_category));
+//		return new ArrayList<String>(categoriesList);
+//	}
  
 	/**
 	 * Create an ArrayList with the selected by user marker's categories.
@@ -46,7 +45,7 @@ public class CategoryUtils {
 		ArrayList<Category> selectedMarkerCategories = new ArrayList<Category>();
 		for (int i=0; i<Appl.selectedCategories.length; i++) {
 			if (Appl.selectedCategories[i]) {
-				selectedMarkerCategories.add(new Category(getMarkerCategories().get(i).toLowerCase()));
+				selectedMarkerCategories.add(new Category(Appl.categoriesValues.get(i).toLowerCase()));
 			}
 		}
 		return selectedMarkerCategories;

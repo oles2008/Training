@@ -27,7 +27,7 @@ public class FilterDialogFragment extends DialogFragment{
 	public Dialog onCreateDialog(Bundle savedInstanceState){
 		// Where we track the selected items
 		final boolean[] tmpCheckedItems;
-		tmpCheckedItems = new boolean[(getResources().getStringArray(R.array.marker_category)).length];
+		tmpCheckedItems = new boolean[Appl.categoriesValues.size()];
 		final List<Category> oldCategories = CategoryUtils.getSelectedMarkerCategories();
 		System.arraycopy(Appl.selectedCategories, 0, tmpCheckedItems, 0, Appl.selectedCategories.length);
 
@@ -39,7 +39,7 @@ public class FilterDialogFragment extends DialogFragment{
 		
 		// Specify the list array, the items to be selected by default (null for none),
 		// and the listener through which to receive callback when items are selected
-		dialogBuilder.setMultiChoiceItems(R.array.marker_category, Appl.selectedCategories, new DialogInterface.OnMultiChoiceClickListener() {
+		dialogBuilder.setMultiChoiceItems(R.array.marker_category_display, Appl.selectedCategories, new DialogInterface.OnMultiChoiceClickListener() {
 				
 			@SuppressLint("NewApi")
 			@Override

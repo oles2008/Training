@@ -13,7 +13,7 @@
     <string name="action_button_filter">Фільтр</string>
 	
     <!-- Filter Categories list -->
-    <string-array name="marker_category">
+    <string-array name="marker_category_display">
         <item >ВСІ</item>
         <item >Релігія</item>
         <item >Історія</item>

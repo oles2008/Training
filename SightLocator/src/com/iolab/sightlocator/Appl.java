@@ -27,6 +27,8 @@ public class Appl extends Application {
 	// array to store checked checkboxes(selected marker categories) from
 	// Option Filter menu
 	public static boolean[] selectedCategories;
+	public static List<String> categoriesDisplay;
+	public static List<String> categoriesValues;
 
 	// all the following listeners should perform their callback methods
 	// in the UI thread
@@ -48,13 +50,21 @@ public class Appl extends Application {
 
 		// Initialize the boolean array where checkboxes from Option Filter menu are
 		// stored
-		selectedCategories = new boolean[(getResources()
-				.getStringArray(R.array.marker_category)).length];
+		InitCategories();
+		
 		//set all checkboxes to "uncheck" state
 		Arrays.fill(selectedCategories, Boolean.FALSE);
 		// set first checkbox "All" pre-checked
 		selectedCategories[0] = true;
 
+	}
+	
+	private void InitCategories(){
+		categoriesDisplay = Arrays.asList(
+				Appl.appContext.getResources().getStringArray(R.array.marker_category_display));
+		categoriesValues = Arrays.asList(
+				Appl.appContext.getResources().getStringArray(R.array.marker_category_values));
+		selectedCategories = new boolean[categoriesDisplay.size()];
 	}
 
 	/**
