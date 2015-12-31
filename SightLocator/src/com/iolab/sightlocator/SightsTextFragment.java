@@ -269,6 +269,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
 		scrollViewParams.weight =1;
 		listViewParams.weight = 1;
+		mScrollView.setLayoutParams(scrollViewParams);
+		mSights.setLayoutParams(listViewParams);
 		getView().post(new Runnable() {
 			
 			@Override
