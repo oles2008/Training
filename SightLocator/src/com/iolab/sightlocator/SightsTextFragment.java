@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -73,6 +75,16 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private TextView mTitle;
 	private TextView mDescription;
 	private ImageView mImage;
+	private ScrollView mScrollView;
+	private LinearLayout mScrollingLayout;
+	private int mImageAndAddressHeight;
+	
+	//invisible auxiliary views for adjusting the layout
+	private TextView mDescriptionFake;
+	private ImageView mImageFake;
+	private LinearLayout mImageAndAddressContainerFake;
+	private LinearLayout mImageAndAddressContainer;
+	
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
 	private String mLanguage;
@@ -93,8 +105,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
     public interface OnTextFragmentClickListener{
         public void onTextFragmentLongClick();
     }
-	
-
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -131,6 +142,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			Bundle savedInstanceState) {
 		View inflatedView = inflater.inflate(R.layout.text_fragment, container,
 				false);
+		mScrollView = (ScrollView) inflatedView.findViewById(R.id.scrollView);
+		mScrollingLayout = (LinearLayout) inflatedView.findViewById(R.id.linear_layout_child_of_scroll);
 		mSights = (ListView) inflatedView.findViewById(R.id.listView);
 		initializeListView();
 		mAddress = (TextView) inflatedView.findViewById(R.id.address);
@@ -140,6 +153,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mDescription = (TextView) inflatedView.findViewById(R.id.textView);
 		mImage = (ImageView) inflatedView.findViewById(
 				R.id.imageView);
+		
+		mDescriptionFake = (TextView) inflatedView.findViewById(R.id.textView_invisible);
+		mImageFake = (ImageView) inflatedView.findViewById(
+				R.id.imageView_invisible);
+		mImageAndAddressContainerFake = (LinearLayout) inflatedView.findViewById(R.id.image_and_address_container_invisible);
+		mImageAndAddressContainer = (LinearLayout) inflatedView.findViewById(R.id.image_and_address_container);
 
 		changeImageFragment(mImagePath, mImageSource); 
 		return inflatedView;
@@ -252,6 +271,46 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.subscribeForMarkerCategoryUpdates(this);
 		ResumeActiveDialog();
 	}
+	
+	/**
+	 * Adjust the sizes of the scrollable content and the list of items after layout has been inflated.
+	 *
+	 */
+	private void correctScrollAndList() {
+//		final LinearLayout.LayoutParams fakeScrollViewParams = (LayoutParams) mScrollView.getLayoutParams();
+//		final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
+//		
+//		scrollViewParams.weight =1;
+//		listViewParams.weight = 1;
+//		mScrollView.setLayoutParams(scrollViewParams);
+//		mSights.setLayoutParams(listViewParams);
+		getView().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				final LinearLayout.LayoutParams scrollViewParams = (LayoutParams) mScrollView.getLayoutParams();
+				final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
+				int overollHeight = getView().getHeight();
+				int linearLayoutInScrollHeight = mTitle.getHeight() + mImageAndAddressHeight + mDescriptionFake.getHeight();
+				int listViewHeight = mSights.getHeight();
+				if(linearLayoutInScrollHeight < overollHeight/2) {
+					scrollViewParams.weight = (listViewHeight-10)/linearLayoutInScrollHeight;
+					mSights.setLayoutParams(listViewParams);
+				} else {
+					int listViewItemHeight = mSights.getChildAt(0).getHeight();
+					if(listViewItemHeight*mSights.getAdapter().getCount() < overollHeight * 0.4){
+						scrollViewParams.weight = (listViewHeight+10)/linearLayoutInScrollHeight;
+					} else {
+						scrollViewParams.weight =1;
+						listViewParams.weight = 1;
+						mScrollView.setLayoutParams(scrollViewParams);
+						mSights.setLayoutParams(listViewParams);
+					}
+				}
+				mScrollView.setLayoutParams(scrollViewParams);
+			}
+		});
+	}
 
 	private void ResumeActiveDialog(){
 		if(categoriesDialogActive){
@@ -272,14 +331,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 *            the new text to be displayed
 	 */
 	private void changeTextFragment(String newText) {
-		TextView textView = getTextView();
-		textView.setText(newText);
-	}
-
-	private TextView getTextView() {
-		Fragment textFragment = getFragmentManager()
-				.findFragmentById(R.id.text_fragment);
-		return (TextView) textFragment.getView().findViewById(R.id.textView);
+		mDescription.setText(newText);
+		mDescriptionFake.setText(newText);
 	}
 
     private LinearLayout getLinearLayout() {
@@ -325,7 +378,19 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
-		mImage.setImageBitmap(resizedBitmap);		
+		mImage.setImageBitmap(resizedBitmap);
+	}
+	
+	private void updateFakeImageAndAddressHeight() {
+		getView().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				LinearLayout.LayoutParams imageAndAddressContainerParams = (LayoutParams) mImageAndAddressContainer
+						.getLayoutParams();
+					mImageAndAddressHeight = mImageAndAddressContainer.getHeight();
+			}
+		});
 	}
 		
 	@Override
@@ -504,7 +569,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (bundle.getStringArray(Tags.AVAILABLE_LANGUAGES) != null){
         	showLanguagesDialog(bundle.getStringArray(Tags.AVAILABLE_LANGUAGES));
         }
+		updateFakeImageAndAddressHeight();
 			
+		if(mSightListItems != null && !mSightListItems.isEmpty()) {
+			correctScrollAndList();
+		}
 	}
 
 	@Override
@@ -880,17 +949,28 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		initializeListView();
 	}
 	
+	public String setLanguageFromDevice() {
+		if (Arrays.asList(
+				Appl.appContext.getResources().getStringArray(
+						R.array.content_language_abbr)).contains(
+				Locale.getDefault().getLanguage())) {
+			return Locale.getDefault().getLanguage();
+		} else {
+			return "en";
+		}
+	}
+	
 	private void initContentLanguage() {
 		SharedPreferences sharedPref = getActivity().getPreferences(
 				Context.MODE_PRIVATE);
-		mLanguage = sharedPref.getString(getString(R.string.content_language),
-				"en");
+		mLanguage = sharedPref.getString(Tags.CONTENT_LANGUAGE,
+				setLanguageFromDevice());
 	}
 	
 	private void changeLanguageInPreferences(String langToSet){
 		SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(getString(R.string.content_language),langToSet);
+		editor.putString(Tags.CONTENT_LANGUAGE,langToSet);
 		editor.commit();
 	}
 	
