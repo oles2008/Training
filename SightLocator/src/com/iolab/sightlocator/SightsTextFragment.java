@@ -74,6 +74,13 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private ImageView mImage;
 	private ScrollView mScrollView;
 	private LinearLayout mScrollingLayout;
+	private int mImageAndAddressHeight;
+	
+	//invisible auxiliary views for adjusting the layout
+	private TextView mDescriptionFake;
+	private ImageView mImageFake;
+	private LinearLayout mImageAndAddressContainerFake;
+	private LinearLayout mImageAndAddressContainer;
 	
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
@@ -127,6 +134,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		mDescription = (TextView) inflatedView.findViewById(R.id.textView);
 		mImage = (ImageView) inflatedView.findViewById(
 				R.id.imageView);
+		
+		mDescriptionFake = (TextView) inflatedView.findViewById(R.id.textView_invisible);
+		mImageFake = (ImageView) inflatedView.findViewById(
+				R.id.imageView_invisible);
+		mImageAndAddressContainerFake = (LinearLayout) inflatedView.findViewById(R.id.image_and_address_container_invisible);
+		mImageAndAddressContainer = (LinearLayout) inflatedView.findViewById(R.id.image_and_address_container);
 
 		changeImageFragment(mImagePath, mImageSource); 
 		return inflatedView;
@@ -265,31 +278,37 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 *
 	 */
 	private void correctScrollAndList() {
-		final LinearLayout.LayoutParams scrollViewParams = (LayoutParams) mScrollView.getLayoutParams();
-		final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
-		scrollViewParams.weight =1;
-		listViewParams.weight = 1;
-		mScrollView.setLayoutParams(scrollViewParams);
-		mSights.setLayoutParams(listViewParams);
+//		final LinearLayout.LayoutParams fakeScrollViewParams = (LayoutParams) mScrollView.getLayoutParams();
+//		final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
+//		
+//		scrollViewParams.weight =1;
+//		listViewParams.weight = 1;
+//		mScrollView.setLayoutParams(scrollViewParams);
+//		mSights.setLayoutParams(listViewParams);
 		getView().post(new Runnable() {
 			
 			@Override
 			public void run() {
+				final LinearLayout.LayoutParams scrollViewParams = (LayoutParams) mScrollView.getLayoutParams();
+				final LinearLayout.LayoutParams listViewParams = (LayoutParams) mSights.getLayoutParams();
 				int overollHeight = getView().getHeight();
-				int linearLayoutInScrollHeight = mTitle.getHeight() + mImage.getHeight() + mDescription.getHeight();
+				int linearLayoutInScrollHeight = mTitle.getHeight() + mImageAndAddressHeight + mDescriptionFake.getHeight();
 				int listViewHeight = mSights.getHeight();
-				Log.d("MyLogs", "overall: "+overollHeight+", scroll: "+linearLayoutInScrollHeight+", list: "+listViewHeight);
 				if(linearLayoutInScrollHeight < overollHeight/2) {
 					scrollViewParams.weight = (listViewHeight-10)/linearLayoutInScrollHeight;
-					mScrollView.setLayoutParams(scrollViewParams);
 					mSights.setLayoutParams(listViewParams);
 				} else {
 					int listViewItemHeight = mSights.getChildAt(0).getHeight();
-					if(listViewItemHeight*mSights.getAdapter().getCount() < listViewHeight * 0.8){
+					if(listViewItemHeight*mSights.getAdapter().getCount() < overollHeight * 0.4){
 						scrollViewParams.weight = (listViewHeight+10)/linearLayoutInScrollHeight;
+					} else {
+						scrollViewParams.weight =1;
+						listViewParams.weight = 1;
+						mScrollView.setLayoutParams(scrollViewParams);
+						mSights.setLayoutParams(listViewParams);
 					}
-					Log.d("MyLogs", "item height: "+listViewItemHeight);
 				}
+				mScrollView.setLayoutParams(scrollViewParams);
 			}
 		});
 	}
@@ -301,14 +320,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 *            the new text to be displayed
 	 */
 	private void changeTextFragment(String newText) {
-		TextView textView = getTextView();
-		textView.setText(newText);
-	}
-
-	private TextView getTextView() {
-		Fragment textFragment = getFragmentManager()
-				.findFragmentById(R.id.text_fragment);
-		return (TextView) textFragment.getView().findViewById(R.id.textView);
+		mDescription.setText(newText);
+		mDescriptionFake.setText(newText);
 	}
 
     private LinearLayout getLinearLayout() {
@@ -354,7 +367,19 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
-		mImage.setImageBitmap(resizedBitmap);		
+		mImage.setImageBitmap(resizedBitmap);
+	}
+	
+	private void updateFakeImageAndAddressHeight() {
+		getView().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				LinearLayout.LayoutParams imageAndAddressContainerParams = (LayoutParams) mImageAndAddressContainer
+						.getLayoutParams();
+					mImageAndAddressHeight = mImageAndAddressContainer.getHeight();
+			}
+		});
 	}
 	
 	
@@ -518,6 +543,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (bundle.getStringArray(Tags.AVAILABLE_LANGUAGES) != null){
         	showLanguagesDialog(bundle.getStringArray(Tags.AVAILABLE_LANGUAGES));
         }
+		updateFakeImageAndAddressHeight();
 			
 		if(mSightListItems != null && !mSightListItems.isEmpty()) {
 			correctScrollAndList();
