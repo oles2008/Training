@@ -79,6 +79,6 @@
     <string name="action_filter_monument">Monument</string>
 
     <!-- Default text-->
-    <string name="default_description_text">There is no available description in current language. Please choose other language</string>
-    <string name="default_address_text">There is no available address in current language. Please choose other language</string>
+    <string name="default_description_text">No available description in current language. Please choose other language</string>
+    <string name="default_address_text">No available address in current language</string>
 </resources>

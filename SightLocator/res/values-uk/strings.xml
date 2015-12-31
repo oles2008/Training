@@ -50,5 +50,5 @@
     
     <!-- Default text that is shown when original is absent-->
     <string name="default_description_text">Опис вибраною мовою не доступний. Оберіть іншу мову</string>
-    <string name="default_address_text">Адреса вибраною мовою не доступна. Оберіть іншу мову</string>
+    <string name="default_address_text">Адреса вибраною мовою не доступна</string>
 </resources>
