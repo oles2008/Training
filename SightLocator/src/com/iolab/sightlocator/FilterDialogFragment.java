@@ -89,25 +89,20 @@ public class FilterDialogFragment extends DialogFragment{
 		});
 			
 		// Set the action buttons
-		dialogBuilder.setPositiveButton(R.string.dialog_ok_button,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// Send the positive button event back to the host
-						// activity
-						List<Category> newCategories = CategoryUtils
-								.getSelectedMarkerCategories();
-						mListener.onFilterDialogPositiveClick(
-								FilterDialogFragment.this, newCategories,
-								oldCategories);
-					}
-				});
+		dialogBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// Send the positive button event back to the host activity
+					List<Category> newCategories = CategoryUtils.getSelectedMarkerCategories();
+					mListener.onFilterDialogPositiveClick(
+							FilterDialogFragment.this, newCategories, oldCategories);
+				}
+			});
 			
 		dialogBuilder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					// Send the negative button event back to the host activity
-					dialog.cancel();
 					System.arraycopy(tmpCheckedItems, 0, Appl.selectedCategories, 0, Appl.selectedCategories.length);
 					mListener.onFilterDialogNegativeClick(FilterDialogFragment.this);
 				}
@@ -116,7 +111,6 @@ public class FilterDialogFragment extends DialogFragment{
 		// Create the AlertDialog object and return it
 		return dialogBuilder.create();
 	}
-
 
 	
 ////////////////   LEGACY CODE to work with checkboxes and checkboxes_layout.xml	////////////////

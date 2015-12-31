@@ -1,19 +1,10 @@
 package com.iolab.sightlocator;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.List;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -23,8 +14,7 @@ public class MainActivity extends BaseActivity
 
     public static boolean mapFragmentVisible = true;
     public static boolean textFragmentVisible = true;
-
-
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,44 +51,7 @@ public class MainActivity extends BaseActivity
             getTextView().setTextSize(14);
             getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
         }
-                
-        // check if gps module is presented, enabled or disabled
-        LocationManager mgr = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-        if (mgr != null) {
-        	if (mgr.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
-        		if(mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-					Log.d("gps", "GPS is enabled");
-        		} else {
-        			showGPSDisabledAlertToUser();
-        		}
-        	}
-        	else {
-				Log.d("gps", "GPS is not found");
-        	}
-        }
-    }
-
-    private void showGPSDisabledAlertToUser(){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
-        .setCancelable(false)
-        .setPositiveButton("Goto Settings Page To Enable GPS",
-                new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int id){
-                Intent callGPSSettingIntent = new Intent(
-                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(callGPSSettingIntent);
-            }
-        });
-        alertDialogBuilder.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int id){
-                dialog.cancel();
-            }
-        });
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
-    }
+    }	
     
     private TextView getTextView() {
         Fragment textFragment = getFragmentManager()
@@ -114,7 +67,6 @@ public class MainActivity extends BaseActivity
         super.onSaveInstanceState(args);
         args.putBoolean(Tags.MAP_FRAGMENT_VISIBLE, getFragmentManager().findFragmentById(R.id.map_fragment).isVisible());
     }
-
 
     @Override
     public void onBackPressed() {

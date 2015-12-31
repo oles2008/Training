@@ -10,6 +10,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class LanguagesDialogFragment extends DialogFragment {
+
+	public interface LanguagesDialogListener {
+		public void onFilterDialogPositiveClick(String languageTag);
+		public void onFilterDialogNegativeClick();
+	}
+	
 	int mSelectedItem = -1;
 	int mItemId = -1;
 	String mCurrentLanguage;
@@ -66,30 +72,26 @@ public class LanguagesDialogFragment extends DialogFragment {
 	               public void onClick(DialogInterface dialog, int which) {
 	               // The 'which' argument contains the index position of the selected item
 	            	   mSelectedItem = which;
-	           } 
+	           }
 	    });
-		builder.setPositiveButton(R.string.dialog_ok_button,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// Set into SharedPreferences variable selected in
-						// dialog language
-						if (mSelectedItem != getLanguagePosition(mCurrentLanguage)) {
-							mLanguageDialogListener
-									.onLanguageChosen(langsForSharedPreference[mSelectedItem]);
-						}
-					}
+		builder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// Set into SharedPreferences variable selected in
+				// dialog language
+				String lang = null;
+				if (mSelectedItem != getLanguagePosition(mCurrentLanguage)) {
+					lang = langsForSharedPreference[mSelectedItem];
+				}
+				mLanguageDialogListener.onFilterDialogPositiveClick(lang);
+			}
 		});
 	    builder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
+				mLanguageDialogListener.onFilterDialogNegativeClick();
 			}
 		});
 	    return builder.create();
-	}
-	public interface LanguagesDialogListener {
-		public void onLanguageChosen(String languageTag);
-	}
-	
+	}	
 }

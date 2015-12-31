@@ -1,6 +1,5 @@
 package com.iolab.sightlocator;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
@@ -14,15 +13,18 @@ import java.util.Queue;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -77,6 +79,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private Queue<DestinationEndPoint> mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
 	private Queue<DestinationEndPoint> mForwardStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
 
+	// dialogs
+	private Boolean categoriesDialogActive = false;
+	private Boolean languagesDialogActive = false;
+	private Boolean gpsDialogActive = true;
+	
+	private FilterDialogFragment categoriesDialog;
+	private DialogFragment languagesDialog;
+    private AlertDialog gpsDialog;
+
     OnTextFragmentClickListener mCallback;
 
     public interface OnTextFragmentClickListener{
@@ -103,6 +114,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			if(savedForwardStack != null){
 				mForwardStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>(savedForwardStack));
 			}
+			
+			//dialogs
+			categoriesDialogActive = savedInstanceState.getBoolean(Tags.CATEGORIES_DIALOG_ACTIVE, false);
+			languagesDialogActive = savedInstanceState.getBoolean(Tags.LANGUAGES_DIALOG_ACTIVE, false);
+			gpsDialogActive = savedInstanceState.getBoolean(Tags.GPS_DIALOG_ACTIVE, false);
+		}
+		if(gpsDialogActive){
+			showGpsDialog();
 		}
 		setHasOptionsMenu(true);
 	}
@@ -157,15 +176,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			return true;
 			
 		case R.id.action_languages_dialog:
-			int itemId = -1;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
-			if (mSelectedItem != null) {
-				itemId = mSelectedItem.getID();
-			}
-			if (itemId != -1) {
-				startGetAvailableLanguagesAction(itemId);
-			} else {
-				showLanguagesDialogWithAllLanguages();
-			}
+			startLanguageDialog();
 			return true;
 		
 		default:
@@ -180,19 +191,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				new GetAvailableContentLanguagesAction(itemId));
 		getActivity().startService(intent);
 	}
-	
-	private void showLanguagesDialog(String[] inputLanguages) {
-		// Create an instance of the dialog fragment and show it
-		DialogFragment dialogLangs = new LanguagesDialogFragment(inputLanguages,this, mLanguage);
-		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
-	}
-	
-	private void showLanguagesDialogWithAllLanguages() {
-		// Create an instance of the dialog fragment and show it
-		DialogFragment dialogLangs = new LanguagesDialogFragment(this, mLanguage);
-		dialogLangs.show(getFragmentManager(), "LanguagesDialogFragment");
-	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -228,7 +227,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
         registerBackButtonListener();
 	}
 
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -252,8 +250,21 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.subscribeForMapLongClickUpdates(this);
 		Appl.subscribeForViewUpdates(this);
 		Appl.subscribeForMarkerCategoryUpdates(this);
+		ResumeActiveDialog();
 	}
 
+	private void ResumeActiveDialog(){
+		if(categoriesDialogActive){
+			showFilterDialog();
+		}
+		if(languagesDialogActive){
+			startLanguageDialog();
+		}
+		if(gpsDialogActive){
+			// no need, as gps dialog is not connected to this fragment			
+		}
+	}
+	
 	/**
 	 * Change text in text fragment to new one.
 	 * 
@@ -316,8 +327,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
 		mImage.setImageBitmap(resizedBitmap);		
 	}
-	
-	
+		
 	@Override
 	public void onMapLongClick(LatLng arg0) {
 		onMapClick(arg0);
@@ -384,6 +394,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putString(Tags.TYPE_OF_IMAGE_SOURCE, mImageSource);
 		args.putParcelableArrayList(Tags.BACK_STACK, new ArrayList<DestinationEndPoint>(mBackStack));
 		args.putParcelableArrayList(Tags.FORWARD_STACK, new ArrayList<DestinationEndPoint>(mForwardStack));
+		args.putBoolean(Tags.CATEGORIES_DIALOG_ACTIVE, categoriesDialogActive);
+		args.putBoolean(Tags.LANGUAGES_DIALOG_ACTIVE, languagesDialogActive);
+		args.putBoolean(Tags.GPS_DIALOG_ACTIVE, gpsDialogActive);
 	}
 
     @Override
@@ -396,7 +409,20 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Appl.unsubscribeFromMapLongClickUpdates(this);
 		Appl.unsubscribeFromViewUpdates(this);
 		Appl.unsubscribeFromMarkerCategoryUpdates(this);
+		DismissActiveDialog();
 	}
+    
+    private void DismissActiveDialog(){
+		if(categoriesDialogActive && categoriesDialog != null){
+			categoriesDialog.dismiss();
+		}
+		if(languagesDialogActive){
+			languagesDialog.dismiss();
+		}
+		if(gpsDialogActive){
+			// no need, as gps dialog is not connected to this fragment
+		}    	
+    }
 
 	private ScrollView getScrollView() {
 		ScrollView scr;
@@ -742,34 +768,113 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 						mSelectedItem)) {
 			navigateUp(false);
 		}
-		
-		
 	}
 
-	public void showFilterDialog() {
+    /* *************************** Categories Dialog *************************** */
+
+	private void showFilterDialog() {
 		// Create an instance of the dialog fragment and show it
-		DialogFragment dialog = new FilterDialogFragment(this);
-		dialog.show(getFragmentManager(), "FilterDialogFragment");
+		categoriesDialogActive = true;
+		categoriesDialog = new FilterDialogFragment(this);
+		categoriesDialog.show(getFragmentManager(), "FilterDialogFragment");
 	}
 	
-	/* **************************************************************************** */
-    /* *************************** FilterDialogListener *************************** */
-    /* **************************************************************************** */
-
 	@Override
 	public void onFilterDialogPositiveClick(DialogFragment dialog, List<Category> newCategories, List<Category> oldCategories) {
 		selectCategories(newCategories, oldCategories, true);
+		categoriesDialogActive = false;
 	}
 
 	@Override
 	public void onFilterDialogNegativeClick(DialogFragment dialog) {
-		//Do nothing
+		categoriesDialogActive = false;
 	}
 
-	/* **************************************************************************** */
-    /* ************************ OnMarkerCategoryUpdateListener ******************** */
-    /* **************************************************************************** */
+    /* *************************** GPS dialog *************************** */
 
+	private void showGpsDialog(){
+	// check if gps module is presented, enabled or disabled
+		Context context = getActivity().getBaseContext();
+		LocationManager mgr = (LocationManager)context.getSystemService(
+				Context.LOCATION_SERVICE);
+		if (mgr != null) {
+			if (mgr.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
+				if(mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+					Log.d("gps", "GPS is enabled");
+				} else {
+					showGPSDisabledAlertToUser();
+				}
+			}
+			else {
+				Log.d("gps", "GPS is not found");
+			}
+		}
+	}
+
+    private void showGPSDisabledAlertToUser(){
+    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+        	.setCancelable(false)
+        	.setPositiveButton("Goto Settings To Enable GPS",
+                new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int id){
+                Intent callGPSSettingIntent = new Intent(
+                		android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(callGPSSettingIntent);
+    			gpsDialogActive = false;
+            }
+        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+        		new DialogInterface.OnClickListener(){
+            		public void onClick(DialogInterface dialog, int id){
+            			dialog.cancel();
+            			gpsDialogActive = false;
+            		}
+        });
+        gpsDialog = alertDialogBuilder.create();
+        gpsDialog.show();
+    }
+
+    /* ************************ Languages Dialog ******************** */	
+    
+	private void startLanguageDialog(){
+		int itemId = -1;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
+		if (mSelectedItem != null) {
+			itemId = mSelectedItem.getID();
+		}
+		if (itemId != -1) {
+			startGetAvailableLanguagesAction(itemId);
+		} else {
+			showLanguagesDialogWithAllLanguages();
+		}
+	}
+	
+	private void showLanguagesDialog(String[] inputLanguages) {
+		// Create an instance of the dialog fragment and show it
+		languagesDialogActive = true;
+		languagesDialog = new LanguagesDialogFragment(
+				inputLanguages, this, mLanguage);
+		languagesDialog.show(getFragmentManager(), "LanguagesDialogFragment");
+	}
+	
+	private void showLanguagesDialogWithAllLanguages() {
+		// Create an instance of the dialog fragment and show it
+		showLanguagesDialog(null);
+	}
+
+	public void onFilterDialogNegativeClick() {
+		languagesDialogActive = false;
+	}
+
+	public void onFilterDialogPositiveClick(String languageTag) {
+		languagesDialogActive = false;
+		if(languageTag != null){
+			changeLanguage(languageTag, true);
+		}
+	}
+	
+    /* ************************ OnMarkerCategoryUpdateListener ******************** */	
+	
 	@Override
 	public void onMarkerCategoryChosen() {
 		initializeListView();
@@ -802,9 +907,5 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if(mSelectedItem != null) {
 			navigateTo(mSelectedItem.getID(), false, mSightListItems, false, false);
 		}
-	}
-	
-	public void onLanguageChosen(String languageTag) {
-		changeLanguage(languageTag, true);
 	}
 }
