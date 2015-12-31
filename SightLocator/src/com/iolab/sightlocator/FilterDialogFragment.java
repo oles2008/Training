@@ -27,7 +27,7 @@ public class FilterDialogFragment extends DialogFragment{
 	public Dialog onCreateDialog(Bundle savedInstanceState){
 		// Where we track the selected items
 		final boolean[] tmpCheckedItems;
-		tmpCheckedItems = new boolean[(getResources().getStringArray(R.array.marker_category)).length];
+		tmpCheckedItems = new boolean[Appl.categoriesValues.size()];
 		final List<Category> oldCategories = CategoryUtils.getSelectedMarkerCategories();
 		System.arraycopy(Appl.selectedCategories, 0, tmpCheckedItems, 0, Appl.selectedCategories.length);
 
@@ -39,7 +39,7 @@ public class FilterDialogFragment extends DialogFragment{
 		
 		// Specify the list array, the items to be selected by default (null for none),
 		// and the listener through which to receive callback when items are selected
-		dialogBuilder.setMultiChoiceItems(R.array.marker_category, Appl.selectedCategories, new DialogInterface.OnMultiChoiceClickListener() {
+		dialogBuilder.setMultiChoiceItems(R.array.marker_category_display, Appl.selectedCategories, new DialogInterface.OnMultiChoiceClickListener() {
 				
 			@SuppressLint("NewApi")
 			@Override
@@ -89,25 +89,20 @@ public class FilterDialogFragment extends DialogFragment{
 		});
 			
 		// Set the action buttons
-		dialogBuilder.setPositiveButton(R.string.dialog_ok_button,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// Send the positive button event back to the host
-						// activity
-						List<Category> newCategories = CategoryUtils
-								.getSelectedMarkerCategories();
-						mListener.onFilterDialogPositiveClick(
-								FilterDialogFragment.this, newCategories,
-								oldCategories);
-					}
-				});
+		dialogBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// Send the positive button event back to the host activity
+					List<Category> newCategories = CategoryUtils.getSelectedMarkerCategories();
+					mListener.onFilterDialogPositiveClick(
+							FilterDialogFragment.this, newCategories, oldCategories);
+				}
+			});
 			
 		dialogBuilder.setNegativeButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					// Send the negative button event back to the host activity
-					dialog.cancel();
 					System.arraycopy(tmpCheckedItems, 0, Appl.selectedCategories, 0, Appl.selectedCategories.length);
 					mListener.onFilterDialogNegativeClick(FilterDialogFragment.this);
 				}
@@ -116,7 +111,6 @@ public class FilterDialogFragment extends DialogFragment{
 		// Create the AlertDialog object and return it
 		return dialogBuilder.create();
 	}
-
 
 	
 ////////////////   LEGACY CODE to work with checkboxes and checkboxes_layout.xml	////////////////

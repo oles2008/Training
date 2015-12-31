@@ -13,7 +13,7 @@
     <string name="action_button_filter">Filter</string>
     
     <!-- Filter Categories list -->
-    <string-array name="marker_category">
+    <string-array name="marker_category_display">
         <item >ALL</item>
         <item >Religion</item>
         <item >History</item>
@@ -23,6 +23,18 @@
         <item >Entertaiment</item>
         <item >Industry</item>
     </string-array>
+	<!--do not internationalise as is used for comparison-->
+    <string-array name="marker_category_values">
+        <item >ALL</item>
+        <item >Religion</item>
+        <item >History</item>
+        <item >Monument</item>
+        <item >Literature</item>
+        <item >Cafe</item>
+        <item >Entertaiment</item>
+        <item >Industry</item>
+    </string-array>
+
     
 	<!-- Filter Categories Dialog buttons -->
     <string name="dialog_ok_button">OK</string>

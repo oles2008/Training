@@ -40,4 +40,9 @@ public class Tags {/**/
 	public static final String IMAGE_FROM_ASSET = "imageFromAsset";
 	public static final String IMAGE_FROM_CASHE = "imageFromCashe";
 	public static final String IMAGE_BLANK = "blankImage";
+
+	// dialogs
+	public static final String CATEGORIES_DIALOG_ACTIVE = "categoriesDialogActive";
+	public static final String LANGUAGES_DIALOG_ACTIVE = "languagesDialogActive";
+	public static final String GPS_DIALOG_ACTIVE = "gpsDialogActive";
 }
