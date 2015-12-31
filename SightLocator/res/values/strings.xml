@@ -55,7 +55,7 @@
     <!-- SharedPreferences -->
     <string name="content_language">content language</string>
     
-    <string name="welcome_screen_text">The mobile development community is at a tipping point. Mobile users demand more choice, more opportunities to customize their phones, and more functionality. Mobile operators want to provide value-added content to their subscribers in a manageable and lucrative way. Mobile developers want the freedom to develop the powerful mobile applications users demand with minimal roadblocks to success. Finally, handset manufacturers want a stable, secure, and affordable platform to power their devices. Upuntil now single mobile platform has adequately addressed the needs of all the parties. Enter Android, which is a potential game-changer for the mobile development community. An innovative and open platform, Android is well positioned to address the growing needs of the mobile marketplace.</string>	
+    <string name="welcome_screen_text">WELCOME,\nDear Friend!</string>	
     
     <!-- DEPRECATED - values used for checkboxes -->
     <string name="action_filter_all">ALL</string>
