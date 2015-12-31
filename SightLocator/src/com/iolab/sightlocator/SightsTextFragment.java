@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
 
@@ -104,8 +105,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
     public interface OnTextFragmentClickListener{
         public void onTextFragmentLongClick();
     }
-	
-
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -949,17 +949,28 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		initializeListView();
 	}
 	
+	public String setLanguageFromDevice() {
+		if (Arrays.asList(
+				Appl.appContext.getResources().getStringArray(
+						R.array.content_language_abbr)).contains(
+				Locale.getDefault().getLanguage())) {
+			return Locale.getDefault().getLanguage();
+		} else {
+			return "en";
+		}
+	}
+	
 	private void initContentLanguage() {
 		SharedPreferences sharedPref = getActivity().getPreferences(
 				Context.MODE_PRIVATE);
-		mLanguage = sharedPref.getString(getString(R.string.content_language),
-				"en");
+		mLanguage = sharedPref.getString(Tags.CONTENT_LANGUAGE,
+				setLanguageFromDevice());
 	}
 	
 	private void changeLanguageInPreferences(String langToSet){
 		SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(getString(R.string.content_language),langToSet);
+		editor.putString(Tags.CONTENT_LANGUAGE,langToSet);
 		editor.commit();
 	}
 	
