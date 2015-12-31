@@ -61,8 +61,12 @@
     </string-array>
     
     <!-- Content languages dialog title and message -->
-    <string name="content_lang_dialog_title">Languages available for chosen object</string>
-    <string name="content_lang_dialog_message">Сhoose language for content.</string>
+    <string name="content_lang_dialog_title">Languages available for chosen item</string>
+    <string name="content_lang_dialog_message">Please choose language for content:</string>
+        
+    <!-- SharedPreferences -->
+    <string name="content_language">content language</string>
+    <string name="welcome_screen_text">Find the places you would like to visit!</string>	
     
     <!-- DEPRECATED - values used for checkboxes -->
     <string name="action_filter_all">ALL</string>
@@ -75,7 +79,6 @@
     <string name="action_filter_monument">Monument</string>
 
     <!-- Default text-->
-    <string name="welcome_screen_text">The mobile development community is at a tipping point. Mobile users demand more choice, more opportunities to customize their phones, and more functionality. Mobile operators want to provide value-added content to their subscribers in a manageable and lucrative way. Mobile developers want the freedom to develop the powerful mobile applications users demand with minimal roadblocks to success. Finally, handset manufacturers want a stable, secure, and affordable platform to power their devices. Upuntil now single mobile platform has adequately addressed the needs of all the parties. Enter Android, which is a potential game-changer for the mobile development community. An innovative and open platform, Android is well positioned to address the growing needs of the mobile marketplace.</string>
     <string name="default_description_text">There is no available description in current language. Please choose other language</string>
     <string name="default_address_text">There is no available address in current language. Please choose other language</string>
 </resources>
