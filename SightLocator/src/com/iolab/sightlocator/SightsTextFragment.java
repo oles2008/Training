@@ -788,7 +788,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Arrays.fill(Appl.selectedCategories, Boolean.FALSE);
 
 		//get list of categories
-		ArrayList<String> itemCategories = (ArrayList<String>) Appl.categoriesDisplay;
+		List<String> itemCategories = Appl.categoriesDisplay;
 
 		//set "changed" flag, to indicate if any changes were made 
 		boolean changed = false;
