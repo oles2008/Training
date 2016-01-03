@@ -49,6 +49,8 @@
     <string name="welcome_screen_text">ВІТАЄМО,\nЛюбий Друже! Ми допоможемо тобі знайти місця, в яких прагнеш побувати.</string>
     
     <!-- Default text that is shown when original is absent-->
-    <string name="default_description_text">Опис вибраною мовою не доступний. Оберіть іншу мову</string>
-    <string name="default_address_text">Адреса вибраною мовою не доступна</string>
+    <string name="default_description_text_part1">Опис вибраною мовою(</string>
+    <string name="default_description_text_part2">) не доступний. Оберіть іншу мову</string>
+    <string name="default_address_text_part1">Адреса вибраною мовою(</string>
+    <string name="default_address_text_part2">) не доступна</string>
 </resources>

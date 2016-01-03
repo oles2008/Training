@@ -292,14 +292,30 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		Pair<String, String> pathType = getImagePathAndSource(pathToImage);
 		
 		if (sightDescription == null) {
-			sightDescription = Appl.appContext.getResources().getString(R.string.default_description_text);
+			sightDescription = Appl.appContext.getResources().getString(
+					R.string.default_description_text_part1)
+					+ Language.getFullLanguageName(mLanguage)
+					+ Appl.appContext.getResources().getString(
+							R.string.default_description_text_part2);
 		} else if (sightDescription.length() == 0) {
-			sightDescription = Appl.appContext.getResources().getString(R.string.default_description_text);
+			sightDescription = Appl.appContext.getResources().getString(
+					R.string.default_description_text_part1)
+					+ Language.getFullLanguageName(mLanguage)
+					+ Appl.appContext.getResources().getString(
+							R.string.default_description_text_part2);
 		}
 		if (sightAddress == null) {
-			sightAddress = Appl.appContext.getResources().getString(R.string.default_address_text);
+			sightAddress = Appl.appContext.getResources().getString(
+					R.string.default_address_text_part1)
+					+ Language.getFullLanguageName(mLanguage)
+					+ Appl.appContext.getResources().getString(
+							R.string.default_address_text_part2);
 		} else if (sightAddress.length() == 0) {
-			sightAddress = Appl.appContext.getResources().getString(R.string.default_address_text);
+			sightAddress = Appl.appContext.getResources().getString(
+					R.string.default_address_text_part1)
+					+ Language.getFullLanguageName(mLanguage)
+					+ Appl.appContext.getResources().getString(
+							R.string.default_address_text_part2);
 		}
 		
 		Bundle resultData = new Bundle();
