@@ -139,10 +139,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		case R.id.action_filter:
 			showFilterDialog();
 			return true;
-
-//		case R.id.action_languages_dialog:
-//			showLanguagesDialog(itemId);
-//			return true;
 			
 		case R.id.action_back:
 			navigateBack();
@@ -157,7 +153,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			return true;
 			
 		case R.id.action_languages_dialog:
-			int itemId = -1;                  //TODO replace hardcoded value of itemId with automatically id of chosen item
+			//TODO replace hardcoded value of itemId with automatically id of chosen item
+			int itemId = -1;
 			if (mSelectedItem != null) {
 				itemId = mSelectedItem.getID();
 			}
@@ -167,11 +164,21 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				showLanguagesDialogWithAllLanguages();
 			}
 			return true;
+			
+		case R.id.action_help:
+			showHelp();
+			return true;
 		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	private void showHelp(){
+		Intent intent =  new Intent(getActivity(), DisplayHelpTextActivity.class);
+		startActivity(intent);
+	}
+	
 
 	private void startGetAvailableLanguagesAction(int itemId) {
 		Intent intent = new Intent(getActivity(),

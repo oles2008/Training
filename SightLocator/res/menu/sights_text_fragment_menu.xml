@@ -23,10 +23,17 @@
         android:icon="@drawable/ic_action_arrow_forward"
         android:showAsAction="ifRoom"
         android:title="@string/forward"/>
+    
     <item
         android:id="@+id/action_back"
         android:icon="@drawable/ic_action_arrow_back"
         android:showAsAction="ifRoom"
         android:title="@string/back"/>
+    
+    <item
+        android:id="@+id/action_help"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_help"/>
     
 </menu>

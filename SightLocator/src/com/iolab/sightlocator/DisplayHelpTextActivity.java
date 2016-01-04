@@ -1,12 +1,12 @@
 package com.iolab.sightlocator;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class DisplayHelpTextActivity extends BaseActivity {
+public class DisplayHelpTextActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.help_text);
 
