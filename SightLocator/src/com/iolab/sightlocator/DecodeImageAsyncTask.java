@@ -1,24 +1,27 @@
 package com.iolab.sightlocator;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
 public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 	
 	private WeakReference<ImageView> mImageViewRef;
 	private String mImagePath;
+	private String mImageSource;
 	private int mWidth;
 	private int mHeight;
 	
-	public DecodeImageAsyncTask(ImageView imageView, String imagePath, int width, int height) {
+	public DecodeImageAsyncTask(ImageView imageView, String imagePath, String imageSource, int width, int height) {
 		mImageViewRef = new WeakReference<ImageView>(imageView);
 		mImagePath = imagePath;
+		mImageSource = imageSource;
 		mWidth = width;
 		mHeight = height;
 	}
@@ -49,10 +52,33 @@ public class DecodeImageAsyncTask extends AsyncTask<Void, Void, Bitmap> {
 	private Bitmap decodeBitmapFromPath(int width, int height) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(mImagePath, options);
-		options.inSampleSize = getInSampleSize(options, width, height);
-		options.inJustDecodeBounds = false;
-		return BitmapFactory.decodeFile(mImagePath, options);
+		if(mImageSource == null || mImageSource.equals(Tags.IMAGE_BLANK) || mImageSource.isEmpty()) {
+			return null;
+		}
+		
+		// image from storage
+		if(mImageSource.equals(Tags.IMAGE_FROM_CACHE)){
+			BitmapFactory.decodeFile(mImagePath, options);
+			options.inSampleSize = getInSampleSize(options, width, height);
+			options.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(mImagePath, options);		
+		}
+
+		// image from assets
+		if(mImageSource.equals(Tags.IMAGE_FROM_ASSET)){
+			try{
+			    // get input stream
+			    InputStream ims = Appl.appContext.getAssets().open(mImagePath);
+				BitmapFactory.decodeStream(ims, null, options);
+				options.inSampleSize = getInSampleSize(options, width, height);
+				options.inJustDecodeBounds = false;
+				return BitmapFactory.decodeStream(ims, null, options);
+			}
+			catch(IOException ex) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	private int getInSampleSize(BitmapFactory.Options options, int newWidth, int newHeight) {

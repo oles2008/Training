@@ -39,7 +39,7 @@ public class Tags {/**/
 	public static final String CONTENT_LANGUAGE = "content_language";
 	
 	public static final String IMAGE_FROM_ASSET = "imageFromAsset";
-	public static final String IMAGE_FROM_CASHE = "imageFromCashe";
+	public static final String IMAGE_FROM_CACHE = "imageFromCache";
 	public static final String IMAGE_BLANK = "blankImage";
 
 	// dialogs

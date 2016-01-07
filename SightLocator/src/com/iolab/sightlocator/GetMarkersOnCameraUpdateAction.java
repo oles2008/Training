@@ -1,25 +1,23 @@
 package com.iolab.sightlocator;
 
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMNS_LOCATION_LEVEL;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LATITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_LONGITUDE;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_SIGHT_STATUS;
+import static com.iolab.sightlocator.SightsDatabaseOpenHelper.MARKER_CATEGORY;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_ADDRESS;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.SIGHT_NAME;
 import static com.iolab.sightlocator.SightsDatabaseOpenHelper.TABLE_NAME;
-import static com.iolab.sightlocator.SightsDatabaseOpenHelper.MARKER_CATEGORY;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import static com.iolab.sightlocator.SightsDatabaseOpenHelper.COLUMN_ID;
 
-import com.iolab.sightlocator.ItemGroupAnalyzer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -39,15 +37,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		mLatLngBounds = latLngBounds;
 		mViewUpdateCallIndex = viewUpdateCallIndex;
 		mCategories = categories;
-		
 	}
-	
-//	private GetMarkersOnCameraUpdateAction(Parcel parcel) {
-//		mLatLngBounds = parcel.readParcelable(LatLngBounds.class.getClassLoader());
-//		mViewUpdateCallIndex = parcel.readLong();
-//		mCategories = parcel.readArrayList();
-//	}
-
 	
 	private GetMarkersOnCameraUpdateAction(Bundle bundle) {
 		if (bundle.containsKey(Tags.LAT_LNG_BOUNDS) 
@@ -57,9 +47,6 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			mViewUpdateCallIndex = bundle.getLong(Tags.VIEW_UPDATE_CALL_INDEX);
 			mCategories = bundle.getStringArrayList(Tags.MARKER_FILTER_CATEGORIES);
 		}
-//		mLatLngBounds = parcel.readParcelable(LatLngBounds.class.getClassLoader());
-//		mViewUpdateCallIndex = parcel.readLong();
-//		mCategories = parcel.readArrayList();
 	}
 
 	@Override
