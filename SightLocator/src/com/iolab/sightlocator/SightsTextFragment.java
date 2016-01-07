@@ -81,8 +81,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	//invisible auxiliary views for adjusting the layout
 	private TextView mDescriptionFake;
-	private ImageView mImageFake;
-	private LinearLayout mImageAndAddressContainerFake;
 	private LinearLayout mImageAndAddressContainer;
 	
 	private static long mClusterClickCounter = 0;
@@ -155,12 +153,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				R.id.imageView);
 		
 		mDescriptionFake = (TextView) inflatedView.findViewById(R.id.textView_invisible);
-		mImageFake = (ImageView) inflatedView.findViewById(
-				R.id.imageView_invisible);
-		mImageAndAddressContainerFake = (LinearLayout) inflatedView.findViewById(R.id.image_and_address_container_invisible);
 		mImageAndAddressContainer = (LinearLayout) inflatedView.findViewById(R.id.image_and_address_container);
 
-		changeImageFragment(mImagePath, mImageSource); 
+		inflatedView.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				changeImage(mImagePath, mImageSource);
+			}
+		}); 
 		return inflatedView;
 	}
 	
@@ -293,13 +294,15 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				int overollHeight = getView().getHeight();
 				int linearLayoutInScrollHeight = mTitle.getHeight() + mImageAndAddressHeight + mDescriptionFake.getHeight();
 				int listViewHeight = mSights.getHeight();
+				
 				if(linearLayoutInScrollHeight < overollHeight/2) {
 					scrollViewParams.weight = (listViewHeight-10)/linearLayoutInScrollHeight;
 					mSights.setLayoutParams(listViewParams);
 				} else {
-					int listViewItemHeight = mSights.getChildAt(0).getHeight();
+					//if the item is not visible, we make a rough estimate using listview's image size
+					int listViewItemHeight = (mSights.getChildAt(0) == null) ? getResources().getDimensionPixelSize(R.dimen.list_view_image_width) : mSights.getChildAt(0).getHeight();
 					if(listViewItemHeight*mSights.getAdapter().getCount() < overollHeight * 0.4){
-						scrollViewParams.weight = (listViewHeight+10)/linearLayoutInScrollHeight;
+						scrollViewParams.weight = (listViewHeight+10)/((float) overollHeight);
 					} else {
 						scrollViewParams.weight =1;
 						listViewParams.weight = 1;
@@ -308,6 +311,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					}
 				}
 				mScrollView.setLayoutParams(scrollViewParams);
+				Log.d("MyLogs", mSelectedItem.getTitle()+": "+mSights.getAdapter().getCount()+" items, listViewHeight: "+listViewHeight+", scroll weight: "+scrollViewParams.weight);
 			}
 		});
 	}
@@ -350,35 +354,16 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	 * @param type
 	 * 			  describe type of the source of an image
 	 */
-	private void changeImageFragment(String uri, String type) {
-		// blank image
-		if(type.equals(Tags.IMAGE_BLANK) || type == null || type.isEmpty()) {
-			mImage.setImageBitmap(null);
+	private void changeImage(String uri, String type) {
+		mImagePath = uri;
+		mImageSource = type;
+		if (type == null || type.equals(Tags.IMAGE_BLANK) || type.isEmpty()) {
+			mImage.setVisibility(View.GONE);
 			return;
+		} else {
+			mImage.setVisibility(View.VISIBLE);
+			new ImageUtils(getActivity()).loadImage(mImage, uri, type);
 		}
-		
-		// image from storage
-		if(type.equals(Tags.IMAGE_FROM_CASHE)){
-			mImage.setImageURI(Uri.parse(uri));		
-		}
-
-		// image from assets
-		if(type.equals(Tags.IMAGE_FROM_ASSET)){
-			try{
-			    // get input stream
-			    InputStream ims = Appl.appContext.getAssets().open(uri);
-			    
-			    // load image as Drawable and set to ImageView
-			    Drawable draw = Drawable.createFromStream(ims, null);
-			    mImage.setImageDrawable(draw);
-			}
-			catch(IOException ex) {
-				return;
-			}
-		}
-		
-		Bitmap resizedBitmap = Utils.resizeBitmap(mImage, ICON_SIZE);
-		mImage.setImageBitmap(resizedBitmap);
 	}
 	
 	private void updateFakeImageAndAddressHeight() {
@@ -445,12 +430,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onSaveInstanceState(Bundle args) {
 		super.onSaveInstanceState(args);
-		ImageView imageView = (ImageView) getActivity().findViewById(
-				R.id.imageView);
-		String uri = (String) imageView.getTag(R.string.imageview_tag_uri);
-		if (null != uri) {
-			args.putString(Tags.URI, uri);
-		}
+		args.putString(Tags.PATH_TO_IMAGE, mImagePath);
+		args.putString(Tags.TYPE_OF_IMAGE_SOURCE, mImageSource);
 		args.putLong(Tags.ON_MARKER_CLICK_COUNTER, mClusterClickCounter);
 		args.putInt(Tags.SCROLL_Y, getScrollView().getScrollY());
 		args.putParcelableArrayList(Tags.SIGHT_ITEM_LIST, mSightListItems);
@@ -520,10 +501,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 
 		if (bundle.getString(Tags.PATH_TO_IMAGE) != null) {
-			changeImageFragment(bundle.getString(Tags.PATH_TO_IMAGE), 
+			changeImage(bundle.getString(Tags.PATH_TO_IMAGE), 
 					bundle.getString(Tags.TYPE_OF_IMAGE_SOURCE));
-//			changeImageFragmentUsingImageUri(bundle
-//					.getString(Tags.PATH_TO_IMAGE));
 		} 
 		
 		if (bundle.getInt(Tags.COMMON_PARENT_ID,-1) != -1) {
@@ -603,7 +582,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	}
 	
 	private void cleanAllViews(){
-		changeImageFragment(null, Tags.IMAGE_BLANK);
+		changeImage(null, Tags.IMAGE_BLANK);
 		changeTextFragment(null);
 		mAddress.setText(null);
 		mTitle.setText(null);

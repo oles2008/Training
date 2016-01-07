@@ -227,7 +227,7 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		}
 		file = new File(path);
 		if(file.exists()) {
-			return new Pair<String, String>(path, Tags.IMAGE_FROM_CASHE);
+			return new Pair<String, String>(path, Tags.IMAGE_FROM_CACHE);
 		}
 
 		// 3. In assets
