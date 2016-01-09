@@ -304,23 +304,19 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				if(linearLayoutInScrollHeight < overollHeight/2) {
 					scrollViewParams.weight = ((float)listViewHeight-10)/linearLayoutInScrollHeight;
 					mSights.setLayoutParams(listViewParams);
-					Log.d("MyLogs", "1: weight: "+scrollViewParams.weight);
 				} else {
 					//if the item is not visible, we make a rough estimate using listview's image size
 					int listViewItemHeight = (mSights.getChildAt(0) == null) ? getResources().getDimensionPixelSize(R.dimen.list_view_image_width) : mSights.getChildAt(0).getHeight();
 					if(listViewItemHeight*mSights.getAdapter().getCount() < overollHeight * 0.4){
 						scrollViewParams.weight = (listViewHeight+10)/((float) overollHeight);
-						Log.d("MyLogs", "2: weight: "+scrollViewParams.weight);
 					} else {
 						scrollViewParams.weight =1;
 						listViewParams.weight = 1;
 						mScrollView.setLayoutParams(scrollViewParams);
 						mSights.setLayoutParams(listViewParams);
-						Log.d("MyLogs", "3: weight: "+scrollViewParams.weight);
 					}
 				}
 				mScrollView.setLayoutParams(scrollViewParams);
-				Log.d("MyLogs", mSelectedItem.getTitle()+": "+mSights.getAdapter().getCount()+" items, listViewHeight: "+listViewHeight+", scroll weight: "+scrollViewParams.weight);
 			}
 		});
 	}
