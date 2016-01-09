@@ -178,10 +178,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		case R.id.action_filter:
 			showFilterDialog();
 			return true;
-
-//		case R.id.action_languages_dialog:
-//			showLanguagesDialog(itemId);
-//			return true;
 			
 		case R.id.action_back:
 			navigateBack();
@@ -198,11 +194,21 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		case R.id.action_languages_dialog:
 			startLanguageDialog();
 			return true;
+			
+		case R.id.action_help:
+			showHelp();
+			return true;
 		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	private void showHelp(){
+		Intent intent =  new Intent(getActivity(), DisplayHelpTextActivity.class);
+		startActivity(intent);
+	}
+	
 
 	private void startGetAvailableLanguagesAction(int itemId) {
 		Intent intent = new Intent(getActivity(),
@@ -296,18 +302,21 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 				int listViewHeight = mSights.getHeight();
 				
 				if(linearLayoutInScrollHeight < overollHeight/2) {
-					scrollViewParams.weight = (listViewHeight-10)/linearLayoutInScrollHeight;
+					scrollViewParams.weight = ((float)listViewHeight-10)/linearLayoutInScrollHeight;
 					mSights.setLayoutParams(listViewParams);
+					Log.d("MyLogs", "1: weight: "+scrollViewParams.weight);
 				} else {
 					//if the item is not visible, we make a rough estimate using listview's image size
 					int listViewItemHeight = (mSights.getChildAt(0) == null) ? getResources().getDimensionPixelSize(R.dimen.list_view_image_width) : mSights.getChildAt(0).getHeight();
 					if(listViewItemHeight*mSights.getAdapter().getCount() < overollHeight * 0.4){
 						scrollViewParams.weight = (listViewHeight+10)/((float) overollHeight);
+						Log.d("MyLogs", "2: weight: "+scrollViewParams.weight);
 					} else {
 						scrollViewParams.weight =1;
 						listViewParams.weight = 1;
 						mScrollView.setLayoutParams(scrollViewParams);
 						mSights.setLayoutParams(listViewParams);
+						Log.d("MyLogs", "3: weight: "+scrollViewParams.weight);
 					}
 				}
 				mScrollView.setLayoutParams(scrollViewParams);

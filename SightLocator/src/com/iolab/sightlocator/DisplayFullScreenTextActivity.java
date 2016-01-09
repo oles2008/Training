@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -7,7 +8,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class DisplayFullScreenTextActivity extends BaseActivity{
+public class DisplayFullScreenTextActivity extends Activity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

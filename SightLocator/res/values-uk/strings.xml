@@ -35,7 +35,7 @@
     <string name="imageview_tag_uri">0</string>
     <string name="full_screen_activity_title">Інфа</string>
     <string name="help_activity_title">Поміч</string>
-    <string name="help_activity_content">Декілька порад як найкраще використовувати UGuideMe:\n\n 1. Користуйтесь ним\n 2. Діліться з друзями\n 3. Клікайте всюди\n 4. Досліджуйте</string>
+    <string name="help_activity_content">\nТи можеш робити наступне:\n- Клацнути по маркеру на мапі, щоб побачити інформацію про нього;\n- Клацнути просто по мапі, щоб побачити інформацію про район;\n- Прокрутити список маркерів;\n- Клацнути по кластеру (велика синя бульбашка), щоб побачити інформацію про нього;\n- Ти можеш виділити одну або кілька категорій, щоб бачити тільки бажані маркери;\n- Щоб вибрати іншу мову, клацни по кнопці Мови;\n- Щоб побачити попередню сторінку, клацни Назад;</string>
     <string name="address">Адреса : завдання</string>
     <string name="object_title"></string>
     <string name="back">Назад</string>
@@ -51,6 +51,6 @@
     <!-- Default text that is shown when original is absent-->
     <string name="default_description_text_part1">Опис вибраною мовою(</string>
     <string name="default_description_text_part2">) не доступний. Оберіть іншу мову</string>
-    <string name="default_address_text_part1">Адреса вибраною мовою(</string>
+    <string name="default_address_text_part1">Адреса вибраною мовою (</string>
     <string name="default_address_text_part2">) не доступна</string>
 </resources>

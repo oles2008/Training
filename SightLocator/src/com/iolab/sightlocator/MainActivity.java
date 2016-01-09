@@ -1,5 +1,6 @@
 package com.iolab.sightlocator;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -9,7 +10,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-public class MainActivity extends BaseActivity
+public class MainActivity extends Activity
         implements SightsTextFragment.OnTextFragmentClickListener{
 
     public static boolean mapFragmentVisible = true;
