@@ -43,12 +43,16 @@ public class SightsMapFragment extends Fragment implements
 											OnMarkerCategoryUpdateListener,
 											SightNavigationListener {
 	
+	private static final String TAG = SightsMapFragment.class.getCanonicalName();
+	
 	private GoogleMap gMap;
 	private AbstractMap mMap;
 	private LocationSource sightLocationSource;
 	private boolean mMoveMapOnLocationUpdate = true;
 	private ClusterManager<SightMarkerItem> clusterManager;
 	private SightsRenderer sightsRenderer;
+	
+	private Location mUserLocation;
 
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
 	private Set<SightMarkerItem> mItemSetForGivenCategory = new HashSet<SightMarkerItem>();
@@ -171,8 +175,22 @@ public class SightsMapFragment extends Fragment implements
 	}
 	
 	@Override
-	public void makeUseOfNewLocation(Location location) {
-		
+	public void onUserLocationChanged(Location location) {
+		mUserLocation = location;
+		makeUseOfNewLocation(location, 15);
+	}
+	
+	/**
+	 * Updates the map camera position according to the new location.
+	 *
+	 * @param location the new location
+	 * @param zoom the zoom level
+	 */
+	public void makeUseOfNewLocation(Location location, float zoom) {
+		if(location == null) {
+			Log.e(TAG, "makeUseOfNewLocation received null location");
+			return;
+		}
 		LatLng newCoord = new LatLng(
 				location.getLatitude(),
 				location.getLongitude());
@@ -320,8 +338,13 @@ public class SightsMapFragment extends Fragment implements
 				addItemToMapIfCategoryIsChosen(item, chosenCategories);
 			}
 			clusterManager.cluster();
+			mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
 		}
-		mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
+		
+		if(bundle.containsKey(Tags.APPROPRIATE_ZOOM)) {
+			float appropriateZoom = bundle.getFloat(Tags.APPROPRIATE_ZOOM);
+			makeUseOfNewLocation(mUserLocation, appropriateZoom);
+		}
 	}
 
 	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,
