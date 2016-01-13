@@ -46,7 +46,7 @@ public class SightsMapFragment extends Fragment implements
 	private GoogleMap gMap;
 	private AbstractMap mMap;
 	private LocationSource sightLocationSource;
-	private boolean moveMapOnLocationUpdate = true;
+	private boolean mMoveMapOnLocationUpdate = true;
 	private ClusterManager<SightMarkerItem> clusterManager;
 	private SightsRenderer sightsRenderer;
 
@@ -61,8 +61,8 @@ public class SightsMapFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState!=null){
-			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
-			updateViewCallIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
+			mMoveMapOnLocationUpdate = savedInstanceState.getBoolean(Tags.MOVE_MAP_ON_LOCATION_UPDATE, false);
+			updateViewCallIndex = savedInstanceState.getLong(Tags.VIEW_UPDATE_CALL_INDEX, 0);
 		}
 	}
 	
@@ -100,6 +100,38 @@ public class SightsMapFragment extends Fragment implements
 				false));
 
 		return touchEventListenerFrameLayout;
+	}
+	
+	/** 
+	 * Whether the map should move and zoom when user's location changes.
+	 *
+	 * @return true, if the map should move, false if only the dot showing the location
+	 */
+	public boolean shouldMoveMapOnUserLocationUpdate() {
+		return mMoveMapOnLocationUpdate;
+	}
+	
+	/**
+	 * Disable map move on user location update.
+	 */
+	public void disableMapMoveOnUserLocationUpdate() {
+		mMoveMapOnLocationUpdate = false;
+	}
+	
+	/**
+	 * Enable map move on user location update.
+	 */
+	public void enableMapMoveOnUserLocationUpdate() {
+		mMoveMapOnLocationUpdate = true;
+	}
+	
+	/**
+	 * Whether the user's location should be shown on startup.
+	 *
+	 * @return true, if yes, false, if only default location should be shown
+	 */
+	public boolean shouldShowUserLocationOnStartup() {
+		return true;
 	}
 	
 	/**
@@ -145,7 +177,7 @@ public class SightsMapFragment extends Fragment implements
 				location.getLatitude(),
 				location.getLongitude());
 		
-		if (moveMapOnLocationUpdate) {
+		if (shouldMoveMapOnUserLocationUpdate()) {
 			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
 		}
 	}
@@ -155,7 +187,7 @@ public class SightsMapFragment extends Fragment implements
 			@Override
 			public void onMapClick(LatLng arg0) {
 				//the user wants to stay here
-				moveMapOnLocationUpdate = false;
+				disableMapMoveOnUserLocationUpdate();
 				Appl.notifyMapClickUpdates(arg0);
 				mSelectedMarkerManager.removeSelectedItems();
 			}
@@ -167,7 +199,7 @@ public class SightsMapFragment extends Fragment implements
 			@Override
 			public void onMapLongClick(LatLng arg0) {
 				//the user wants to stay here
-				moveMapOnLocationUpdate = false;
+				disableMapMoveOnUserLocationUpdate();
 				Appl.notifyLongMapClickUpdates(arg0);
 				mSelectedMarkerManager.removeSelectedItems();
 			}
@@ -176,7 +208,7 @@ public class SightsMapFragment extends Fragment implements
 	
 	@Override
     public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
-		moveMapOnLocationUpdate = false;
+		disableMapMoveOnUserLocationUpdate();
 		Appl.notifyClusterClickUpdates(cluster);
 		mSelectedMarkerManager.removeSelectedItems();
 		mSelectedMarkerManager.selectItems(cluster.getItems());
@@ -185,7 +217,7 @@ public class SightsMapFragment extends Fragment implements
 	
 	@Override
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
-		moveMapOnLocationUpdate = false;
+		disableMapMoveOnUserLocationUpdate();
 		Appl.notifyClusterItemClickUpdates(clickedItem);
 		mSelectedMarkerManager.selectItem(clickedItem);
         return true;
@@ -197,7 +229,7 @@ public class SightsMapFragment extends Fragment implements
 			
 			@Override
 			public void onMapTouched() {
-				moveMapOnLocationUpdate = false;
+				disableMapMoveOnUserLocationUpdate();
 			}
 		});
 	}
@@ -207,7 +239,7 @@ public class SightsMapFragment extends Fragment implements
 			@Override
 			public boolean onMyLocationButtonClick() {
 				//the user probably wants his location to be show and updated
-				moveMapOnLocationUpdate = true;
+				enableMapMoveOnUserLocationUpdate();
 				
 				//this means that the location will be now shown and updated, 
 				//so if the user wants to navigate away, they should perform long clock again
@@ -264,8 +296,8 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onSaveInstanceState(Bundle args){
 		super.onSaveInstanceState(args);
-		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
-		args.putLong("updateViewCallIndex", updateViewCallIndex);
+		args.putBoolean(Tags.MOVE_MAP_ON_LOCATION_UPDATE, mMoveMapOnLocationUpdate);
+		args.putLong(Tags.VIEW_UPDATE_CALL_INDEX, updateViewCallIndex);
 		mSelectedMarkerManager.saveSelectedItems(args);
 	}
 	

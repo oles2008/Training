@@ -31,6 +31,7 @@ public class Tags {/**/
 	public static final String SIGHT_NAME = "name";
 	public static final String SIGHT_ADDRESS = "address";
 	public static final String VIEW_UPDATE_CALL_INDEX = "viewUpdateCallIndex";
+	public static final String MOVE_MAP_ON_LOCATION_UPDATE = "moveMapOnLocationUpdate";
 	public static final String MARKER_FILTER_CATEGORIES = "markerFilterCategories";
 	public static final String SIGHT_POSITION = "sight_position";
 	public static final String SHOW_ON_MAP = "show_on_map";
