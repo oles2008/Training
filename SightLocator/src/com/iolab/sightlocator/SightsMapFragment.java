@@ -176,7 +176,11 @@ public class SightsMapFragment extends Fragment implements
 	
 	@Override
 	public void onUserLocationChanged(Location location) {
+		Log.d("MyLogs", "onUserLocationChanged");
 		mUserLocation = location;
+		Intent intent = new Intent(Appl.appContext, SightsIntentService.class);
+		intent.putExtra(SightsIntentService.ACTION, new GetAppropriateZoomAction(location, 15));
+		Appl.appContext.startService(intent);
 		makeUseOfNewLocation(location, 15);
 	}
 	
