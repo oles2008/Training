@@ -112,6 +112,10 @@ public class FilterDialogFragment extends DialogFragment{
 		return dialogBuilder.create();
 	}
 
+	@Override
+	public void onCancel(DialogInterface dialog){
+		mListener.onFilterDialogNegativeClick(FilterDialogFragment.this);
+	}
 	
 ////////////////   LEGACY CODE to work with checkboxes and checkboxes_layout.xml	////////////////
 	

@@ -92,6 +92,12 @@ public class LanguagesDialogFragment extends DialogFragment {
 				mLanguageDialogListener.onFilterDialogNegativeClick();
 			}
 		});
+	    
 	    return builder.create();
-	}	
+	}
+	
+	@Override
+	public void onCancel(DialogInterface dialog){
+		mLanguageDialogListener.onFilterDialogNegativeClick();
+	}
 }
