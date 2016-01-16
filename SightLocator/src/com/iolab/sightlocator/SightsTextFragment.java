@@ -884,6 +884,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
             			gpsDialogActive = false;
             		}
         });
+        alertDialogBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {			
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				gpsDialogActive = false;
+			}
+		});
         gpsDialog = alertDialogBuilder.create();
         gpsDialog.show();
     }
