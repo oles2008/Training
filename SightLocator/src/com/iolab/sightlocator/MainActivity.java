@@ -43,9 +43,13 @@ public class MainActivity extends Activity
             // get the visibility state for Map Fragment
             MainActivity.mapFragmentVisible = savedInstanceState.getBoolean(Tags.MAP_FRAGMENT_VISIBLE);
         }
-
-        postInitFragmentsProperties();
-    }	
+    }
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		postInitFragmentsProperties();
+	}
     
     private TextView getTextView() {
         Fragment textFragment = getFragmentManager()

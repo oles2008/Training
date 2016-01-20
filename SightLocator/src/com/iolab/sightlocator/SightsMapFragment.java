@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -200,7 +201,33 @@ public class SightsMapFragment extends Fragment implements
 				location.getLongitude());
 		
 		if (shouldMoveMapOnUserLocationUpdate()) {
-			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
+			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, zoom));
+		}
+	}
+	
+	/**
+	 * Updates the map camera position according to the new location.
+	 *
+	 * @param location the new location
+	 * @param zoom the zoom level
+	 */
+	public void makeUseOfNewLocation(Location location, Location locationToBeIncluded) {
+		if(location == null) {
+			Log.e(TAG, "makeUseOfNewLocation received null location");
+			return;
+		}
+		
+		double symmetricLat = 2*location.getLatitude() - locationToBeIncluded.getLatitude();
+		double symmetricLong = 2*location.getLongitude() - locationToBeIncluded.getLongitude();
+		Location symmetricLocation = new Location("");
+		symmetricLocation.setLatitude(symmetricLat);
+		symmetricLocation.setLongitude(symmetricLong);
+		
+		if (shouldMoveMapOnUserLocationUpdate()) {
+			int minDimension = Math.min(getView().getWidth(), getView()
+					.getHeight());
+			mMap.moveCameraToLocations(
+					Arrays.asList(symmetricLocation, locationToBeIncluded), 100);
 		}
 	}
 
@@ -345,9 +372,9 @@ public class SightsMapFragment extends Fragment implements
 			mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
 		}
 		
-		if(bundle.containsKey(Tags.APPROPRIATE_ZOOM)) {
-			float appropriateZoom = bundle.getFloat(Tags.APPROPRIATE_ZOOM);
-			makeUseOfNewLocation(mUserLocation, appropriateZoom);
+		if(bundle.containsKey(Tags.LOCATION_FOR_APPROPRIATE_ZOOM)) {
+			Location locationForAppropriateZoom = bundle.getParcelable(Tags.LOCATION_FOR_APPROPRIATE_ZOOM);
+			makeUseOfNewLocation(mUserLocation, locationForAppropriateZoom);
 		}
 	}
 

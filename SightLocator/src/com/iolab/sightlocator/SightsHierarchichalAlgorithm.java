@@ -14,15 +14,17 @@ import com.iolab.sightlocator.ItemGroupAnalyzer.ClusterGroup;
 public class SightsHierarchichalAlgorithm extends
 		NonHierarchicalDistanceBasedAlgorithm<SightMarkerItem> {
 	
+	private static final double ZOOM_OFFSET = 1.5;
+	
 	/* **************************************************************************** */
     /* ******************** NonHierarchicalDistanceBasedAlgorithm ***************** */
     /* **************************************************************************** */
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
-		Set<? extends Cluster<SightMarkerItem>> clusterSet = super.getClusters(zoom+2);
+		Set<? extends Cluster<SightMarkerItem>> clusterSet = super.getClusters(zoom+ZOOM_OFFSET);
 		//to make it impossible for clusters to be split even under a large scale
-		Set<? extends Cluster<SightMarkerItem>> clustersBiggerZoom = super.getClusters(zoom+3);
+		Set<? extends Cluster<SightMarkerItem>> clustersBiggerZoom = super.getClusters(zoom+ZOOM_OFFSET+1);
 		Set<Cluster<SightMarkerItem>> resultSet = new HashSet<Cluster<SightMarkerItem>>();
 		for(Cluster<SightMarkerItem> cluster: clusterSet){
 			Set<Cluster<SightMarkerItem>> splitClusters = splitClusterAccordingToHierarchy(cluster);
