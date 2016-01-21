@@ -1,6 +1,7 @@
 package com.iolab.sightlocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -43,12 +44,16 @@ public class SightsMapFragment extends Fragment implements
 											OnMarkerCategoryUpdateListener,
 											SightNavigationListener {
 	
+	private static final String TAG = SightsMapFragment.class.getCanonicalName();
+	
 	private GoogleMap gMap;
 	private AbstractMap mMap;
 	private LocationSource sightLocationSource;
-	private boolean moveMapOnLocationUpdate = true;
+	private boolean mMoveMapOnLocationUpdate = true;
 	private ClusterManager<SightMarkerItem> clusterManager;
 	private SightsRenderer sightsRenderer;
+	
+	private Location mUserLocation;
 
 	private Set<SightMarkerItem> itemSet = new HashSet<SightMarkerItem>();
 	private Set<SightMarkerItem> mItemSetForGivenCategory = new HashSet<SightMarkerItem>();
@@ -61,8 +66,8 @@ public class SightsMapFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState!=null){
-			moveMapOnLocationUpdate = savedInstanceState.getBoolean("moveMapOnLocationUpdate", false);
-			updateViewCallIndex = savedInstanceState.getLong("updateViewCallIndex", 0);
+			mMoveMapOnLocationUpdate = savedInstanceState.getBoolean(Tags.MOVE_MAP_ON_LOCATION_UPDATE, false);
+			updateViewCallIndex = savedInstanceState.getLong(Tags.VIEW_UPDATE_CALL_INDEX, 0);
 		}
 	}
 	
@@ -102,6 +107,38 @@ public class SightsMapFragment extends Fragment implements
 		return touchEventListenerFrameLayout;
 	}
 	
+	/** 
+	 * Whether the map should move and zoom when user's location changes.
+	 *
+	 * @return true, if the map should move, false if only the dot showing the location
+	 */
+	public boolean shouldMoveMapOnUserLocationUpdate() {
+		return mMoveMapOnLocationUpdate;
+	}
+	
+	/**
+	 * Disable map move on user location update.
+	 */
+	public void disableMapMoveOnUserLocationUpdate() {
+		mMoveMapOnLocationUpdate = false;
+	}
+	
+	/**
+	 * Enable map move on user location update.
+	 */
+	public void enableMapMoveOnUserLocationUpdate() {
+		mMoveMapOnLocationUpdate = true;
+	}
+	
+	/**
+	 * Whether the user's location should be shown on startup.
+	 *
+	 * @return true, if yes, false, if only default location should be shown
+	 */
+	public boolean shouldShowUserLocationOnStartup() {
+		return true;
+	}
+	
 	/**
 	 * Zoom in to user's last location during activity creation.
 	 *
@@ -139,14 +176,61 @@ public class SightsMapFragment extends Fragment implements
 	}
 	
 	@Override
-	public void makeUseOfNewLocation(Location location) {
-		
+	public void onUserLocationChanged(Location location) {
+		mUserLocation = location;
+		if (shouldMoveMapOnUserLocationUpdate()) {
+			Intent intent = new Intent(Appl.appContext,
+					SightsIntentService.class);
+			intent.putExtra(SightsIntentService.ACTION,
+					new GetAppropriateZoomAction(location, 15));
+			Appl.appContext.startService(intent);
+			makeUseOfNewLocation(location, 15);
+		}
+	}
+	
+	/**
+	 * Updates the map camera position according to the new location.
+	 *
+	 * @param location the new location
+	 * @param zoom the zoom level
+	 */
+	public void makeUseOfNewLocation(Location location, float zoom) {
+		if(location == null) {
+			Log.e(TAG, "makeUseOfNewLocation received null location");
+			return;
+		}
 		LatLng newCoord = new LatLng(
 				location.getLatitude(),
 				location.getLongitude());
 		
-		if (moveMapOnLocationUpdate) {
-			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, 15));
+		if (shouldMoveMapOnUserLocationUpdate()) {
+			gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newCoord, zoom));
+		}
+	}
+	
+	/**
+	 * Updates the map camera position according to the new location.
+	 *
+	 * @param location the new location
+	 * @param zoom the zoom level
+	 */
+	public void makeUseOfNewLocation(Location location, Location locationToBeIncluded) {
+		if(location == null) {
+			Log.e(TAG, "makeUseOfNewLocation received null location");
+			return;
+		}
+		
+		double symmetricLat = 2*location.getLatitude() - locationToBeIncluded.getLatitude();
+		double symmetricLong = 2*location.getLongitude() - locationToBeIncluded.getLongitude();
+		Location symmetricLocation = new Location("");
+		symmetricLocation.setLatitude(symmetricLat);
+		symmetricLocation.setLongitude(symmetricLong);
+		
+		if (shouldMoveMapOnUserLocationUpdate()) {
+			int minDimension = Math.min(getView().getWidth(), getView()
+					.getHeight());
+			mMap.moveCameraToLocations(
+					Arrays.asList(symmetricLocation, locationToBeIncluded), minDimension/4);
 		}
 	}
 
@@ -155,7 +239,7 @@ public class SightsMapFragment extends Fragment implements
 			@Override
 			public void onMapClick(LatLng arg0) {
 				//the user wants to stay here
-				moveMapOnLocationUpdate = false;
+				disableMapMoveOnUserLocationUpdate();
 				Appl.notifyMapClickUpdates(arg0);
 				mSelectedMarkerManager.removeSelectedItems();
 			}
@@ -167,7 +251,7 @@ public class SightsMapFragment extends Fragment implements
 			@Override
 			public void onMapLongClick(LatLng arg0) {
 				//the user wants to stay here
-				moveMapOnLocationUpdate = false;
+				disableMapMoveOnUserLocationUpdate();
 				Appl.notifyLongMapClickUpdates(arg0);
 				mSelectedMarkerManager.removeSelectedItems();
 			}
@@ -176,7 +260,7 @@ public class SightsMapFragment extends Fragment implements
 	
 	@Override
     public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
-		moveMapOnLocationUpdate = false;
+		disableMapMoveOnUserLocationUpdate();
 		Appl.notifyClusterClickUpdates(cluster);
 		mSelectedMarkerManager.removeSelectedItems();
 		mSelectedMarkerManager.selectItems(cluster.getItems());
@@ -185,7 +269,7 @@ public class SightsMapFragment extends Fragment implements
 	
 	@Override
     public boolean onClusterItemClick(SightMarkerItem clickedItem) {
-		moveMapOnLocationUpdate = false;
+		disableMapMoveOnUserLocationUpdate();
 		Appl.notifyClusterItemClickUpdates(clickedItem);
 		mSelectedMarkerManager.selectItem(clickedItem);
         return true;
@@ -197,7 +281,7 @@ public class SightsMapFragment extends Fragment implements
 			
 			@Override
 			public void onMapTouched() {
-				moveMapOnLocationUpdate = false;
+				disableMapMoveOnUserLocationUpdate();
 			}
 		});
 	}
@@ -207,7 +291,7 @@ public class SightsMapFragment extends Fragment implements
 			@Override
 			public boolean onMyLocationButtonClick() {
 				//the user probably wants his location to be show and updated
-				moveMapOnLocationUpdate = true;
+				enableMapMoveOnUserLocationUpdate();
 				
 				//this means that the location will be now shown and updated, 
 				//so if the user wants to navigate away, they should perform long clock again
@@ -264,8 +348,8 @@ public class SightsMapFragment extends Fragment implements
 	@Override
 	public void onSaveInstanceState(Bundle args){
 		super.onSaveInstanceState(args);
-		args.putBoolean("moveMapOnLocationUpdate", moveMapOnLocationUpdate);
-		args.putLong("updateViewCallIndex", updateViewCallIndex);
+		args.putBoolean(Tags.MOVE_MAP_ON_LOCATION_UPDATE, mMoveMapOnLocationUpdate);
+		args.putLong(Tags.VIEW_UPDATE_CALL_INDEX, updateViewCallIndex);
 		mSelectedMarkerManager.saveSelectedItems(args);
 	}
 	
@@ -288,8 +372,13 @@ public class SightsMapFragment extends Fragment implements
 				addItemToMapIfCategoryIsChosen(item, chosenCategories);
 			}
 			clusterManager.cluster();
+			mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
 		}
-		mSelectedMarkerManager.onItemsUpdated(sightMarkerItemList);
+		
+		if(bundle.containsKey(Tags.LOCATION_FOR_APPROPRIATE_ZOOM)) {
+			Location locationForAppropriateZoom = bundle.getParcelable(Tags.LOCATION_FOR_APPROPRIATE_ZOOM);
+			makeUseOfNewLocation(mUserLocation, locationForAppropriateZoom);
+		}
 	}
 
 	private void addItemToMapIfCategoryIsChosen(SightMarkerItem item,

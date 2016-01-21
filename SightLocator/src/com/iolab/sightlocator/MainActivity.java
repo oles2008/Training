@@ -5,10 +5,12 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMultiplayer.InitiateMatchResult;
 
 public class MainActivity extends Activity
         implements SightsTextFragment.OnTextFragmentClickListener{
@@ -41,18 +43,13 @@ public class MainActivity extends Activity
             // get the visibility state for Map Fragment
             MainActivity.mapFragmentVisible = savedInstanceState.getBoolean(Tags.MAP_FRAGMENT_VISIBLE);
         }
-
-        Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
-        System.out.println(" >>> map fragment is null > " + (mapFragment == null));
-        System.out.println(" >>> map visible > " + MainActivity.mapFragmentVisible);
-        if (!MainActivity.mapFragmentVisible) {
-            getTextView().setTextSize(24);
-            getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
-        } else {
-            getTextView().setTextSize(14);
-            getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
-        }
-    }	
+    }
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		postInitFragmentsProperties();
+	}
     
     private TextView getTextView() {
         Fragment textFragment = getFragmentManager()
@@ -61,6 +58,25 @@ public class MainActivity extends Activity
         System.out.println(" >>> text visible > " + MainActivity.textFragmentVisible);
 
         return (TextView) textFragment.getView().findViewById(R.id.textView);
+    }
+    
+    private void postInitFragmentsProperties() {
+    	new Handler().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
+		        System.out.println(" >>> map fragment is null > " + (mapFragment == null));
+		        System.out.println(" >>> map visible > " + MainActivity.mapFragmentVisible);
+		        if (!MainActivity.mapFragmentVisible) {
+		            getTextView().setTextSize(24);
+		            getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
+		        } else {
+		            getTextView().setTextSize(14);
+		            getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
+		        }
+			}
+		});
     }
 
     @Override

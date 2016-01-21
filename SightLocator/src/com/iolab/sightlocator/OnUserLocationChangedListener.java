@@ -30,7 +30,7 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 		 *
 		 * @param location the location
 		 */
-		void makeUseOfNewLocation(Location location);
+		void onUserLocationChanged(Location location);
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public class OnUserLocationChangedListener implements OnLocationChangedListener{
 	@Override
 	public void onLocationChanged(Location location) {
 		if(isBetterLocation(location, currentBestLocation)){
-			newLocationUser.makeUseOfNewLocation(location);
+			newLocationUser.onUserLocationChanged(location);
 			currentBestLocation = location;
 		}
 		

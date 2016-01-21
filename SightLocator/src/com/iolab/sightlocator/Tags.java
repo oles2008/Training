@@ -31,12 +31,16 @@ public class Tags {/**/
 	public static final String SIGHT_NAME = "name";
 	public static final String SIGHT_ADDRESS = "address";
 	public static final String VIEW_UPDATE_CALL_INDEX = "viewUpdateCallIndex";
+	public static final String MOVE_MAP_ON_LOCATION_UPDATE = "moveMapOnLocationUpdate";
 	public static final String MARKER_FILTER_CATEGORIES = "markerFilterCategories";
 	public static final String SIGHT_POSITION = "sight_position";
 	public static final String SHOW_ON_MAP = "show_on_map";
 	public static final String AVAILABLE_LANGUAGES = "available_languages";
 	public static final String LANGUAGE = "language";
 	public static final String CONTENT_LANGUAGE = "content_language";
+	public static final String APPROPRIATE_ZOOM = "appropriate_zoom";
+	public static final String LOCATION_FOR_APPROPRIATE_ZOOM = "location_for_appropriate_zoom";
+	public static final String RELEVANT_PARENT_ID = "relevant_parent_id";
 	
 	public static final String IMAGE_FROM_ASSET = "imageFromAsset";
 	public static final String IMAGE_FROM_CACHE = "imageFromCache";

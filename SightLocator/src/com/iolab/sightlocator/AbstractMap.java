@@ -2,6 +2,8 @@ package com.iolab.sightlocator;
 
 import java.util.Collection;
 
+import android.location.Location;
+
 public interface AbstractMap {
 
 	/**
@@ -22,4 +24,15 @@ public interface AbstractMap {
 	 *            map's edge
 	 */
 	void moveCameraTo(Collection<SightMarkerItem> items, int padding);
+	
+	/**
+	 * Moves camera to the include the indicated locations.
+	 *
+	 * @param locations
+	 *            the {@link Location}s to be included
+	 * @param padding
+	 *            the additional padding; if 0, some of the items will be on the
+	 *            map's edge
+	 */
+	public void moveCameraToLocations(Collection<Location> locations, int padding);
 }

@@ -3,13 +3,10 @@ package com.iolab.sightlocator;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class GetAvailableContentLanguagesAction implements ServiceAction, Parcelable{
 	int mItemId = -1;

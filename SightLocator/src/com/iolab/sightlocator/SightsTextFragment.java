@@ -514,6 +514,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mCommonParentID = bundle.getInt(Tags.COMMON_PARENT_ID);
 		}
 		
+		if (bundle.getInt(Tags.RELEVANT_PARENT_ID,-1) != -1) {
+			navigateTo(bundle.getInt(Tags.RELEVANT_PARENT_ID,-1), false, true);
+		}
+		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
 			mSightListItems = new ArrayList<SightMarkerItem>(
 					(Collection<? extends SightMarkerItem>) bundle
@@ -772,7 +776,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		Arrays.fill(Appl.selectedCategories, Boolean.FALSE);
 
 		//get list of categories
-		List<String> itemCategories = Appl.categoriesDisplay;
+		List<String> itemCategories = Appl.categoriesValues;
 
 		//set "changed" flag, to indicate if any changes were made 
 		boolean changed = false;
