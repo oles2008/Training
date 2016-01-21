@@ -75,10 +75,13 @@ public class GetAppropriateZoomAction implements ServiceAction, Parcelable {
 	public void runInService() {
 		Cursor allItems = getAllItemsCursor();
 		initClosestLocation(allItems);
-		Location furthestLocation = getRelevantParentIDAndLocationOfFarthestChild().first;
+		Pair<Location, Integer> locationOfFarthestChildAndRelevantParentId = getRelevantParentIDAndLocationOfFarthestChild();
+		Location furthestLocation = locationOfFarthestChildAndRelevantParentId.first;
+		int relevantParentId = locationOfFarthestChildAndRelevantParentId.second;
 		
 		Bundle result = new Bundle();
 		result.putParcelable(Tags.LOCATION_FOR_APPROPRIATE_ZOOM, furthestLocation);
+		result.putInt(Tags.RELEVANT_PARENT_ID, relevantParentId);
 		Appl.receiver.send(0, result);
 	}
 	

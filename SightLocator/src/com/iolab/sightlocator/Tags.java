@@ -40,6 +40,7 @@ public class Tags {/**/
 	public static final String CONTENT_LANGUAGE = "content_language";
 	public static final String APPROPRIATE_ZOOM = "appropriate_zoom";
 	public static final String LOCATION_FOR_APPROPRIATE_ZOOM = "location_for_appropriate_zoom";
+	public static final String RELEVANT_PARENT_ID = "relevant_parent_id";
 	
 	public static final String IMAGE_FROM_ASSET = "imageFromAsset";
 	public static final String IMAGE_FROM_CACHE = "imageFromCache";

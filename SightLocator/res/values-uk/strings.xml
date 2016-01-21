@@ -46,7 +46,7 @@
     <string name="content_lang_dialog_title">Мови доступні для вибраного обєкту</string>
     <string name="content_lang_dialog_message">Оберіть мову контенту</string>
     
-    <string name="welcome_screen_text">ВІТАЄМО,\nЛюбий Друже! Ми допоможемо тобі знайти місця, в яких прагнеш побувати.</string>
+    <string name="welcome_screen_text">Ми допоможемо Тобі знайти місця, в яких прагнеш побувати!</string>
     
     <!-- Default text that is shown when original is absent-->
     <string name="default_description_text_part1">Опис вибраною мовою(</string>
