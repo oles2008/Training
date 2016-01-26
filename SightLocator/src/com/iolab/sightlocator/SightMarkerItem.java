@@ -4,6 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -12,7 +15,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.algo.StaticCluster;
 
 public class SightMarkerItem implements ClusterItem, Parcelable {
-	
+
 	private LatLng position;
 	private String title;
 	private String snippet;
@@ -20,10 +23,13 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	private String imageURI;
 	private String imageSourceType;
 	private String category;
+	private Map<String, Double> categories;
 	private int id;
 	private int[] parentIDs;
 	//not to be saved in Parcel
 	private Cluster<SightMarkerItem> mCluster;
+
+	final double DEFAULT_PRIORITY = 50;
 	
 	public SightMarkerItem(int id) {
 		this.id = id;
@@ -35,7 +41,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	                       String snippet, 
 	                       String imageURI,
 	                       String imageSource, 
-	                       String category, 
+	                       String categoryString, 
 	                       int id, 
 	                       int[] parentIDs) {
 		this.position = position;
@@ -43,7 +49,8 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.snippet = snippet;
 		this.imageURI = imageURI;
 		this.imageSourceType = imageSource;
-		this.category = category;
+		this.category = categoryString;
+		this.categories = parseCategoryString(categoryString);
 		this.parentIDs = parentIDs;
 		this.id = id;
 	}
@@ -56,6 +63,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.position = position;
 		this.title = title;
 		this.category = category;
+		this.categories = parseCategoryString(category);
 		this.parentIDs = parentIDs;
 	}
 	
@@ -68,6 +76,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.title = title;
 		this.snippet = snippet;
 		this.category = color;
+		this.categories = parseCategoryString(color);
 		this.parentIDs = parentIDs;
 	}
 	
@@ -79,6 +88,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		this.title = title;
 		this.snippet = snippet;
 		this.category = color;
+		this.categories = parseCategoryString(color);
 	}
 	
 	public SightMarkerItem(Marker marker) {
@@ -96,12 +106,13 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	public SightMarkerItem(Parcel parcel) {
 		this.position=parcel.readParcelable(LatLng.class.getClassLoader());
 		String[] array = parcel.createStringArray();
-		this.title=array[0];
-		this.address=array[1];
-		this.snippet=array[2];
-		this.imageURI=array[3];
-		this.imageSourceType=array[4];
-		this.category=array[5];
+		this.title = array[0];
+		this.address = array[1];
+		this.snippet = array[2];
+		this.imageURI = array[3];
+		this.imageSourceType = array[4];
+		this.category = array[5];
+		this.categories = parseCategoryString(array[5]);
 		this.parentIDs = parcel.createIntArray();
 		this.id = parcel.readInt();
 	}
@@ -164,6 +175,40 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		return category;
 	}
 	
+	public Map<String, Double> getCategories(){
+		return categories;
+	}
+	
+	public double getItemPriority(){
+		double prior = 0;
+		for(int i = 0; i < Appl.selectedCategories.length; i++){
+			if(Appl.selectedCategories[i]){
+				String category = Appl.categoriesValues.get(i);
+				
+				// get priority if all categories are selected
+				if(category.equals(Category.CATEGORY_ALL)){
+					for(String itemCategory : categories.keySet()){
+						if(categories.containsKey(itemCategory) && 
+								Appl.categoryPriorities.containsKey(itemCategory)){
+							prior += categories.get(itemCategory)
+								  * Appl.categoryPriorities.get(itemCategory);
+						}
+					}
+					return prior;
+				}
+				
+				// update priority for selected category
+				if(categories.containsKey(category)){
+					if(categories.containsKey(category) && 
+							Appl.categoryPriorities.containsKey(category)){
+						prior += categories.get(category) * Appl.categoryPriorities.get(category);											
+					}
+				}
+			}
+		}
+		return prior;
+	}
+	
 	public int getID() {
 		return id;
 	}
@@ -196,6 +241,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	 */
 	public void setCategory(String category) {
 		this.category = category;
+		this.categories = parseCategoryString(category);
 	}
 	
 	/**
@@ -253,5 +299,20 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		SightMarkerItem item = (SightMarkerItem) obj;
 		return this.id == item.id;
 	}
-
+	
+	private Map<String, Double> parseCategoryString(String categoryString){
+		Map<String, Double> categories = new HashMap<String, Double>();
+		if(categoryString != null && !categoryString.isEmpty()){
+			String[] items = categoryString.trim().split(",");
+			for(String item : items){
+				String[] splitItem = item.split("_");
+				if(splitItem.length == 2){
+					categories.put(splitItem[0], Double.parseDouble(splitItem[1]));				
+				} else {
+					categories.put(splitItem[0], DEFAULT_PRIORITY);
+				}
+			}
+		}
+		return categories;
+	}
 }

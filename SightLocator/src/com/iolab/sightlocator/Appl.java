@@ -3,10 +3,13 @@ package com.iolab.sightlocator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -29,7 +32,8 @@ public class Appl extends Application {
 	public static boolean[] selectedCategories;
 	public static List<String> categoriesDisplay;
 	public static List<String> categoriesValues;
-
+	public static Map<String, Double> categoryPriorities;
+	
 	// all the following listeners should perform their callback methods
 	// in the UI thread
 	public static List<OnMarkerClickListener> onMarkerClickListeners = new ArrayList<OnMarkerClickListener>();
@@ -65,6 +69,16 @@ public class Appl extends Application {
 		categoriesValues = Arrays.asList(
 				Appl.appContext.getResources().getStringArray(R.array.marker_category_values));
 		selectedCategories = new boolean[categoriesDisplay.size()];
+		
+		categoryPriorities = new HashMap<String, Double>();
+		String[] priorities = Appl.appContext.getResources().getStringArray(R.array.category_priority);
+		for(int i = 0; i < categoriesValues.size(); i++){
+			String category = categoriesValues.get(i);
+			Double priority = Double.parseDouble(priorities[i]);
+			if(!category.equals(Category.CATEGORY_ALL)){
+				categoryPriorities.put(category, priority);
+			}
+		}
 	}
 
 	/**

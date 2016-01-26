@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 public class Category implements Parcelable {
 
+	public static final String CATEGORY_ALL = "all";
+	
 	private String mCategoryString;
 	private String mCategoryValue;
 	
@@ -32,28 +34,22 @@ public class Category implements Parcelable {
 	
 	public boolean isItemBelongsToThisCategory(SightMarkerItem item){
 		//TODO KOSTYL
-		if (item.getCategory() == null) {
+		if (item.getCategories() == null) {
 			return true;
 		}
 
 		//KOSTYL "All"
-		if (mCategoryString.equals("all")) {
+		if (mCategoryString.equals(CATEGORY_ALL)) {
 			return true;
 		}
 		
 		//KOSTYL "industry" - "industrial"
 		if (mCategoryString.equals("industry")
-				&& item.getCategory()
-						.toLowerCase()
-						.trim()
-						.contains("industrial")){
+				&& item.getCategories().containsKey("industrial")){
 			return true;
 		}
 		
-		if (item.getCategory()
-				.toLowerCase()
-				.trim()
-				.contains(mCategoryString)){
+		if (item.getCategories().containsKey(mCategoryString)){
 			return true;
 		}
 		return false;

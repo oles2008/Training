@@ -45,7 +45,8 @@ public class CategoryUtils {
 		ArrayList<Category> selectedMarkerCategories = new ArrayList<Category>();
 		for (int i=0; i<Appl.selectedCategories.length; i++) {
 			if (Appl.selectedCategories[i]) {
-				selectedMarkerCategories.add(new Category(Appl.categoriesValues.get(i).toLowerCase()));
+				selectedMarkerCategories.add(
+						new Category(Appl.categoriesValues.get(i).toLowerCase()));
 			}
 		}
 		return selectedMarkerCategories;

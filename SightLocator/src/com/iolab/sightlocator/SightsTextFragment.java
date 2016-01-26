@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -700,6 +701,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					mListItemsFromSelectedCategories.add(item);
 				}
 			}
+			Collections.sort(mListItemsFromSelectedCategories, new Comparator<SightMarkerItem>(){
+				public int compare(SightMarkerItem sight1, SightMarkerItem sight2){
+					return Double.compare(sight2.getItemPriority(), sight1.getItemPriority());
+				}
+			});
+			
 			mSights.setAdapter(new SightsAdapter(getActivity(),
 					R.layout.sights_list_item, mListItemsFromSelectedCategories));
 			mSights.setVisibility(View.VISIBLE);

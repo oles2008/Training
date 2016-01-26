@@ -23,18 +23,28 @@
         <item >Entertaiment</item>
         <item >Industry</item>
     </string-array>
-	<!--do not internationalise as is used for comparison-->
+	<!--do not internationalise as is used for comparison. Use lower case-->
     <string-array name="marker_category_values">
-        <item >ALL</item>
-        <item >Religion</item>
-        <item >History</item>
-        <item >Monument</item>
-        <item >Literature</item>
-        <item >Cafe</item>
-        <item >Entertaiment</item>
-        <item >Industry</item>
+        <item >all</item>
+        <item >religion</item>
+        <item >history</item>
+        <item >monument</item>
+        <item >literature</item>
+        <item >cafe</item>
+        <item >entertainment</item>
+        <item >industry</item>
     </string-array>
-
+	<string-array name="category_priority">
+		<item>50</item>
+		<item>50</item>
+		<item>50</item>
+		<item>50</item>
+		<item>50</item>
+		<item>50</item>
+		<item>50</item>
+		<item>50</item>
+	</string-array>
+	
     
 	<!-- Filter Categories Dialog buttons -->
     <string name="dialog_ok_button">OK</string>
