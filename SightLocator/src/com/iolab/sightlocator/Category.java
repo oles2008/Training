@@ -6,6 +6,8 @@ import android.os.Parcelable;
 public class Category implements Parcelable {
 
 	public static final String CATEGORY_ALL = "all";
+	public static final String SEPARATOR = ",";
+	public static final String PRIO_SEPARATOR = "_";
 	
 	private String mCategoryString;
 	private String mCategoryValue;
