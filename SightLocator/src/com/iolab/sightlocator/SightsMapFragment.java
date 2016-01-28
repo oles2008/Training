@@ -430,6 +430,7 @@ public class SightsMapFragment extends Fragment implements
 
 	@Override
 	public void onNavigation(Collection<SightMarkerItem> items) {
+		disableMapMoveOnUserLocationUpdate();
 		moveToItemsAndSelectThem(items);
 	}
 

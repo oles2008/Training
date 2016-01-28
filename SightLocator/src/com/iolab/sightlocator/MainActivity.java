@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,7 +42,7 @@ public class MainActivity extends Activity
 
         if (savedInstanceState != null) {
             // get the visibility state for Map Fragment
-            MainActivity.mapFragmentVisible = savedInstanceState.getBoolean(Tags.MAP_FRAGMENT_VISIBLE);
+            mapFragmentVisible = savedInstanceState.getBoolean(Tags.MAP_FRAGMENT_VISIBLE);
         }
     }
 	
@@ -50,33 +51,42 @@ public class MainActivity extends Activity
 		super.onStart();
 		postInitFragmentsProperties();
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onStart();
+		postInitFragmentsProperties();
+	}
     
-    private TextView getTextView() {
-        Fragment textFragment = getFragmentManager()
+    private void setTextSize(int textSize) {
+    	Fragment textFragment = getFragmentManager()
                 .findFragmentById(R.id.text_fragment);
-        System.out.println(" >>> text fragment is null > " + (textFragment == null));
-        System.out.println(" >>> text visible > " + MainActivity.textFragmentVisible);
 
-        return (TextView) textFragment.getView().findViewById(R.id.textView);
+        View fragmentView = textFragment.getView();
+        ((TextView) fragmentView.findViewById(R.id.textView)).setTextSize(textSize);
+        ((TextView) fragmentView.findViewById(R.id.textView_invisible)).setTextSize(textSize);
+        ((TextView) fragmentView.findViewById(R.id.text_view_object_title)).setTextSize(textSize);
+        ((TextView) fragmentView.findViewById(R.id.text_view_object_title_invisible)).setTextSize(textSize);
     }
     
     private void postInitFragmentsProperties() {
-    	new Handler().post(new Runnable() {
+    	new Handler().postDelayed(new Runnable() {
 			
 			@Override
 			public void run() {
 				Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
-		        System.out.println(" >>> map fragment is null > " + (mapFragment == null));
-		        System.out.println(" >>> map visible > " + MainActivity.mapFragmentVisible);
-		        if (!MainActivity.mapFragmentVisible) {
-		            getTextView().setTextSize(24);
+				Fragment textFragment = getFragmentManager().findFragmentById(R.id.text_fragment);
+				if(textFragment!=null) {
+		        if (!mapFragmentVisible) {
+		            setTextSize(getResources().getDimensionPixelSize(R.dimen.description_text_size_full_screen));
 		            getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
 		        } else {
-		            getTextView().setTextSize(14);
+		            setTextSize(getResources().getDimensionPixelSize(R.dimen.description_text_size));
 		            getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
 		        }
+				}
 			}
-		});
+		}, 100);
     }
 
     @Override
@@ -91,11 +101,11 @@ public class MainActivity extends Activity
         Fragment textFragment = getFragmentManager().findFragmentById(R.id.text_fragment);
         // if we are in "Home" screen ("Map" and "Text" fragments are visible) - close the app
         if (mapFragment.isVisible() && textFragment.isVisible()) {
-            MainActivity.mapFragmentVisible = true;
+            mapFragmentVisible = true;
             finish();
         // else - go back one step
         } else if(textFragment.isVisible()) {
-            getTextView().setTextSize(14);
+            setTextSize(getResources().getDimensionPixelSize(R.dimen.description_text_size));
             super.onBackPressed();
         } else {
             super.onBackPressed();
@@ -106,13 +116,13 @@ public class MainActivity extends Activity
     public void onTextFragmentLongClick() {
         Fragment mapFragment = getFragmentManager().findFragmentById(R.id.map_fragment);
         if (mapFragment.isVisible()) {
-            getTextView().setTextSize(24);
+            setTextSize(getResources().getDimensionPixelSize(R.dimen.description_text_size_full_screen));
             getFragmentManager().beginTransaction().hide(mapFragment).addToBackStack(null).commit();
-            MainActivity.mapFragmentVisible = false;
+            mapFragmentVisible = false;
         } else {
-            getTextView().setTextSize(14);
+            setTextSize(getResources().getDimensionPixelSize(R.dimen.description_text_size));
             getFragmentManager().beginTransaction().show(mapFragment).addToBackStack(null).commit();
-            MainActivity.mapFragmentVisible = true;
+            mapFragmentVisible = true;
         }
     }
 }
