@@ -8,5 +8,8 @@
     
     <!-- Markers -->
     <dimen name="selected_cluster_outline">4dp</dimen>
+    
+    <dimen name="description_text_size">4dp</dimen>
+    <dimen name="description_text_size_full_screen">5dp</dimen>
 
 </resources>
