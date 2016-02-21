@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -63,14 +64,14 @@ public class MainActivity extends Activity
                 .findFragmentById(R.id.text_fragment);
 
         View fragmentView = textFragment.getView();
-        ((TextView) fragmentView.findViewById(R.id.textView)).setTextSize(textSize);
-        ((TextView) fragmentView.findViewById(R.id.textView_invisible)).setTextSize(textSize);
-        ((TextView) fragmentView.findViewById(R.id.text_view_object_title)).setTextSize(textSize);
-        ((TextView) fragmentView.findViewById(R.id.text_view_object_title_invisible)).setTextSize(textSize);
+        ((TextView) fragmentView.findViewById(R.id.textView)).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        ((TextView) fragmentView.findViewById(R.id.textView_invisible)).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        ((TextView) fragmentView.findViewById(R.id.text_view_object_title)).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        ((TextView) fragmentView.findViewById(R.id.text_view_object_title_invisible)).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     }
     
     private void postInitFragmentsProperties() {
-    	new Handler().postDelayed(new Runnable() {
+    	new Handler().post(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -86,7 +87,7 @@ public class MainActivity extends Activity
 		        }
 				}
 			}
-		}, 100);
+		});
     }
 
     @Override

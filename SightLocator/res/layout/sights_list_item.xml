@@ -19,7 +19,7 @@
         android:layout_toRightOf="@id/image_view_in_list"
         android:layout_marginTop="10dp"
         android:freezesText="true"
-        android:textSize="15dp"
+        android:textSize="@dimen/description_text_size"
         android:textStyle="bold" />
 
     <TextView
@@ -29,6 +29,7 @@
         android:layout_below="@id/text_view_name_in_list"
         android:layout_alignLeft="@id/text_view_name_in_list"
         android:freezesText="true"
+        android:textSize="@dimen/description_text_size"
         android:textStyle="italic" />
 
 	<TextView
@@ -37,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/text_view_address_in_list"
         android:layout_alignLeft="@id/text_view_address_in_list"
+        android:textSize="@dimen/description_text_size"
         android:freezesText="true"
         android:textStyle="italic" />"
 
