@@ -3,25 +3,25 @@
     <item
         android:id="@+id/action_filter"
         android:icon="@drawable/ic_action_toc"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/action_button_filter"/>
     
     <item
         android:id="@+id/action_languages_dialog"
         android:icon="@drawable/ic_action_language"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/content_lang_dialog_title"/>
     
     <item
         android:id="@+id/action_back"
         android:icon="@drawable/ic_action_arrow_back"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/back"/>
     
     <item
         android:id="@+id/action_up"
         android:icon="@drawable/ic_action_arrow_upward"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/up"/>
     
     <item
