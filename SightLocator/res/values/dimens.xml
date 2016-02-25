@@ -11,5 +11,7 @@
     
     <dimen name="description_text_size">15dp</dimen>
     <dimen name="description_text_size_full_screen">17dp</dimen>
+    <dimen name="send_feedback_button_text_size">30dp</dimen>
+    <dimen name="we_appreciate_your_feedback_text_size">20dp</dimen>
 
 </resources>

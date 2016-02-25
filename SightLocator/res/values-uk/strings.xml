@@ -5,6 +5,7 @@
 	
 	<!-- Action Bar buttons and Option Menu items -->
     <string name="action_settings">Налаштування</string>
+    <string name="action_feedback">Відгук</string>
     <string name="action_help">Поміч</string>
     <string name="action_button_help">Поміч</string>
     <string name="action_about">Опис</string>
@@ -34,6 +35,7 @@
 	
     <string name="imageview_tag_uri">0</string>
     <string name="full_screen_activity_title">Інфа</string>
+    <string name="feedback_activity_title">Відгук</string>
     <string name="help_activity_title">Поміч</string>
     <string name="help_activity_content">\nТи можеш робити наступне:\n- Клацнути по маркеру на мапі, щоб побачити інформацію про нього;\n- Клацнути просто по мапі, щоб побачити інформацію про район;\n- Прокрутити список маркерів;\n- Клацнути по кластеру (велика синя бульбашка), щоб побачити інформацію про нього;\n- Ти можеш виділити одну або кілька категорій, щоб бачити тільки бажані маркери;\n- Щоб вибрати іншу мову, клацни по кнопці Мови;\n- Щоб побачити попередню сторінку, клацни Назад;</string>
     <string name="address">Адреса : завдання</string>
@@ -53,4 +55,10 @@
     <string name="default_description_text_part2">) не доступний. Оберіть іншу мову</string>
     <string name="default_address_text_part1">Адреса вибраною мовою (</string>
     <string name="default_address_text_part2">) не доступна</string>
+    
+    <!-- Feedback -->
+    <string name="we_appreciate_your_feedback_text">Поділіться своїми враженнями від UGuide, або ідеями, як зробити його кращим. \n\nМи цінуємо Вашу думку!</string>
+    <string name="send_feedback">Надіслати відгук</string>
+    <string name="feedback_email_subject">Відгук</string>
+    <string name="feedback_email_intent_resolver_message">Надіслати відгук з допомогою:</string>
 </resources>
