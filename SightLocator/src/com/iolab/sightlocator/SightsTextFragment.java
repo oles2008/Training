@@ -195,6 +195,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			startLanguageDialog();
 			return true;
 			
+		case R.id.action_feedback:
+			startFeedback();
+			return true;
+			
 		case R.id.action_help:
 			showHelp();
 			return true;
@@ -202,6 +206,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void startFeedback() {
+		Intent intent =  new Intent(getActivity(), FeedbackActivity.class);
+		startActivity(intent);
 	}
 	
 	private void showHelp(){

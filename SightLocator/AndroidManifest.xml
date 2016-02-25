@@ -41,6 +41,16 @@
                 android:value="com.iolab.sightlocator.MainActivity"/>
         </activity>
         
+        <activity
+            android:name="com.iolab.sightlocator.FeedbackActivity"
+            android:label="@string/feedback_activity_title"
+            android:parentActivityName="com.iolab.sightlocator.MainActivity"
+            android:launchMode="singleTop">
+            <meta-data 
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.iolab.sightlocator.MainActivity"/>
+        </activity>
+        
         <service
             android:name="com.iolab.sightlocator.SightsIntentService"
             android:enabled="true" >
