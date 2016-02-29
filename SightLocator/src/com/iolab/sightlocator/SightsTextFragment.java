@@ -85,6 +85,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
+	private int mRelevantParentID = -1;
 	private String mLanguage;
 	private Queue<DestinationEndPoint> mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
 	private Queue<DestinationEndPoint> mForwardStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
@@ -115,6 +116,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSelectedItem = savedInstanceState.getParcelable(Tags.SELECTED_ITEM);
 			mImagePath = savedInstanceState.getString(Tags.PATH_TO_IMAGE);
 			mImageSource = savedInstanceState.getString(Tags.TYPE_OF_IMAGE_SOURCE);
+			mRelevantParentID = savedInstanceState.getInt(Tags.RELEVANT_PARENT_ID, -1);
 			List<DestinationEndPoint> savedBackStack = savedInstanceState.getParcelableArrayList(Tags.BACK_STACK);
 			if(savedBackStack != null){
 				mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>(savedBackStack));
@@ -457,6 +459,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putBoolean(Tags.CATEGORIES_DIALOG_ACTIVE, categoriesDialogActive);
 		args.putBoolean(Tags.LANGUAGES_DIALOG_ACTIVE, languagesDialogActive);
 		args.putBoolean(Tags.GPS_DIALOG_ACTIVE, gpsDialogActive);
+		args.putInt(Tags.RELEVANT_PARENT_ID, mRelevantParentID);
 	}
 
     @Override
@@ -524,7 +527,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getInt(Tags.RELEVANT_PARENT_ID,-1) != -1) {
-			navigateTo(bundle.getInt(Tags.RELEVANT_PARENT_ID,-1), false, true);
+			int newRelevantParentID = bundle.getInt(Tags.RELEVANT_PARENT_ID);
+			if (newRelevantParentID != mRelevantParentID) {
+				mRelevantParentID = newRelevantParentID;
+				navigateTo(newRelevantParentID, false, true);
+			}
 		}
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
