@@ -268,11 +268,11 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		LatLng sightPosition = null;
 		int[] parentIDs = null;
 
-		if(cursor == null){
-			return;
-		}
+//		if(cursor == null){
+//			return;
+//		}
 		
-		if (cursor.moveToFirst()) {
+		if (cursor!=null && cursor.moveToFirst()) {
 			pathToImage 		= cursor.getString(cursor.getColumnIndex(COLUMN_SIGHT_IMAGE_PATH));
 			sightDescription 	= cursor.getString(cursor.getColumnIndex(SIGHT_DESCRIPTION 	+ mLanguage));
 			sightName 			= cursor.getString(cursor.getColumnIndex(SIGHT_NAME 		+ mLanguage));
