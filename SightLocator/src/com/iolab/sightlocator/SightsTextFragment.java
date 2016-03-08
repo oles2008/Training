@@ -1,7 +1,5 @@
 package com.iolab.sightlocator;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,9 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -86,6 +82,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	
 	private static long mClusterClickCounter = 0;
 	private int mCommonParentID = -1;
+	private int mRelevantParentID = -1;
 	private String mLanguage;
 	private Queue<DestinationEndPoint> mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
 	private Queue<DestinationEndPoint> mForwardStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>());
@@ -116,6 +113,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 			mSelectedItem = savedInstanceState.getParcelable(Tags.SELECTED_ITEM);
 			mImagePath = savedInstanceState.getString(Tags.PATH_TO_IMAGE);
 			mImageSource = savedInstanceState.getString(Tags.TYPE_OF_IMAGE_SOURCE);
+			mRelevantParentID = savedInstanceState.getInt(Tags.RELEVANT_PARENT_ID, -1);
 			List<DestinationEndPoint> savedBackStack = savedInstanceState.getParcelableArrayList(Tags.BACK_STACK);
 			if(savedBackStack != null){
 				mBackStack = Collections.asLifoQueue(new ArrayDeque<DestinationEndPoint>(savedBackStack));
@@ -458,6 +456,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		args.putBoolean(Tags.CATEGORIES_DIALOG_ACTIVE, categoriesDialogActive);
 		args.putBoolean(Tags.LANGUAGES_DIALOG_ACTIVE, languagesDialogActive);
 		args.putBoolean(Tags.GPS_DIALOG_ACTIVE, gpsDialogActive);
+		args.putInt(Tags.RELEVANT_PARENT_ID, mRelevantParentID);
 	}
 
     @Override
@@ -498,7 +497,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		
-		if (bundle.getInt(Tags.ID, -1) != -1) {
+		if (bundle.getInt(Tags.ID, -2) != -2) {
 			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
 			mSightListItems = null;
 			cleanAllViews();
@@ -525,7 +524,11 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		
 		if (bundle.getInt(Tags.RELEVANT_PARENT_ID,-1) != -1) {
-			navigateTo(bundle.getInt(Tags.RELEVANT_PARENT_ID,-1), false, true);
+			int newRelevantParentID = bundle.getInt(Tags.RELEVANT_PARENT_ID);
+			if (newRelevantParentID != mRelevantParentID) {
+				mRelevantParentID = newRelevantParentID;
+				navigateTo(newRelevantParentID, false, true);
+			}
 		}
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
@@ -682,8 +685,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(selectedItemId, mSightListItems);
 		lastDestinationEndPoint.setCategories(CategoryUtils.getSelectedMarkerCategories());
 		lastDestinationEndPoint.setLanguage(mLanguage);
-		if((destinationEndPoint.getID()!= -1) && (selectedItemId != destinationEndPoint.getID())){
-			navigateTo(destinationEndPoint.getID(), showOnMap, destinationEndPoint.getClusteredItems(), false, clearForwardStack);
+		if (((destinationEndPoint.getID() != -1) && (selectedItemId != destinationEndPoint
+				.getID()))
+				|| ((destinationEndPoint.getClusteredItems() != null)
+						&& !destinationEndPoint.getClusteredItems().isEmpty() && !destinationEndPoint
+						.getClusteredItems().equals(mSightListItems))) {
+			navigateTo(destinationEndPoint.getID(), showOnMap,
+					destinationEndPoint.getClusteredItems(), false,
+					clearForwardStack);
 		}
 		if((destinationEndPoint.getCategories()!= null) && !CategoryUtils.getSelectedMarkerCategories().equals(destinationEndPoint.getCategories())){
 			selectCategories(destinationEndPoint.getCategories(), lastDestinationEndPoint.getCategories(), false);
