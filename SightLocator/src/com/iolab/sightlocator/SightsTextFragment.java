@@ -1,7 +1,5 @@
 package com.iolab.sightlocator;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,9 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -501,7 +497,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public void onUpdateView(Bundle bundle) {
 		
-		if (bundle.getInt(Tags.ID, -1) != -1) {
+		if (bundle.getInt(Tags.ID, -2) != -2) {
 			mSelectedItem = new SightMarkerItem(bundle.getInt(Tags.ID));
 			mSightListItems = null;
 			cleanAllViews();
@@ -689,8 +685,14 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		DestinationEndPoint lastDestinationEndPoint = new DestinationEndPoint(selectedItemId, mSightListItems);
 		lastDestinationEndPoint.setCategories(CategoryUtils.getSelectedMarkerCategories());
 		lastDestinationEndPoint.setLanguage(mLanguage);
-		if((destinationEndPoint.getID()!= -1) && (selectedItemId != destinationEndPoint.getID())){
-			navigateTo(destinationEndPoint.getID(), showOnMap, destinationEndPoint.getClusteredItems(), false, clearForwardStack);
+		if (((destinationEndPoint.getID() != -1) && (selectedItemId != destinationEndPoint
+				.getID()))
+				|| ((destinationEndPoint.getClusteredItems() != null)
+						&& !destinationEndPoint.getClusteredItems().isEmpty() && !destinationEndPoint
+						.getClusteredItems().equals(mSightListItems))) {
+			navigateTo(destinationEndPoint.getID(), showOnMap,
+					destinationEndPoint.getClusteredItems(), false,
+					clearForwardStack);
 		}
 		if((destinationEndPoint.getCategories()!= null) && !CategoryUtils.getSelectedMarkerCategories().equals(destinationEndPoint.getCategories())){
 			selectCategories(destinationEndPoint.getCategories(), lastDestinationEndPoint.getCategories(), false);
