@@ -232,23 +232,33 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 
 		// 3. In assets
 		List<String> assets = new ArrayList<String>();
+		String assetName = imagePathFromDatabase;
 		try {
-			String folder = Tags.PATH_TO_IMAGES_IN_ASSETS;
-			if(folder.endsWith("/")) {
-				folder = folder.substring(0, folder.length() - 1);
+			String pathInAssets = Tags.PATH_TO_IMAGES_IN_ASSETS;
+			if(pathInAssets.endsWith("/")) {
+				pathInAssets = pathInAssets.substring(0, pathInAssets.length() - 1);
 			}
-			assets = Arrays.asList(Appl.appContext.getAssets().list(folder));
+			pathInAssets += "/"+imagePathFromDatabase;
+			if(pathInAssets.endsWith("/")) {
+				pathInAssets = pathInAssets.substring(0, pathInAssets.length() - 1);
+			}
+			int lastSlashIndex = pathInAssets.lastIndexOf("/");
+			if(lastSlashIndex!=-1) {
+				assetName = pathInAssets.substring(lastSlashIndex+1, pathInAssets.length());
+				pathInAssets = pathInAssets.substring(0, lastSlashIndex);
+			}
+			assets = Arrays.asList(Appl.appContext.getAssets().list(pathInAssets));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(assets.contains(imagePathFromDatabase)){
+		if(assets.contains(assetName)){
 			path = Tags.PATH_TO_IMAGES_IN_ASSETS + imagePathFromDatabase;
 			type = Tags.IMAGE_FROM_ASSET;
 			
 			return new Pair<String, String>(path, type);
 		}
-		
+				
 		// 4. Online
 		// look for an image online and save into cache
 		
