@@ -78,7 +78,8 @@
         <ListView
             android:id="@+id/listView_invisible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingTop="2dp" />
     </LinearLayout>
     
 
@@ -159,7 +160,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scrollbarStyle="outsideInset"
-            android:fadingEdge="horizontal" />
+            android:fadingEdge="horizontal"
+            android:paddingTop="2dp" />
     </LinearLayout>
 
 </RelativeLayout>
