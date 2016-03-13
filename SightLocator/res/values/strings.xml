@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">UGuideMe</string>
-    
+    <string name="decrement">0.9</string>
+	
     <!-- Action Bar buttons and Option Menu items -->
     <string name="action_settings">Settings</string>
     <string name="action_feedback">Feedback</string>
