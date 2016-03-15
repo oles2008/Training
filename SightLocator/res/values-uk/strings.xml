@@ -16,13 +16,18 @@
     <!-- Filter Categories list -->
     <string-array name="marker_category_display">
         <item >ВСІ</item>
+        <item >Архітектура</item>
         <item >Релігія</item>
         <item >Історія</item>
         <item >Памятники</item>
+        <item >Скульптура</item>
         <item >Література</item>
         <item >Кафе</item>
         <item >Розваги</item>
+        <item >Відпочинок</item>
         <item >Індустрія</item>
+        <item >Інфраструктура</item>
+        <item >Природа</item>
     </string-array>	
 	
 	<!-- Filter Categories Dialog buttons -->
