@@ -19,6 +19,7 @@
         <item >Architecture</item>
         <item >Religion</item>
         <item >History</item>
+        <item >Museum</item>
         <item >Monument</item>
         <item >Sculpture</item>
         <item >Literature</item>
@@ -35,6 +36,7 @@
         <item >architecture</item>
         <item >religion</item>
         <item >history</item>
+        <item >museum</item>
         <item >monument</item>
         <item >sculpture</item>
         <item >literature</item>
@@ -49,6 +51,11 @@
 		<item>0</item>
 		<item>50</item>
 		<item>20</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
 		<item>30</item>
 		<item>30</item>
 		<item>20</item>
