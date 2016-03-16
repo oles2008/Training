@@ -305,7 +305,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		if(categoryString != null && !categoryString.isEmpty()){
 			String[] items = categoryString.trim().split(Category.SEPARATOR);
 			for(String item : items){
-				String[] splitItem = item.split(Category.PRIO_SEPARATOR);
+				String[] splitItem = item.trim().split(Category.PRIO_SEPARATOR);
 				if(splitItem.length == 2){
 					categories.put(splitItem[0], Double.parseDouble(splitItem[1]));				
 				} else {
