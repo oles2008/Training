@@ -78,7 +78,8 @@
         <ListView
             android:id="@+id/listView_invisible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingTop="2dp" />
     </LinearLayout>
     
 
@@ -96,7 +97,8 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
-            android:layout_weight="1" >
+            android:layout_weight="1"
+            android:fadingEdge="vertical" >
 
             <LinearLayout
                 android:id="@+id/linear_layout_child_of_scroll"
@@ -137,6 +139,7 @@
                         android:id="@+id/address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginRight="10dp"
                         android:freezesText="true"
                         android:textStyle="italic" />
@@ -159,7 +162,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scrollbarStyle="outsideInset"
-            android:fadingEdge="horizontal" />
+            android:fadingEdge="horizontal"
+            android:paddingTop="2dp" />
     </LinearLayout>
 
 </RelativeLayout>
