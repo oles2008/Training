@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 	private int[] parentIDs;
 	//not to be saved in Parcel
 	private Cluster<SightMarkerItem> mCluster;
+	private double priority;
 
 	final double DEFAULT_PRIORITY = 50;
 	
@@ -179,41 +181,52 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 		return categories;
 	}
 	
-	public double getItemPriority(){
-		double prior = 0;
+	public double getPriority(){
+		return priority;
+	}
+	
+	private double weightPriorityArray(double[] priorities, double dec){
+		double sum = 0;
+		for(int i = 0; i < priorities.length; i++){
+			sum += priorities[i] * Math.pow(dec, i);
+		}
+		return sum;
+	}
+	
+	public void updateItemPriority(){
+		double[] priorities = new double[categories.size()];
+		double dec = Double.parseDouble(Appl.appContext.getResources()
+				.getString(R.string.decrement));
 		for(int i = 0; i < Appl.selectedCategories.length; i++){
 			if(Appl.selectedCategories[i]){
 				String category = Appl.categoriesValues.get(i);
-				
-				double dec = Double.parseDouble(Appl.appContext.getResources()
-						.getString(R.string.decrement));
-				double upd = 1;
+				int ind = 0;				
 				
 				// get priority if all categories are selected
 				if(category.equals(Category.CATEGORY_ALL)){
 					for(String itemCategory : categories.keySet()){
 						if(categories.containsKey(itemCategory) && 
 								Appl.categoryPriorities.containsKey(itemCategory)){
-							prior += categories.get(itemCategory) * upd
+							priorities[ind] = categories.get(itemCategory)
 								  * Appl.categoryPriorities.get(itemCategory);
-							upd *= dec;
+							ind++;
 						}
 					}
-					return prior;
-				}
-				
-				// update priority for selected category
-				if(categories.containsKey(category)){
-					if(categories.containsKey(category) && 
-							Appl.categoryPriorities.containsKey(category)){
-						prior += categories.get(category) * upd
-								* Appl.categoryPriorities.get(category);
-						upd *= dec;
+				} else {
+					// update priority for selected category
+					if(categories.containsKey(category)){
+						if(categories.containsKey(category) && 
+								Appl.categoryPriorities.containsKey(category)){
+							priorities[ind] = categories.get(category)
+									* Appl.categoryPriorities.get(category);
+							ind++;
+						}
 					}
 				}
 			}
 		}
-		return prior;
+		Arrays.sort(priorities);
+		priority = weightPriorityArray(priorities, dec);
 	}
 	
 	public int getID() {

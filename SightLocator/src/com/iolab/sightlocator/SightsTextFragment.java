@@ -719,9 +719,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					mListItemsFromSelectedCategories.add(item);
 				}
 			}
+			for(SightMarkerItem item : mListItemsFromSelectedCategories){
+				item.updateItemPriority();
+			}
 			Collections.sort(mListItemsFromSelectedCategories, new Comparator<SightMarkerItem>(){
 				public int compare(SightMarkerItem sight1, SightMarkerItem sight2){
-					return Double.compare(sight2.getItemPriority(), sight1.getItemPriority());
+					return Double.compare(sight2.getPriority(), sight1.getPriority());
 				}
 			});
 			
