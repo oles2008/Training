@@ -119,5 +119,6 @@
     <string name="send_feedback">Send Feedback</string>
     <string name="feedback_email_subject">Feedback</string>
     <string name="feedback_email_intent_resolver_message">Send your feedback using:</string>
+    <string name="feedback_no_email_app_message">No email app found. Please send your thoughts to info.uguide@gmail.com. We appreciate your feedback!</string>
     
 </resources>
