@@ -185,13 +185,18 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 			if(Appl.selectedCategories[i]){
 				String category = Appl.categoriesValues.get(i);
 				
+				double dec = Double.parseDouble(Appl.appContext.getResources()
+						.getString(R.string.decrement));
+				double upd = 1;
+				
 				// get priority if all categories are selected
 				if(category.equals(Category.CATEGORY_ALL)){
 					for(String itemCategory : categories.keySet()){
 						if(categories.containsKey(itemCategory) && 
 								Appl.categoryPriorities.containsKey(itemCategory)){
-							prior += categories.get(itemCategory)
+							prior += categories.get(itemCategory) * upd
 								  * Appl.categoryPriorities.get(itemCategory);
+							upd *= dec;
 						}
 					}
 					return prior;
@@ -201,7 +206,9 @@ public class SightMarkerItem implements ClusterItem, Parcelable {
 				if(categories.containsKey(category)){
 					if(categories.containsKey(category) && 
 							Appl.categoryPriorities.containsKey(category)){
-						prior += categories.get(category) * Appl.categoryPriorities.get(category);											
+						prior += categories.get(category) * upd
+								* Appl.categoryPriorities.get(category);
+						upd *= dec;
 					}
 				}
 			}
