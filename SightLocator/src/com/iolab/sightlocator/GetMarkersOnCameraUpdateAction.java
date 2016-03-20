@@ -84,7 +84,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 
 	@Override
 	public void runInService() {
-		long startTime = System.nanoTime();
+		Appl.Tic(" getMarkersAction started");
+		
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.query(TABLE_NAME,
 						new String[] { COLUMN_LATITUDE,
@@ -107,8 +108,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 								+ mLatLngBounds.northeast.longitude + ")",
 								null, null, null, null);
 
-		long queryDuration = System.nanoTime() - startTime;
-		Log.d("MyLogs", "GetMarkers query: "+(queryDuration/1000000)+"ms");
+		Appl.Toc("- GetMarkers query: ");
+
 		int[] parentIDs;
 		List<int[]> listOfArrays = new ArrayList<int[]>();
 		
@@ -127,7 +128,9 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 			listOfArrays.add(parentIDs);			
 
 		}
-		
+
+		Appl.Toc("- after move to first: ");
+
 		while (cursor.moveToNext()) {
 			LatLng position = new LatLng(cursor.getDouble(0),
 										cursor.getDouble(1));
@@ -142,15 +145,22 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 					cursor.getInt(cursor.getColumnIndex(COLUMN_ID)), parentIDs));			
 			listOfArrays.add(parentIDs); 
 		}
-				
+
+		Appl.Toc("- after move to next: ");
+
 		Bundle resultData = new Bundle();
 		resultData.putParcelableArrayList(Tags.MARKERS, sightMarkerItemList);
 		resultData.putLong(Tags.ON_CAMERA_CHANGE_CALL_INDEX, mViewUpdateCallIndex);
+
+		Appl.Toc("- after put Long: ");
 		
 		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
+		
+		Appl.Toc("- after find common parent: ");
+
 		Appl.receiver.send(0, resultData);
-		long duration = System.nanoTime() - startTime;
-		Log.d("MyLogs", "GetMarkersAction: "+(duration/1000000)+"ms");
+		
+		Appl.Toc("- GetMarkersAction finished: ");
 	}
 
 }

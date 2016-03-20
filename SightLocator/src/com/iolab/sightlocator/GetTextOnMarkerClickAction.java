@@ -268,11 +268,11 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	@Override
 	public void runInService() {
 		
-		long startTime = System.nanoTime();
+		Appl.Tic();
 		
 		Cursor cursor = getCursor();
-		long queryDuration = System.nanoTime() - startTime;
-		Log.d("MyLogs", "GetText query: "+(queryDuration/1000000)+"ms");
+		
+		Appl.Toc("GetText query: ");
 
 		String sightDescription = null;
 		String pathToImage = null;
@@ -346,6 +346,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			resultData.putParcelable(Tags.SIGHT_POSITION, sightPosition);
 		}
 		Appl.receiver.send(0, resultData);
+
+		Appl.Toc("GetText single item return: ");
 		
 		if((mClusterItems!=null && !mClusterItems.isEmpty()) || (mID!=-1)){
 			cursor = getMultipleItemsCursor();
@@ -405,8 +407,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			resultData.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
 			Appl.receiver.send(0, resultData);
 		}
-		long duration = System.nanoTime() - startTime;
-		Log.d("MyLogs", "GetTextAction: "+(duration/1000000)+"ms");
+		
+		Appl.Toc("GetTextAction finished: ");
 	}
 	
 }

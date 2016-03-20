@@ -24,10 +24,16 @@ public class SightsHierarchichalAlgorithm extends
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
-		long startTime = System.nanoTime();
+		Appl.Tic();
 		Set<? extends Cluster<SightMarkerItem>> clusterSet = super.getClusters(zoom+ZOOM_OFFSET);
+
+		Appl.Toc("-- getClusters after super: ");
+		
 		//to make it impossible for clusters to be split even under a large scale
 		Set<? extends Cluster<SightMarkerItem>> clustersBiggerZoom = super.getClusters(zoom+ZOOM_OFFSET+1);
+
+		Appl.Toc("-- getClusters after super+1: ");
+
 		Set<Cluster<SightMarkerItem>> resultSet = new HashSet<Cluster<SightMarkerItem>>();
 		for(Cluster<SightMarkerItem> cluster: clusterSet){
 			Set<Cluster<SightMarkerItem>> splitClusters = splitClusterAccordingToHierarchy(cluster);
@@ -38,8 +44,7 @@ public class SightsHierarchichalAlgorithm extends
 				resultSet.add(cluster);
 			}
 		}
-		long duration = System.nanoTime() - startTime;
-		Log.d("MyLogs", "getClusters duration: "+(duration/1000000)+"ms");
+		Appl.Toc("-- getClusters finish (background) duration: ");
 		return resultSet;
 	}
 

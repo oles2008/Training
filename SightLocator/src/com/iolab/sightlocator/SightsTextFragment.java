@@ -593,6 +593,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		//TODO avoid sending the same request if the selected marker is the same
+		Appl.Tic(" onClusterClick");
+		
 		cleanAllViews();
 		List<int[]>parentIDs = new ArrayList<int[]>();
 		for(SightMarkerItem item: cluster.getItems()){
@@ -600,6 +602,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		}
 		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
 		navigateTo(clusterCommonParentId, false, cluster.getItems(), true, true);
+
+		Appl.Toc("finished onClusterClick");
+
 		return false;
 	}
 	
@@ -660,6 +665,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
+		Appl.Toc("- getTextOnMarker service should be started: ");
 		return lastDestinationEndPoint;
 	}
 	
