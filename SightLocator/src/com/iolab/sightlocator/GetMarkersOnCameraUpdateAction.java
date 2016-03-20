@@ -17,6 +17,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -83,6 +84,7 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 
 	@Override
 	public void runInService() {
+		long startTime = System.nanoTime();
 		Cursor cursor = Appl.sightsDatabaseOpenHelper.getReadableDatabase()
 				.query(TABLE_NAME,
 						new String[] { COLUMN_LATITUDE,
@@ -105,6 +107,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 								+ mLatLngBounds.northeast.longitude + ")",
 								null, null, null, null);
 
+		long queryDuration = System.nanoTime() - startTime;
+		Log.d("MyLogs", "GetMarkers query: "+(queryDuration/1000000)+"ms");
 		int[] parentIDs;
 		List<int[]> listOfArrays = new ArrayList<int[]>();
 		
@@ -145,6 +149,8 @@ public class GetMarkersOnCameraUpdateAction implements ServiceAction,
 		
 		resultData.putInt(Tags.COMMON_PARENT_ID,ItemGroupAnalyzer.findCommonParent(listOfArrays,0));
 		Appl.receiver.send(0, resultData);
+		long duration = System.nanoTime() - startTime;
+		Log.d("MyLogs", "GetMarkersAction: "+(duration/1000000)+"ms");
 	}
 
 }

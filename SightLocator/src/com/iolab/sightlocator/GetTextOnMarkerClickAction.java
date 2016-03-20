@@ -268,7 +268,11 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 	@Override
 	public void runInService() {
 		
+		long startTime = System.nanoTime();
+		
 		Cursor cursor = getCursor();
+		long queryDuration = System.nanoTime() - startTime;
+		Log.d("MyLogs", "GetText query: "+(queryDuration/1000000)+"ms");
 
 		String sightDescription = null;
 		String pathToImage = null;
@@ -401,6 +405,8 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 			resultData.putBoolean(Tags.SHOW_ON_MAP, mShowOnMap);
 			Appl.receiver.send(0, resultData);
 		}
+		long duration = System.nanoTime() - startTime;
+		Log.d("MyLogs", "GetTextAction: "+(duration/1000000)+"ms");
 	}
 	
 }
