@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemViewAnalyzerOptimized {
+import android.util.Log;
+
+public class ItemGroupAnalyzerOptimized {
 
 	public static int findCommonParent(List<int[]> parentIDsList, int ignoreLevelPercentage) {
 		int analysisId = -1;
@@ -62,7 +64,8 @@ public class ItemViewAnalyzerOptimized {
 	public static int findCommonParent2(List<int[]> parentIDsList, int ignoreLevelPercentage) {
 		int commonParentId = -1;
 		for(int level=0;;level++) {			
-			int mostCommonItemFromLevel = getMostCommonItemFromLevel(parentIDsList, ignoreLevelPercentage, level);
+			int mostCommonItemFromLevel = getMostCommonItemFromLevel(parentIDsList, level, ignoreLevelPercentage);
+			Log.d("MyLogs", "mostCommon for level="+level+": "+mostCommonItemFromLevel);
 			if(mostCommonItemFromLevel != -1) {
 				commonParentId = mostCommonItemFromLevel;
 			} else {
@@ -75,9 +78,11 @@ public class ItemViewAnalyzerOptimized {
 	private static int getMostCommonItemFromLevel(List<int[]> parentIDsList, int level, int percentageToIgnore) {
 		Map<Integer, Integer> parentOccurrenceMap = new HashMap<Integer, Integer>();
 		for(int[] parentIDs: parentIDsList) {
+			Log.d("MyLogs", "parentIDs.length: "+parentIDs.length+", level: "+level+", parentIDs.length > level: "+(parentIDs.length>level));
 			// check if hierarchy is deep enough and add parent to occurrence map
-			if(parentIDs.length >= level){
+			if(parentIDs.length > level){
 				addOccurence(parentIDs[level], parentOccurrenceMap);
+				Log.d("MyLogs", "adding "+parentIDs[level]+", number: "+parentOccurrenceMap.get(parentIDs[level]));
 			}
 		}
 		int mostCommonId = getKeyByMaxValue(parentOccurrenceMap);
@@ -96,7 +101,7 @@ public class ItemViewAnalyzerOptimized {
 	
 	private static void addOccurence(int parentID, Map<Integer, Integer> occurenceMap) {
 		if(!occurenceMap.containsKey(parentID)) {
-			occurenceMap.put(parentID, 0);
+			occurenceMap.put(parentID, 1);
 		} else {
 			int currentValue = occurenceMap.get(parentID);
 			occurenceMap.put(parentID, ++currentValue);
@@ -107,11 +112,13 @@ public class ItemViewAnalyzerOptimized {
 		int maxKey = -1;
 		int maxValue = 0;
 		for(int key: parentOccurrenceMap.keySet()) {
+			Log.d("MyLogs", "getKeyByMaxValue: key+"+key+", value="+parentOccurrenceMap.get(key));
 			if(parentOccurrenceMap.get(key) > maxValue) {
 				maxKey = key;
 				maxValue = parentOccurrenceMap.get(key);
 			}
 		}
+		Log.d("MyLogs", "getKeyByMaxValue: returning "+maxKey);
 		return maxKey;
 	}
 }
