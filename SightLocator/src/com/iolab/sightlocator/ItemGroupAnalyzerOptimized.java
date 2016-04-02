@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
-
 public class ItemGroupAnalyzerOptimized {
 
 	public static int findCommonParent(List<int[]> parentIDsList, int ignoreLevelPercentage) {
@@ -65,7 +63,6 @@ public class ItemGroupAnalyzerOptimized {
 		int commonParentId = -1;
 		for(int level=0;;level++) {			
 			int mostCommonItemFromLevel = getMostCommonItemFromLevel(parentIDsList, level, ignoreLevelPercentage);
-			Log.d("MyLogs", "mostCommon for level="+level+": "+mostCommonItemFromLevel);
 			if(mostCommonItemFromLevel != -1) {
 				commonParentId = mostCommonItemFromLevel;
 			} else {
@@ -78,11 +75,9 @@ public class ItemGroupAnalyzerOptimized {
 	private static int getMostCommonItemFromLevel(List<int[]> parentIDsList, int level, int percentageToIgnore) {
 		Map<Integer, Integer> parentOccurrenceMap = new HashMap<Integer, Integer>();
 		for(int[] parentIDs: parentIDsList) {
-			Log.d("MyLogs", "parentIDs.length: "+parentIDs.length+", level: "+level+", parentIDs.length > level: "+(parentIDs.length>level));
 			// check if hierarchy is deep enough and add parent to occurrence map
 			if(parentIDs.length > level){
 				addOccurence(parentIDs[level], parentOccurrenceMap);
-				Log.d("MyLogs", "adding "+parentIDs[level]+", number: "+parentOccurrenceMap.get(parentIDs[level]));
 			}
 		}
 		int mostCommonId = getKeyByMaxValue(parentOccurrenceMap);
@@ -112,13 +107,11 @@ public class ItemGroupAnalyzerOptimized {
 		int maxKey = -1;
 		int maxValue = 0;
 		for(int key: parentOccurrenceMap.keySet()) {
-			Log.d("MyLogs", "getKeyByMaxValue: key+"+key+", value="+parentOccurrenceMap.get(key));
 			if(parentOccurrenceMap.get(key) > maxValue) {
 				maxKey = key;
 				maxValue = parentOccurrenceMap.get(key);
 			}
 		}
-		Log.d("MyLogs", "getKeyByMaxValue: returning "+maxKey);
 		return maxKey;
 	}
 }
