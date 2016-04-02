@@ -87,7 +87,7 @@ public class ItemGroupAnalyzerOptimized {
 		double freq = parentOccurrenceMap.get(mostCommonId) / (double)parentIDsList.size() * 100;
 		
 		// check if freq passes level
-		if(freq > 100-percentageToIgnore){
+		if(freq >= 100-percentageToIgnore){
 			return mostCommonId;
 		} else {
 			return -1;

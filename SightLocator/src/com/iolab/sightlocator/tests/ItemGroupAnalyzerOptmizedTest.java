@@ -46,5 +46,13 @@ public class ItemGroupAnalyzerOptmizedTest extends TestCase {
 		list.add(new int[]{5,6,8});
 		list.add(new int[]{5,6,9});
 		assertEquals(5, ItemGroupAnalyzerOptimized.findCommonParent2(list, 25));
+		list = new ArrayList<int[]>();
+		list.add(new int[]{7,8,11});
+		list.add(new int[]{7,8,11});
+		list.add(new int[]{7,8,10});
+		list.add(new int[]{7,8,10});
+		list.add(new int[]{7,8,9});
+		list.add(new int[]{7,8,11});
+		assertEquals(8, ItemGroupAnalyzerOptimized.findCommonParent2(list, 0));
 	}
 }

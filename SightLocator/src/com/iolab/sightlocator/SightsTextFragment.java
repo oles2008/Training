@@ -598,7 +598,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		for(SightMarkerItem item: cluster.getItems()){
 			parentIDs.add(item.getParentIDs());
 		}
-		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
+		int clusterCommonParentId = ItemGroupAnalyzerOptimized.findCommonParent2(parentIDs, 0);
 		navigateTo(clusterCommonParentId, false, cluster.getItems(), true, true);
 		return false;
 	}
@@ -776,7 +776,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void navigateUp(boolean addToBackStack) {
 		int currentItemParent = -1;
 		if (mSelectedItem != null) {
-			currentItemParent = ItemGroupAnalyzer.findCommonParent(
+			currentItemParent = ItemGroupAnalyzerOptimized.findCommonParent2(
 					Collections.singletonList(mSelectedItem.getParentIDs()), 0);
 		}
 		if (currentItemParent == -1) {
