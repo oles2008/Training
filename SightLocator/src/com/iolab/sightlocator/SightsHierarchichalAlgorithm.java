@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
@@ -22,9 +24,16 @@ public class SightsHierarchichalAlgorithm extends
 
 	@Override
 	public Set<Cluster<SightMarkerItem>> getClusters(double zoom){
+		Appl.Tic();
 		Set<? extends Cluster<SightMarkerItem>> clusterSet = super.getClusters(zoom+ZOOM_OFFSET);
+
+		Appl.Toc("-- getClusters after super: ");
+		
 		//to make it impossible for clusters to be split even under a large scale
 		Set<? extends Cluster<SightMarkerItem>> clustersBiggerZoom = super.getClusters(zoom+ZOOM_OFFSET+1);
+
+		Appl.Toc("-- getClusters after super+1: ");
+
 		Set<Cluster<SightMarkerItem>> resultSet = new HashSet<Cluster<SightMarkerItem>>();
 		for(Cluster<SightMarkerItem> cluster: clusterSet){
 			Set<Cluster<SightMarkerItem>> splitClusters = splitClusterAccordingToHierarchy(cluster);
@@ -35,6 +44,7 @@ public class SightsHierarchichalAlgorithm extends
 				resultSet.add(cluster);
 			}
 		}
+		Appl.Toc("-- getClusters finish (background) duration: ");
 		return resultSet;
 	}
 

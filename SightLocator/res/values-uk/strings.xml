@@ -16,13 +16,19 @@
     <!-- Filter Categories list -->
     <string-array name="marker_category_display">
         <item >ВСІ</item>
+        <item >Архітектура</item>
         <item >Релігія</item>
         <item >Історія</item>
+        <item >Музеї</item>
         <item >Памятники</item>
+        <item >Скульптура</item>
         <item >Література</item>
         <item >Кафе</item>
         <item >Розваги</item>
+        <item >Відпочинок</item>
         <item >Індустрія</item>
+        <item >Інфраструктура</item>
+        <item >Природа</item>
     </string-array>	
 	
 	<!-- Filter Categories Dialog buttons -->
@@ -61,4 +67,5 @@
     <string name="send_feedback">Надіслати відгук</string>
     <string name="feedback_email_subject">Відгук</string>
     <string name="feedback_email_intent_resolver_message">Надіслати відгук з допомогою:</string>
+    <string name="feedback_no_email_app_message">Поштового додатку не знайдено. Прошу надсилати Ваші зауваження та ідеї на адресу info.uguide@gmail.com. Ми цінуємо Вашу думку!</string>
 </resources>
