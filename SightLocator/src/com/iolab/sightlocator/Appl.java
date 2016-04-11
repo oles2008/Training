@@ -26,6 +26,26 @@ import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListe
 
 public class Appl extends Application {
 
+	// for debug purposes only
+	public static long startTime;
+	public static void Tic(String comment){
+		startTime = System.nanoTime();
+		Log.d("MyLogs", "==> " + comment);		
+	}
+	public static void Tic(){
+		startTime = System.nanoTime();
+		Log.d("MyLogs", "==> ");		
+	}
+	public static void Toc(String comment){
+		long duration = System.nanoTime() - startTime;
+		Log.d("MyLogs", comment+(duration/1000000)+"ms");		
+	}
+	public static void InitApp(){
+		Log.d("MyLogs", "");		
+		Log.d("MyLogs", "**************************************************");		
+	}
+
+	
 	static Context appContext;
 	// array to store checked checkboxes(selected marker categories) from
 	// Option Filter menu
@@ -49,6 +69,7 @@ public class Appl extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		InitApp();
 		appContext = getApplicationContext();
 		sightsDatabaseOpenHelper = new SightsDatabaseOpenHelper(appContext, 1);
 

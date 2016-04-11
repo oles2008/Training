@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UGuideMe</string>
-    
+    <string name="app_name">UGuide Zakarpattia</string>
+    <string name="decrement">0.9</string>
+	
     <!-- Action Bar buttons and Option Menu items -->
     <string name="action_settings">Settings</string>
     <string name="action_feedback">Feedback</string>
@@ -16,34 +17,52 @@
     <!-- Filter Categories list -->
     <string-array name="marker_category_display">
         <item >ALL</item>
+        <item >Architecture</item>
         <item >Religion</item>
         <item >History</item>
+        <item >Museum</item>
         <item >Monument</item>
+        <item >Sculpture</item>
         <item >Literature</item>
         <item >Cafe</item>
         <item >Entertaiment</item>
+        <item >Recreation</item>
         <item >Industry</item>
+        <item >Infrastructure</item>
+        <item >Nature</item>
     </string-array>
 	<!--do not internationalise as is used for comparison. Use lower case-->
     <string-array name="marker_category_values">
         <item >all</item>
+        <item >architecture</item>
         <item >religion</item>
         <item >history</item>
+        <item >museum</item>
         <item >monument</item>
+        <item >sculpture</item>
         <item >literature</item>
         <item >cafe</item>
         <item >entertainment</item>
+        <item >recreation</item>
         <item >industry</item>
+        <item >infrastructure</item>
+        <item >nature</item>
     </string-array>
 	<string-array name="category_priority">
+		<item>0</item>
 		<item>50</item>
-		<item>50</item>
-		<item>50</item>
-		<item>50</item>
-		<item>50</item>
-		<item>50</item>
-		<item>50</item>
-		<item>50</item>
+		<item>20</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>30</item>
+		<item>20</item>
+		<item>10</item>
+		<item>10</item>
+		<item>20</item>
 	</string-array>
 	
     
@@ -101,5 +120,6 @@
     <string name="send_feedback">Send Feedback</string>
     <string name="feedback_email_subject">Feedback</string>
     <string name="feedback_email_intent_resolver_message">Send your feedback using:</string>
+    <string name="feedback_no_email_app_message">No email app found. Please send your thoughts to info.uguide@gmail.com. We appreciate your feedback!</string>
     
 </resources>
