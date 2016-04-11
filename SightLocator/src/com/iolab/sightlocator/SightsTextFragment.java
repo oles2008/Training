@@ -593,13 +593,18 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	@Override
 	public boolean onClusterClick(Cluster<SightMarkerItem> cluster) {
 		//TODO avoid sending the same request if the selected marker is the same
+		Appl.Tic(" onClusterClick");
+		
 		cleanAllViews();
 		List<int[]>parentIDs = new ArrayList<int[]>();
 		for(SightMarkerItem item: cluster.getItems()){
 			parentIDs.add(item.getParentIDs());
 		}
-		int clusterCommonParentId = ItemGroupAnalyzer.findCommonParent(parentIDs, 0);
+		int clusterCommonParentId = ItemGroupAnalyzerOptimized.findCommonParent(parentIDs, 0);
 		navigateTo(clusterCommonParentId, false, cluster.getItems(), true, true);
+
+		Appl.Toc("finished onClusterClick");
+
 		return false;
 	}
 	
@@ -660,6 +665,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		intent.putExtra(SightsIntentService.ACTION,
 				new GetTextOnMarkerClickAction(bundle));
 		getActivity().startService(intent);
+		Appl.Toc("- getTextOnMarker service should be started: ");
 		return lastDestinationEndPoint;
 	}
 	
@@ -719,9 +725,12 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 					mListItemsFromSelectedCategories.add(item);
 				}
 			}
+			for(SightMarkerItem item : mListItemsFromSelectedCategories){
+				item.updateItemPriority();
+			}
 			Collections.sort(mListItemsFromSelectedCategories, new Comparator<SightMarkerItem>(){
 				public int compare(SightMarkerItem sight1, SightMarkerItem sight2){
-					return Double.compare(sight2.getItemPriority(), sight1.getItemPriority());
+					return Double.compare(sight2.getPriority(), sight1.getPriority());
 				}
 			});
 			
@@ -776,7 +785,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void navigateUp(boolean addToBackStack) {
 		int currentItemParent = -1;
 		if (mSelectedItem != null) {
-			currentItemParent = ItemGroupAnalyzer.findCommonParent(
+			currentItemParent = ItemGroupAnalyzerOptimized.findCommonParent(
 					Collections.singletonList(mSelectedItem.getParentIDs()), 0);
 		}
 		if (currentItemParent == -1) {
