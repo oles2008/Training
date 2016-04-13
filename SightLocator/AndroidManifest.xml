@@ -17,7 +17,7 @@
     <application
         android:name="com.iolab.sightlocator.Appl"
         android:allowBackup="true"
-        android:icon="@drawable/zakarpattia_logo"
+        android:icon="@mipmap/zakarpattia_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
