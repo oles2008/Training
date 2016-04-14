@@ -32,14 +32,11 @@ public class CopyDatabase {
                
                 File currentDB = new File(currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
-                Log.d("MyLogs", "cuurent DB exists: "+(currentDB.exists()));
-                Log.d("MyLogs", "backup DB exists: "+(backupDB.exists()));
 
                 if (currentDB.exists()) {
                     src = new FileInputStream(currentDB).getChannel();
                     dst = new FileOutputStream(backupDB).getChannel();
                     dst.transferFrom(src, 0, src.size());
-                    Log.d("MyLogs", "transferred successfully");
                 }
             }
         } catch (Exception e) {
