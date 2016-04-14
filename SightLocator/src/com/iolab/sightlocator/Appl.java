@@ -34,7 +34,7 @@ public class Appl extends Application {
 	}
 	public static void Tic(){
 		startTime = System.nanoTime();
-		Log.d("MyLogs", "==> ");		
+		Log.d("MyLogs", "==> ");
 	}
 	public static void Toc(String comment){
 		long duration = System.nanoTime() - startTime;
@@ -238,7 +238,6 @@ public class Appl extends Application {
 	}
 
 	public static void notifyMarkerCategoryUpdates() {
-		Log.d("Marker", "notifyMarkerCategoryUpdates");
 		for (OnMarkerCategoryUpdateListener listener : onMarkerCategoryUpdateListeners) {
 			listener.onMarkerCategoryChosen();
 		}

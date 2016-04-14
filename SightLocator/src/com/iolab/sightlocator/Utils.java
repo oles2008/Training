@@ -30,14 +30,7 @@ public class Utils {
 		byte[] buffer = null;
 		InputStream assetStream = null;
 		FileOutputStream outputStream = null;
-		
-		if (file.length() == 0) {
-			Log.d("asset", "asset does not exists");
-		}
-		else {
-			Log.d("asset", "asset exists");
-		}
-			
+					
 		// read asset into input buffer
 		try {
 			assetStream = Appl.appContext.getAssets().open(pathInAssets);

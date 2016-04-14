@@ -93,7 +93,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private Boolean gpsDialogActive = true;
 	
 	private FilterDialogFragment categoriesDialog;
-	private DialogFragment languagesDialog;
+//	private DialogFragment languagesDialog;
+	private LanguagesDialogFragment languagesDialog;
     private AlertDialog gpsDialog;
 
     OnTextFragmentClickListener mCallback;
@@ -409,7 +410,6 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 
 			@Override
 			public void onClick(View v) {
-				Log.d("MSG", "Image View click");
 			}
 		});
 	}
@@ -533,8 +533,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
 			mSightListItems = new ArrayList<SightMarkerItem>(
-					(Collection<? extends SightMarkerItem>) bundle
-							.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
+					bundle.<SightMarkerItem>getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
 			initializeListView();
 		}
 
@@ -866,7 +865,8 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void showFilterDialog() {
 		// Create an instance of the dialog fragment and show it
 		categoriesDialogActive = true;
-		categoriesDialog = new FilterDialogFragment(this);
+		categoriesDialog = new FilterDialogFragment();
+		categoriesDialog.SetDialogListener(this);
 		categoriesDialog.show(getFragmentManager(), "FilterDialogFragment");
 	}
 	
@@ -891,13 +891,9 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		if (mgr != null) {
 			if (mgr.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
 				if(mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-					Log.d("gps", "GPS is enabled");
 				} else {
 					showGPSDisabledAlertToUser();
 				}
-			}
-			else {
-				Log.d("gps", "GPS is not found");
 			}
 		}
 	}
@@ -949,8 +945,10 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 	private void showLanguagesDialog(String[] inputLanguages) {
 		// Create an instance of the dialog fragment and show it
 		languagesDialogActive = true;
-		languagesDialog = new LanguagesDialogFragment(
-				inputLanguages, this, mLanguage);
+		languagesDialog = new LanguagesDialogFragment();
+		languagesDialog.SetAvailableLanguages(inputLanguages);
+		languagesDialog.SetDialogListener(this);
+		languagesDialog.SetCurrentLanguage(mLanguage);
 		languagesDialog.show(getFragmentManager(), "LanguagesDialogFragment");
 	}
 	
