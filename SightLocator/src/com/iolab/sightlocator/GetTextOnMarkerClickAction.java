@@ -209,7 +209,6 @@ public class GetTextOnMarkerClickAction implements ServiceAction, Parcelable{
 		String type;
 		File file;
 		
-		Log.d("Mytag","External storage:"+ Environment.getExternalStorageState());
 		// looking for an image in the following order:
 		// 1. In external resources
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

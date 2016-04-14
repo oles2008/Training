@@ -24,17 +24,15 @@ public class LanguagesDialogFragment extends DialogFragment {
 	String[] langsForSharedPreference;
 	LanguagesDialogListener mLanguageDialogListener;
 	
-	
-	//class constructor
-	LanguagesDialogFragment(String[] languages, LanguagesDialogListener langDialogListener, String currentLang){
+	public void SetAvailableLanguages(String[] languages){
 		availableLanguages = languages;
-		mLanguageDialogListener = langDialogListener;
-		mCurrentLanguage = currentLang;
 	}
 	
-	LanguagesDialogFragment(LanguagesDialogListener langDialogListener, String currentLang){
-		availableLanguages = null;
-		mLanguageDialogListener = langDialogListener;
+	public void SetDialogListener(LanguagesDialogListener langDialogListener){
+		mLanguageDialogListener = langDialogListener;		
+	}
+
+	public void SetCurrentLanguage(String currentLang){
 		mCurrentLanguage = currentLang;
 	}
 	
