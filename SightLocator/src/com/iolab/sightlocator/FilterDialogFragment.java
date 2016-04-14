@@ -19,8 +19,8 @@ public class FilterDialogFragment extends DialogFragment{
 	}
 	
 	FilterDialogListener mListener;
-
-	public FilterDialogFragment(FilterDialogListener filterDialogListener) {
+	
+	public void SetDialogListener(FilterDialogListener filterDialogListener) {
 		mListener = filterDialogListener;
 	}
 
