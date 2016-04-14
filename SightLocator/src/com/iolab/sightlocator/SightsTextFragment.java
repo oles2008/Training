@@ -533,8 +533,7 @@ public class SightsTextFragment extends Fragment implements OnMapClickListener,
 		
 		if (bundle.getParcelableArrayList(Tags.SIGHT_ITEM_LIST) != null) {
 			mSightListItems = new ArrayList<SightMarkerItem>(
-					(Collection<? extends SightMarkerItem>) bundle
-							.getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
+					bundle.<SightMarkerItem>getParcelableArrayList(Tags.SIGHT_ITEM_LIST));
 			initializeListView();
 		}
 
