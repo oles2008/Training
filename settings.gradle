@@ -1,0 +1,3 @@
+include ':android-maps-utils-master:library'
+include ':SightLocator'
+include ':google-play-services_lib'
